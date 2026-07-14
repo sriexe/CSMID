@@ -37,6 +37,7 @@ from database import (
     Skin,
 )
 from scraper import SteamMarketScraper, SteamMarketError, SteamRateLimitError
+from collection_manager import CollectionManager
 
 # The generated per-category watchlists all live alongside DEFAULT_WATCHLIST
 # in data/watchlists/. We derive the directory from DEFAULT_WATCHLIST rather
@@ -177,18 +178,15 @@ def cmd_collect(args: argparse.Namespace) -> int:
     """Fetch price(s) and store them. Handles --skin (one skin),
     --watchlist NAME (a generated category watchlist), and --all
     (legacy full-watchlist alias). Returns exit code."""
-    scraper = SteamMarketScraper()
+    manager = CollectionManager()
 
     def resolve_skip_names() -> set[str]:
         if not args.resume:
             return set()
-        session = SessionLocal()
-        try:
-            skip_names = get_recently_collected_names(session, args.since_hours)
-        finally:
-            session.close()
-        return skip_names
 
+        return manager.get_recently_collected_names(
+        args.since_hours
+    )
     if args.watchlist:
         path = resolve_watchlist_path(args.watchlist)
         try:
@@ -202,7 +200,7 @@ def cmd_collect(args: argparse.Namespace) -> int:
                     "tools/generate_watchlists.py if you haven't yet."
                 )
             return 1
-        return collect_batch(names, scraper, skip_names=resolve_skip_names())
+        return manager.collect_batch(names, manager, skip_names=resolve_skip_names())
 
     if args.all:
         try:
@@ -210,11 +208,11 @@ def cmd_collect(args: argparse.Namespace) -> int:
         except FileNotFoundError as exc:
             print(f"\u274c {exc}")
             return 1
-        return collect_batch(names, scraper, skip_names=resolve_skip_names())
+        return manager.collect_batch(names, manager, skip_names=resolve_skip_names())
 
     # Single-skin mode
     try:
-        record = scraper.fetch_price(args.skin)
+        record = manager.fetch_price(args.skin)
     except SteamMarketError as exc:
         print(f"\u274c Scrape failed: {exc}")
         return 1
