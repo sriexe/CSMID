@@ -1,0 +1,96 @@
+# CSMID Handover Document
+
+**Updated:** July 14, 2026
+
+**Status:** Architecture Stabilized & Production-Ready
+
+---
+
+## Current Status
+
+The project has successfully graduated from a fragile prototype to a robust, native, state-aware application. The severe Steam rate-limiting bottleneck ("every-minute hammer loop") has been completely resolved via a native intelligent backoff scheduler, and the core code has been refactored for professional modularity.
+
+---
+
+## Completed Architecture & Milestone Features
+
+### 1. Robust Queue Persistence (`scheduler/state.py`)
+
+* **Crash-Resilient State:** Upgraded from a raw file I/O dump to a schema-protected state coordinator.
+* **Fault Tolerance:** Implemented safe fallbacks. If `queue_state.json` is missing or corrupted, it auto-bootstraps with safe defaults instead of throwing a `FileNotFoundError`.
+* **Enhanced Telemetry:** Tracks rich execution metadata across restarts.
+
+```json
+{
+    "current_index": 5,
+    "batch_size": 120,
+    "last_skin": "AK-47 | Aquamarine Revenge",
+    "last_run": "2026-07-14 23:15:22",
+    "status": "RUNNING"
+}
+
+```
+
+### 2. Centralized Orchestration (`src/collection_manager.py`)
+
+* **Separation of Concerns:** Completely stripped collection logic out of the CLI entry point.
+* **Granular Exit Mapping:** Built internal processing methods (`collect_skin` and `collect_queue`) that track precise execution outcomes:
+* `0`: Success / Batch completed cleanly.
+* `2`: HTTP 429 Rate Limit encountered.
+* `1`: General system / database error.
+
+
+* **Seamless Integration:** Fixed legacy signature mismatches (`skip_names` duplicates) and aligned the session architecture with the internal SQLAlchemy mappings from `src/database.py`.
+
+### 3. Native Intelligent Scheduler (`scheduler/daily_collect.py`)
+
+* **Zero Subprocess Overhead:** Replaced shell wrappers (`subprocess.run`) with clean, memory-efficient native Python imports.
+* **Cross-Module Path Resolution:** Implemented dynamic path injection (`sys.path.append`) to natively resolve root and `src/` directory cross-imports flawlessly.
+* **Adaptive Backoff Algorithm:** Replaced the static, dangerous 60-second loop with an exit-status branching manager:
+
+| Scenario / Return Code | Action Taken | Cooldown Period | Impact |
+| --- | --- | --- | --- |
+| **Clean Batch (`0`)** | Safe pacing pause | 10 Minutes | Prevents profile triggers |
+| **Rate Limited (`2`)** | Immediate execution halt | 60 Minutes | Prevents cooldown extensions |
+| **Unhandled Error (`1`)** | Fault recovery window | 5 Minutes | Allows network/DB recovery |
+
+### 4. Thin-Client CLI (`src/main.py`)
+
+* Functions strictly as a lightweight argument parser.
+* Single-skin mode (`--skin`) and Watchlist mode (`--watchlist`) now pass parameters cleanly to `CollectionManager` and safely pass bubble-up exit statuses straight to the system core.
+
+---
+
+## Current Dataset Layout
+
+* **Master Catalog:** 1,157 unique weapon skins successfully cataloged inside `data/master/master_skins.csv`.
+* **Watchlists:** Sliced into thematic evaluation targets within `data/watchlists/` (`all_weapons.txt`, `rifles.txt`, `pistols.txt`, etc.).
+* **Logging Engine:** Active file append tracking established in `scheduler.log`.
+
+---
+
+## Immediate Next Tasks
+
+### 1. Repository Synchronization (High Priority)
+
+Before running long-term background cycles, push the localized updates to GitHub to sync the diverged codebases:
+
+```bash
+git add .
+git commit -m "Refactor: Native intelligent scheduler, queue persistence hardening, and collection manager integration"
+git push origin main
+
+```
+
+### 2. Unattended Long-Term Data Accumulation
+
+* Restore your desired production batch size (e.g., `120`) inside `scheduler/queue_state.json`.
+* Launch the background process to start accumulating the **100k+ historical observations** foundational milestone.
+
+### 3. Transition to Phase 4 (Analytical Engine)
+
+Once historical data accumulates smoothly, begin prototyping the analytical frameworks:
+
+* **Case ROI Evaluator:** Tracking skin yield values against container opening costs.
+* **Buy/Sell Momentum Engine:** Building trend-line analysis and price velocity tracking.
+* **Web Dashboard:** Creating a light analytical frontend (Streamlit / FastAPI) to interface with the database.

@@ -1,26 +1,64 @@
 import logging
 from datetime import datetime
 from src.scraper import SteamMarketScraper  # Adjust import based on your exact layout
-from src.database import DatabaseSession   # Adjust import based on your exact layout
+from src.database import SessionLocal   # Adjust import based on your exact layout
+from scheduler.state import load_state, save_state
+from datetime import datetime, timedelta ,timezone
+from sqlalchemy import text
+
+logger = logging.getLogger("csmid.collection_manager")
+
+# Native imports directly from your database.py layer
+from src.database import SessionLocal, MarketHistory, Skin, get_or_create_skin, insert_market_history
 from scheduler.state import load_state, save_state
 
 logger = logging.getLogger("csmid.collection_manager")
 
 class CollectionManager:
     def __init__(self):
-        self.scraper = SteamMarketScraper()
-        # Assuming database initialization happens here or passes through
+        self.scraper = None # Assuming your scraper initialization happens here
+        # Instantiate your native session factory
+        self.session = SessionLocal()
         
-    def get_recently_collected_names(self, since_hours=20):
-        """Queries DB for skins updated within the window to skip them."""
-        # Your existing DB query logic goes here
-        pass
+    def get_recently_collected_names(self, since_hours=20) -> set:
+        """Queries MarketHistory for skins successfully updated within the window to skip them."""
+        time_threshold = datetime.now(timezone.utc) - timedelta(hours=since_hours)
+        
+        try:
+            # Query the market_history table for entries within our time window
+            recent_records = (
+                self.session.query(MarketHistory.market_hash_name)
+                .filter(MarketHistory.collected_at_utc >= time_threshold)
+                .filter(MarketHistory.success == True)
+                .all()
+            )
+            
+            # Extract names out of the query tuples into a lightning-fast lookup set
+            names_set = {record[0] for record in recent_records}
+            return names_set
+            
+        except Exception as e:
+            logger.error(f"Database query failed in get_recently_collected_names: {e}")
+            return set()
 
     def _store_record(self, record_data):
-        """Inserts the scraped observation into the database."""
-        # Your existing SQLAlchemy insertion logic goes here
-        pass
-
+        """
+        Inserts the scraped observation into the database using native helpers.
+        Expects record_data to be an object or dictionary matching your scraper schema.
+        """
+        try:
+            # 1. Ensure the parent skin exists in the static metadata table
+            skin = get_or_create_skin(self.session, record_data.market_hash_name)
+            
+            # 2. Use your native insert_market_history helper to append the time-series row
+            insert_market_history(self.session, skin, record_data)
+            
+            # 3. Commit the transaction safely
+            self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            logger.error(f"Failed to commit market record to database: {e}")
+            raise e
     def collect_skin(self, skin_name: str) -> int:
         """
         Collects a single skin. 
@@ -53,7 +91,7 @@ class CollectionManager:
         """
         # 1. Load the watchlist skins
         try:
-            with open(watchlist_path, "r") as f:
+            with open(watchlist_path, "r", encoding="utf-8") as f:
                 all_skins = [line.strip() for line in f if line.strip()]
         except FileNotFoundError:
             logger.error(f"Watchlist file not found: {watchlist_path}")

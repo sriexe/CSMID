@@ -22,6 +22,7 @@ def load_state(filepath=STATE_FILE) -> dict:
     Returns defaults if the file doesn't exist or is corrupted.
     """
     if not os.path.exists(filepath):
+        encoding = "utf-8"
         logger.info(f"State file '{filepath}' not found. Initializing with defaults.")
         return DEFAULT_STATE.copy()
         
@@ -57,8 +58,7 @@ def save_state(current_index: int, batch_size: int, last_skin: str = None, statu
     try:
         # Ensure directory exists
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
-        
-        with open(filepath, "w") as f:
+        with open(filepath, "w", encoding="utf-8") as f:
             json.dump(state_data, f, indent=4)
         logger.debug(f"State saved successfully: Index {current_index}, Status: {status}")
         

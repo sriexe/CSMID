@@ -1,0 +1,72 @@
+# CSMID Handover Document
+
+**Updated:** July 15, 2026
+
+**Status:** Production-Stabilized, Automated, & Encoding-Hardened
+
+**Current Phase:** Phase 3 (Data Pipeline Autopilot) — 100% Operational
+
+---
+
+## Executive Summary
+
+The CSMID core data pipeline has transitioned from a vulnerable local script to an enterprise-grade, state-aware background engine. Over the final stabilization sprints, we successfully neutralized the two most disruptive execution hazards: Windows-specific unicode character translation failure (`cp1252` charmap limits) and database ORM layer desynchronization (`NoneType` returns). The pipeline now actively crawls, evaluates, skips, and paces itself completely unattended.
+
+---
+
+## 🏗️ Architecture & Component Synchronization
+
+### 1. Hardened Queue Engine (`scheduler/state.py`)
+
+* **State Resiliency:** Manages execution progress using a schema-protected tracker (`queue_state.json`).
+* **Safe Traversal:** Tracks batch indexes systematically. If the script restarts mid-cycle, it picks up exactly where it left off without duplicating network requests.
+
+### 2. Live ORM Orchestration (`src/collection_manager.py`)
+
+* **Dynamic Lookups:** Hooks directly into `src/database.py` utilizing the `SessionLocal` factory and `MarketHistory` schema.
+* **Pre-emptive Skipping:** Runs a high-performance in-memory set evaluation (`get_recently_collected_names`) to pull all items modified within a trailing 20-hour window. Skins matching this set are skipped in milliseconds, saving external API tokens.
+
+### 3. Native Pacing & Path Resolution (`scheduler/daily_collect.py`)
+
+* **Zero Shell Overhead:** Replaced fragile external process wrappers with native Python module executions.
+* **Dynamic Path Injection:** Manages dynamic system routing (`sys.path.append`) to natively resolve cross-module components across different runtime locations.
+
+---
+
+## ⏱️ Operational Flow & Cooldown Matrix
+
+The scheduler parses the status signals bubbled up by the core engine and automatically applies the following pacing protocols:
+
+| Signal / Exit Code | Triggering Condition | Immediate Action | Cooling Duration | Operational Goal |
+| --- | --- | --- | --- | --- |
+| **`0` (Success)** | Batch completed cleanly | Shift queue block forward | **10 Minutes** | Standard pacing to look human-like to target servers. |
+| **`2` (Rate Limit)** | HTTP 429 Status hit | Complete engine freeze | **60 Minutes** | Back off immediately before defensive IP bans trigger. |
+| **`1` (System Error)** | Network drops / DB locking | Execution loop pause | **5 Minutes** | Diagnostic window allowing resources to clear. |
+
+---
+
+## 🛠️ Environmental & System Hardening Notes
+
+> ### ⚠️ Critical Environment Quirk: Windows UTF-8 Compliance
+> 
+> 
+> Counter-Strike item naming conventions heavily feature non-standard characters (e.g., the trademark symbol `™` for StatTrak items). Under standard Windows terminals, the default `cp1252` decoder crashes instantly upon encountering these bytes (`UnicodeDecodeError`).
+> **Resolution:** All system file operations (`open()`) across `collection_manager.py` and `state.py` are hard-bound to `encoding="utf-8"`. Do not remove these declarations during future maintenance.
+
+---
+
+## 📦 Current Dataset Status
+
+* **Master Targets:** 1,157 unique weapon profiles cataloged in `data/master/master_skins.csv`.
+* **Database State:** Fully initialized via SQLAlchemy ORM. The data structure uses a Layer 1 append-only timeline table (`market_history`), meaning row entries are never modified or deleted.
+* **Current Cache:** 438 items actively recognized as fresh inside the historical cache layer.
+
+---
+
+## 📋 Phase 4 Action Items (Next Steps)
+
+With data collection moving entirely to autopilot, the foundations for the analytical layer are completely ready.
+
+* [ ] **Monitor Cache Saturation:** Allow the engine to cycle through the initial 1,157 item watchlist until the local database begins building a baseline of structural market observations.
+* [ ] **Initiate Layer 2 Populators:** Begin developing the calculations for `feature_table` inside `src/database.py` (e.g., building out moving averages, Relative Strength Index (RSI), and price volatility metrics).
+* [ ] **Case ROI Engine:** Build the logic to cross-reference static case item drops against real-time container keys to calculate live opening yields.

@@ -4,9 +4,12 @@ import time
 import logging
 from datetime import datetime, timedelta
 
-# Ensure the project root directory is in the Python path so imports resolve correctly
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Dynamic path injection: Add both root and src to satisfy internal cross-imports
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(ROOT_DIR)
+sys.path.append(os.path.join(ROOT_DIR, "src"))
 
+# Now this and all internal database/scraper imports will resolve perfectly
 from src.collection_manager import CollectionManager
 
 # Configure logging
@@ -49,8 +52,8 @@ def main():
                 since_hours=SINCE_HOURS
             )
             
-        except Exception as e:
-            logging.error(f"Unhandled exception during collection loop: {e}")
+        except Exception:
+            logging.exception("Unhandled exception during collection loop:")
             status_code = 1  # Treat as general error
             
         # Branch on native return codes
