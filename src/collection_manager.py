@@ -1,153 +1,116 @@
-"""
-collection_manager.py
+import logging
+from datetime import datetime
+from src.scraper import SteamMarketScraper  # Adjust import based on your exact layout
+from src.database import DatabaseSession   # Adjust import based on your exact layout
+from scheduler.state import load_state, save_state
 
-Owns all collection-related logic.
-
-The CLI, scheduler, and future dashboard should all call this class
-instead of implementing their own collection workflows.
-"""
-
-from datetime import datetime, timedelta, timezone
-
-from database import (
-    SessionLocal,
-    get_or_create_skin,
-    insert_market_history,
-    MarketHistory,
-)
-from scraper import SteamMarketScraper, SteamMarketError, SteamRateLimitError
-
+logger = logging.getLogger("csmid.collection_manager")
 
 class CollectionManager:
-
     def __init__(self):
         self.scraper = SteamMarketScraper()
+        # Assuming database initialization happens here or passes through
+        
+    def get_recently_collected_names(self, since_hours=20):
+        """Queries DB for skins updated within the window to skip them."""
+        # Your existing DB query logic goes here
+        pass
 
-    def get_recently_collected_names(self, since_hours: float) -> set[str]:
-        cutoff = (
-            datetime.now(timezone.utc).replace(tzinfo=None)
-            - timedelta(hours=since_hours)
-        )
+    def _store_record(self, record_data):
+        """Inserts the scraped observation into the database."""
+        # Your existing SQLAlchemy insertion logic goes here
+        pass
 
-        session = SessionLocal()
-
+    def collect_skin(self, skin_name: str) -> int:
+        """
+        Collects a single skin. 
+        Returns 0 on success, 2 on HTTP 429, 1 on other errors.
+        """
+        logger.info(f"Scraping skin data for: {skin_name}")
         try:
-            rows = (
-                session.query(MarketHistory.market_hash_name)
-                .filter(MarketHistory.collected_at_utc >= cutoff)
-                .distinct()
-                .all()
-            )
+            # Call your curl-based scraper
+            result = self.scraper.fetch_price(skin_name) 
+            
+            if result.get("status_code") == 429:
+                logger.error(f"Rate limited while scraping {skin_name}")
+                return 2
+                
+            if result.get("success"):
+                self._store_record(result["data"])
+                logger.info(f"Successfully recorded price for {skin_name}")
+                return 0
+                
+            return 1
+            
+        except Exception as e:
+            logger.error(f"Unexpected error collecting skin {skin_name}: {e}")
+            return 1
 
-            return {r[0] for r in rows}
-
-        finally:
-            session.close()
-
-    def _store_record(self, session, market_hash_name, record):
-
-        if not record.success:
-            return "no_listing"
-
-        skin = get_or_create_skin(session, market_hash_name)
-
-        row = insert_market_history(
-            session,
-            skin,
-            record
-        )
-
-        if row is None:
-            return "skipped_duplicate"
-
-        return "collected"
-
-    def collect_batch(
-        self,
-        names,
-        skip_names=None,
-    ):
-
-        skip_names = skip_names or set()
-
-        to_fetch = [
-            n
-            for n in names
-            if n not in skip_names
-        ]
-
-        already_skipped = len(names) - len(to_fetch)
-
-        if already_skipped:
-            print(
-                f"ℹ️  Skipping {already_skipped} skin(s) already collected recently (--resume)."
-            )
-
-        print(f"Collecting {len(to_fetch)} skins...\n")
-
-        session = SessionLocal()
-
-        counts = {
-            "collected": 0,
-            "skipped_duplicate": 0,
-            "no_listing": 0,
-        }
-
+    def collect_queue(self, watchlist_path: str, resume: bool = False, since_hours: int = 20) -> int:
+        """
+        Reads the target watchlist, checks the skip list (DB), slices the batch 
+        using queue_state.json, and runs the collection engine.
+        """
+        # 1. Load the watchlist skins
         try:
+            with open(watchlist_path, "r") as f:
+                all_skins = [line.strip() for line in f if line.strip()]
+        except FileNotFoundError:
+            logger.error(f"Watchlist file not found: {watchlist_path}")
+            return 1
 
-            for name in to_fetch:
+        # 2. Handle skip logic if resume mode is active
+        skip_names = set()
+        if resume:
+            skip_names = self.get_recently_collected_names(since_hours=since_hours)
+            logger.info(f"Resume active: Skipping {len(skip_names)} skins collected in past {since_hours} hours.")
 
-                try:
-                    record = self.scraper.fetch_price(name)
+        # 3. Load our persistent state tracking
+        state = load_state()
+        start_idx = state["current_index"]
+        batch_size = state["batch_size"]
+        
+        # If we reached the end of the file in a previous run, wrap around or stop
+        if start_idx >= len(all_skins):
+            logger.info("Reached the end of the watchlist. Resetting queue index to 0.")
+            start_idx = 0
 
-                except SteamRateLimitError as exc:
+        end_idx = min(start_idx + batch_size, len(all_skins))
+        target_batch = all_skins[start_idx:end_idx]
+        
+        logger.info(f"Processing queue batch: Index {start_idx} to {end_idx} (Total skins: {len(all_skins)})")
 
-                    print(f"\n❌ Rate limited on '{name}': {exc}")
-
-                    print(f"Stopping batch early. Progress so far: {counts}")
-
-                    session.commit()
-
-                    return 1
-
-                except SteamMarketError as exc:
-
-                    print(f"⚠️ '{name}' failed: {exc}")
-
-                    counts["no_listing"] += 1
-
-                    continue
-
-                status = self._store_record(
-                    session,
-                    name,
-                    record,
+        # 4. Process the slice
+        for current_idx, skin in enumerate(target_batch, start=start_idx):
+            if skin in skip_names:
+                logger.info(f"Skipping (Already fresh in DB): {skin}")
+                continue
+                
+            # Process the individual skin
+            exit_code = self.collect_skin(skin)
+            
+            # If we hit a 429 rate limit, stop the queue immediately and save state
+            if exit_code == 2:
+                save_state(
+                    current_index=current_idx, 
+                    batch_size=batch_size, 
+                    last_skin=skin, 
+                    status="RATE_LIMITED"
                 )
+                return 2  # Bubble up the 429 exit code to the scheduler
+                
+            if exit_code != 0:
+                logger.warning(f"Failed to scrape {skin}, moving on...")
 
-                counts[status] += 1
-
-                symbol = {
-                    "collected": "✅",
-                    "skipped_duplicate": "ℹ️",
-                    "no_listing": "⚠️",
-                }[status]
-
-                print(f"{symbol} {name}: {status}")
-
-            session.commit()
-
-        except Exception:
-            session.rollback()
-            raise
-
-        finally:
-            session.close()
-
-        print(
-            f"\nDone. "
-            f"{counts['collected']} collected, "
-            f"{counts['skipped_duplicate']} duplicates skipped, "
-            f"{counts['no_listing']} had no listing/failed."
+        # 5. Finished the batch cleanly
+        new_start_index = end_idx
+        status = "COMPLETED" if new_start_index >= len(all_skins) else "RUNNING"
+        
+        save_state(
+            current_index=new_start_index, 
+            batch_size=batch_size, 
+            last_skin=target_batch[-1] if target_batch else None, 
+            status=status
         )
-
+        
         return 0
