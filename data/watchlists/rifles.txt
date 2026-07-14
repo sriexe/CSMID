@@ -1,0 +1,385 @@
+AK-47 | Aquamarine Revenge
+AK-47 | Asiimov
+AK-47 | Baroque Purple
+AK-47 | Black Laminate
+AK-47 | Bloodsport
+AK-47 | Blue Laminate
+AK-47 | Cartel
+AK-47 | Case Hardened
+AK-47 | Elite Build
+AK-47 | Emerald Pinstripe
+AK-47 | Fire Serpent
+AK-47 | First Class
+AK-47 | Frontside Misty
+AK-47 | Fuel Injector
+AK-47 | Gold Arabesque
+AK-47 | Green Laminate
+AK-47 | Head Shot
+AK-47 | Hydroponic
+AK-47 | Ice Coaled
+AK-47 | Inheritance
+AK-47 | Jaguar
+AK-47 | Jet Set
+AK-47 | Jungle Spray
+AK-47 | Leet Museo
+AK-47 | Legion of Anubis
+AK-47 | Neon Revolution
+AK-47 | Neon Rider
+AK-47 | Nightwish
+AK-47 | Orbit Mk01
+AK-47 | Panthera onca
+AK-47 | Phantom Disruptor
+AK-47 | Point Disarray
+AK-47 | Predator
+AK-47 | Rat Rod
+AK-47 | Red Laminate
+AK-47 | Redline
+AK-47 | Safari Mesh
+AK-47 | Safety Net
+AK-47 | Slate
+AK-47 | Steel Delta
+AK-47 | The Empress
+AK-47 | Uncharted
+AK-47 | Vulcan
+AK-47 | Wasteland Rebel
+AK-47 | Wild Lotus
+AK-47 | X-Ray
+AUG | Akihabara Accept
+AUG | Amber Fade
+AUG | Amber Slipstream
+AUG | Anodized Navy
+AUG | Arctic Wolf
+AUG | Aristocrat
+AUG | Bengal Tiger
+AUG | Carved Jade
+AUG | Chameleon
+AUG | Colony
+AUG | Condemned
+AUG | Contractor
+AUG | Copperhead
+AUG | Daedalus
+AUG | Death by Puppy
+AUG | Flame Jörmungandr
+AUG | Fleet Flock
+AUG | Hot Rod
+AUG | Midnight Lily
+AUG | Momentum
+AUG | Navy Murano
+AUG | Plague
+AUG | Radiation Hazard
+AUG | Random Access
+AUG | Ricochet
+AUG | Sand Storm
+AUG | Snake Pit
+AUG | Spalted Wood
+AUG | Storm
+AUG | Stymphalian
+AUG | Surveillance
+AUG | Sweeper
+AUG | Syd Mead
+AUG | Tom Cat
+AUG | Torque
+AUG | Triqua
+AUG | Wings
+AWP | Acheron
+AWP | Asiimov
+AWP | Atheris
+AWP | BOOM
+AWP | Black Nile
+AWP | Capillary
+AWP | Chromatic Aberration
+AWP | Chrome Cannon
+AWP | Containment Breach
+AWP | Corticera
+AWP | Desert Hydra
+AWP | Dragon Lore
+AWP | Duality
+AWP | Electric Hive
+AWP | Elite Build
+AWP | Exoskeleton
+AWP | Fade
+AWP | Fever Dream
+AWP | Graphite
+AWP | Gungnir
+AWP | Hyper Beast
+AWP | Lightning Strike
+AWP | Man-o'-war
+AWP | Medusa
+AWP | Mortis
+AWP | Neo-Noir
+AWP | Oni Taiji
+AWP | PAW
+AWP | POP AWP
+AWP | Phobos
+AWP | Pink DDPAT
+AWP | Pit Viper
+AWP | Redline
+AWP | Safari Mesh
+AWP | Silk Tiger
+AWP | Snake Camo
+AWP | Sun in Leo
+AWP | The Prince
+AWP | Wildfire
+AWP | Worm God
+FAMAS | Afterimage
+FAMAS | CaliCamo
+FAMAS | Colony
+FAMAS | Commemoration
+FAMAS | Contrast Spray
+FAMAS | Crypsis
+FAMAS | Cyanospatter
+FAMAS | Dark Water
+FAMAS | Decommissioned
+FAMAS | Djinn
+FAMAS | Doomkitty
+FAMAS | Eye of Athena
+FAMAS | Faulty Wiring
+FAMAS | Hexane
+FAMAS | Macabre
+FAMAS | Mecha Industries
+FAMAS | Meltdown
+FAMAS | Meow 36
+FAMAS | Neural Net
+FAMAS | Night Borre
+FAMAS | Prime Conspiracy
+FAMAS | Pulse
+FAMAS | Rapid Eye Movement
+FAMAS | Roll Cage
+FAMAS | Sergeant
+FAMAS | Spitfire
+FAMAS | Styx
+FAMAS | Sundown
+FAMAS | Survivor Z
+FAMAS | Teardown
+FAMAS | Valence
+FAMAS | Waters of Nephthys
+FAMAS | ZX Spectron
+G3SG1 | Ancient Ritual
+G3SG1 | Arctic Camo
+G3SG1 | Azure Zebra
+G3SG1 | Black Sand
+G3SG1 | Chronos
+G3SG1 | Contractor
+G3SG1 | Demeter
+G3SG1 | Desert Storm
+G3SG1 | Digital Mesh
+G3SG1 | Dream Glade
+G3SG1 | Flux
+G3SG1 | Green Apple
+G3SG1 | High Seas
+G3SG1 | Hunter
+G3SG1 | Jungle Dashed
+G3SG1 | Keeping Tabs
+G3SG1 | Murky
+G3SG1 | New Roots
+G3SG1 | Orange Crash
+G3SG1 | Orange Kimono
+G3SG1 | Polar Camo
+G3SG1 | Safari Mesh
+G3SG1 | Scavenger
+G3SG1 | Stinger
+G3SG1 | The Executioner
+G3SG1 | VariCamo
+G3SG1 | Ventilator
+G3SG1 | Violet Murano
+Galil AR | Akoben
+Galil AR | Amber Fade
+Galil AR | Aqua Terrace
+Galil AR | Black Sand
+Galil AR | Blue Titanium
+Galil AR | CAUTION!
+Galil AR | Cerberus
+Galil AR | Chatterbox
+Galil AR | Chromatic Aberration
+Galil AR | Cold Fusion
+Galil AR | Connexion
+Galil AR | Crimson Tsunami
+Galil AR | Destroyer
+Galil AR | Dusk Ruins
+Galil AR | Eco
+Galil AR | Firefight
+Galil AR | Hunting Blind
+Galil AR | Kami
+Galil AR | Orange DDPAT
+Galil AR | Phoenix Blacklight
+Galil AR | Rocket Pop
+Galil AR | Sage Spray
+Galil AR | Sandstorm
+Galil AR | Shattered
+Galil AR | Signal
+Galil AR | Stone Cold
+Galil AR | Sugar Rush
+Galil AR | Tornado
+Galil AR | Tuxedo
+Galil AR | Urban Rubble
+Galil AR | Vandal
+Galil AR | VariCamo
+Galil AR | Winter Forest
+M4A1-S | Atomic Alloy
+M4A1-S | Basilisk
+M4A1-S | Black Lotus
+M4A1-S | Blood Tiger
+M4A1-S | Blue Phosphor
+M4A1-S | Boreal Forest
+M4A1-S | Briefing
+M4A1-S | Bright Water
+M4A1-S | Chantico's Fire
+M4A1-S | Control Panel
+M4A1-S | Cyrex
+M4A1-S | Dark Water
+M4A1-S | Decimator
+M4A1-S | Emphorosaur-S
+M4A1-S | Fizzy POP
+M4A1-S | Flashback
+M4A1-S | Golden Coil
+M4A1-S | Guardian
+M4A1-S | Hot Rod
+M4A1-S | Hyper Beast
+M4A1-S | Icarus Fell
+M4A1-S | Imminent Danger
+M4A1-S | Knight
+M4A1-S | Leaded Glass
+M4A1-S | Master Piece
+M4A1-S | Mecha Industries
+M4A1-S | Moss Quartz
+M4A1-S | Mud-Spec
+M4A1-S | Night Terror
+M4A1-S | Nightmare
+M4A1-S | Nitro
+M4A1-S | Player Two
+M4A1-S | Printstream
+M4A1-S | VariCamo
+M4A1-S | Welcome to the Jungle
+M4A4 | Asiimov
+M4A4 | Bullet Rain
+M4A4 | Buzz Kill
+M4A4 | Converter
+M4A4 | Cyber Security
+M4A4 | Dark Blossom
+M4A4 | Daybreak
+M4A4 | Desert Storm
+M4A4 | Desert-Strike
+M4A4 | Desolate Space
+M4A4 | Etch Lord
+M4A4 | Evil Daimyo
+M4A4 | Eye of Horus
+M4A4 | Faded Zebra
+M4A4 | Global Offensive
+M4A4 | Griffin
+M4A4 | Hellfire
+M4A4 | Howl
+M4A4 | In Living Color
+M4A4 | Jungle Tiger
+M4A4 | Magnesium
+M4A4 | Mainframe
+M4A4 | Modern Hunter
+M4A4 | Neo-Noir
+M4A4 | Poly Mag
+M4A4 | Poseidon
+M4A4 | Radiation Hazard
+M4A4 | Red DDPAT
+M4A4 | Royal Paladin
+M4A4 | Spider Lily
+M4A4 | Temukau
+M4A4 | The Battlestar
+M4A4 | The Coalition
+M4A4 | The Emperor
+M4A4 | Tooth Fairy
+M4A4 | Tornado
+M4A4 | Urban DDPAT
+M4A4 | X-Ray
+M4A4 | Zirka
+M4A4 | 龍王 (Dragon King)
+SCAR-20 | Army Sheen
+SCAR-20 | Assault
+SCAR-20 | Bloodsport
+SCAR-20 | Blueprint
+SCAR-20 | Brass
+SCAR-20 | Carbon Fiber
+SCAR-20 | Cardiac
+SCAR-20 | Contractor
+SCAR-20 | Crimson Web
+SCAR-20 | Cyrex
+SCAR-20 | Emerald
+SCAR-20 | Enforcer
+SCAR-20 | Fragments
+SCAR-20 | Green Marine
+SCAR-20 | Grotto
+SCAR-20 | Jungle Slipstream
+SCAR-20 | Magna Carta
+SCAR-20 | Outbreak
+SCAR-20 | Palm
+SCAR-20 | Poultrygeist
+SCAR-20 | Powercore
+SCAR-20 | Sand Mesh
+SCAR-20 | Splash Jam
+SCAR-20 | Stone Mosaico
+SCAR-20 | Storm
+SCAR-20 | Torn
+SG 553 | Aerial
+SG 553 | Aloha
+SG 553 | Anodized Navy
+SG 553 | Army Sheen
+SG 553 | Atlas
+SG 553 | Barricade
+SG 553 | Bleached
+SG 553 | Bulldozer
+SG 553 | Candy Apple
+SG 553 | Colony IV
+SG 553 | Cyberforce
+SG 553 | Cyrex
+SG 553 | Damascus Steel
+SG 553 | Danger Close
+SG 553 | Darkwing
+SG 553 | Desert Blossom
+SG 553 | Dragon Tech
+SG 553 | Fallout Warning
+SG 553 | Gator Mesh
+SG 553 | Hazard Pay
+SG 553 | Heavy Metal
+SG 553 | Hypnotic
+SG 553 | Integrale
+SG 553 | Lush Ruins
+SG 553 | Ol' Rusty
+SG 553 | Phantom
+SG 553 | Pulse
+SG 553 | Tiger Moth
+SG 553 | Tornado
+SG 553 | Traveler
+SG 553 | Triarch
+SG 553 | Ultraviolet
+SG 553 | Wave Spray
+SG 553 | Waves Perforated
+SSG 08 | Abyss
+SSG 08 | Acid Fade
+SSG 08 | Azure Glyph
+SSG 08 | Big Iron
+SSG 08 | Blood in the Water
+SSG 08 | Bloodshot
+SSG 08 | Blue Spruce
+SSG 08 | Carbon Fiber
+SSG 08 | Dark Water
+SSG 08 | Death Strike
+SSG 08 | Death's Head
+SSG 08 | Detour
+SSG 08 | Dezastre
+SSG 08 | Dragonfire
+SSG 08 | Fever Dream
+SSG 08 | Ghost Crusader
+SSG 08 | Hand Brake
+SSG 08 | Jungle Dashed
+SSG 08 | Lichen Dashed
+SSG 08 | Mainframe 001
+SSG 08 | Mayan Dreams
+SSG 08 | Necropos
+SSG 08 | Orange Filigree
+SSG 08 | Parallax
+SSG 08 | Prey
+SSG 08 | Red Stone
+SSG 08 | Sand Dune
+SSG 08 | Sea Calico
+SSG 08 | Slashed
+SSG 08 | Spring Twilly
+SSG 08 | Threat Detected
+SSG 08 | Tropical Storm
+SSG 08 | Turbo Peek

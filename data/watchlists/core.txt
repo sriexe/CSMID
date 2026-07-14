@@ -1,0 +1,67 @@
+AK-47 | Slate
+AK-47 | Ice Coaled
+AK-47 | Phantom Disruptor
+AK-47 | Legion of Anubis
+AK-47 | Head Shot
+AK-47 | Neon Revolution
+AK-47 | Bloodsport
+AK-47 | Asiimov
+AK-47 | Fuel Injector
+AK-47 | Safari Mesh
+M4A1-S | Night Terror
+M4A1-S | Black Lotus
+M4A1-S | Player Two
+M4A1-S | Hyper Beast
+M4A1-S | Cyrex
+M4A1-S | Chantico's Fire
+M4A1-S | Golden Coil
+M4A1-S | Printstream
+M4A4 | Tooth Fairy
+M4A4 | Neo-Noir
+M4A4 | The Emperor
+M4A4 | Hellfire
+M4A4 | Temukau
+M4A4 | Buzz Kill
+M4A4 | Asiimov
+M4A4 | Desolate Space
+AWP | Atheris
+AWP | Chromatic Aberration
+AWP | Neo-Noir
+AWP | Wildfire
+AWP | Containment Breach
+AWP | Hyper Beast
+AWP | BOOM
+AWP | Graphite
+MAC-10 | Heat
+MAC-10 | Disco Tech
+MAC-10 | Neon Rider
+MAC-10 | Toybox
+MAC-10 | Stalker
+MAC-10 | Sakkaku
+MAC-10 | Malachite
+MP9 | Mount Fuji
+MP9 | Food Chain
+MP9 | Hydra
+MP9 | Airlock
+UMP-45 | Primal Saber
+UMP-45 | Momentum
+P90 | Asiimov
+P90 | Shallow Grave
+Glock-18 | Vogue
+Glock-18 | Bullet Queen
+Glock-18 | Neo-Noir
+Glock-18 | Gamma Doppler
+USP-S | Cortex
+USP-S | Printstream
+USP-S | The Traitor
+USP-S | Ticket to Hell
+Desert Eagle | Mecha Industries
+Desert Eagle | Printstream
+Desert Eagle | Ocean Drive
+Desert Eagle | Blaze
+P250 | Asiimov
+Tec-9 | Decimator
+Five-SeveN | Angry Mob
+CZ75-Auto | Xiangliu
+Dual Berettas | Melondrama
+R8 Revolver | Fade

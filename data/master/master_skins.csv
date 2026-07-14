@@ -1,0 +1,1158 @@
+weapon,skin_name,market_hash_name,weapon_class,rarity,collection,stattrak,souvenir,active
+AK-47,Aquamarine Revenge,AK-47 | Aquamarine Revenge,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,Asiimov,AK-47 | Asiimov,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,Baroque Purple,AK-47 | Baroque Purple,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+AK-47,Black Laminate,AK-47 | Black Laminate,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AK-47,Bloodsport,AK-47 | Bloodsport,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,Blue Laminate,AK-47 | Blue Laminate,Rifle,Restricted,,FALSE,FALSE,TRUE
+AK-47,Cartel,AK-47 | Cartel,Rifle,Classified,,FALSE,FALSE,TRUE
+AK-47,Case Hardened,AK-47 | Case Hardened,Rifle,Classified,,FALSE,FALSE,TRUE
+AK-47,Elite Build,AK-47 | Elite Build,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AK-47,Emerald Pinstripe,AK-47 | Emerald Pinstripe,Rifle,Restricted,,FALSE,FALSE,TRUE
+AK-47,Fire Serpent,AK-47 | Fire Serpent,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,First Class,AK-47 | First Class,Rifle,Restricted,,FALSE,FALSE,TRUE
+AK-47,Frontside Misty,AK-47 | Frontside Misty,Rifle,Classified,,FALSE,FALSE,TRUE
+AK-47,Fuel Injector,AK-47 | Fuel Injector,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,Gold Arabesque,AK-47 | Gold Arabesque,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,Green Laminate,AK-47 | Green Laminate,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AK-47,Head Shot,AK-47 | Head Shot,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,Hydroponic,AK-47 | Hydroponic,Rifle,Classified,,FALSE,FALSE,TRUE
+AK-47,Ice Coaled,AK-47 | Ice Coaled,Rifle,Classified,,FALSE,FALSE,TRUE
+AK-47,Inheritance,AK-47 | Inheritance,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,Jaguar,AK-47 | Jaguar,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,Jet Set,AK-47 | Jet Set,Rifle,Classified,,FALSE,FALSE,TRUE
+AK-47,Jungle Spray,AK-47 | Jungle Spray,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+AK-47,Leet Museo,AK-47 | Leet Museo,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,Legion of Anubis,AK-47 | Legion of Anubis,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,Neon Revolution,AK-47 | Neon Revolution,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,Neon Rider,AK-47 | Neon Rider,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,Nightwish,AK-47 | Nightwish,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,Orbit Mk01,AK-47 | Orbit Mk01,Rifle,Restricted,,FALSE,FALSE,TRUE
+AK-47,Panthera onca,AK-47 | Panthera onca,Rifle,Classified,,FALSE,FALSE,TRUE
+AK-47,Phantom Disruptor,AK-47 | Phantom Disruptor,Rifle,Classified,,FALSE,FALSE,TRUE
+AK-47,Point Disarray,AK-47 | Point Disarray,Rifle,Classified,,FALSE,FALSE,TRUE
+AK-47,Predator,AK-47 | Predator,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+AK-47,Rat Rod,AK-47 | Rat Rod,Rifle,Restricted,,FALSE,FALSE,TRUE
+AK-47,Red Laminate,AK-47 | Red Laminate,Rifle,Classified,,FALSE,FALSE,TRUE
+AK-47,Redline,AK-47 | Redline,Rifle,Classified,,FALSE,FALSE,TRUE
+AK-47,Safari Mesh,AK-47 | Safari Mesh,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+AK-47,Safety Net,AK-47 | Safety Net,Rifle,Restricted,,FALSE,FALSE,TRUE
+AK-47,Slate,AK-47 | Slate,Rifle,Restricted,,FALSE,FALSE,TRUE
+AK-47,Steel Delta,AK-47 | Steel Delta,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AK-47,The Empress,AK-47 | The Empress,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,Uncharted,AK-47 | Uncharted,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AK-47,Vulcan,AK-47 | Vulcan,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,Wasteland Rebel,AK-47 | Wasteland Rebel,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,Wild Lotus,AK-47 | Wild Lotus,Rifle,Covert,,FALSE,FALSE,TRUE
+AK-47,X-Ray,AK-47 | X-Ray,Rifle,Covert,,FALSE,FALSE,TRUE
+AUG,Akihabara Accept,AUG | Akihabara Accept,Rifle,Covert,,FALSE,FALSE,TRUE
+AUG,Amber Fade,AUG | Amber Fade,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AUG,Amber Slipstream,AUG | Amber Slipstream,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AUG,Anodized Navy,AUG | Anodized Navy,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AUG,Arctic Wolf,AUG | Arctic Wolf,Rifle,Restricted,,FALSE,FALSE,TRUE
+AUG,Aristocrat,AUG | Aristocrat,Rifle,Restricted,,FALSE,FALSE,TRUE
+AUG,Bengal Tiger,AUG | Bengal Tiger,Rifle,Classified,,FALSE,FALSE,TRUE
+AUG,Carved Jade,AUG | Carved Jade,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AUG,Chameleon,AUG | Chameleon,Rifle,Covert,,FALSE,FALSE,TRUE
+AUG,Colony,AUG | Colony,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+AUG,Condemned,AUG | Condemned,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+AUG,Contractor,AUG | Contractor,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+AUG,Copperhead,AUG | Copperhead,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AUG,Daedalus,AUG | Daedalus,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+AUG,Death by Puppy,AUG | Death by Puppy,Rifle,Classified,,FALSE,FALSE,TRUE
+AUG,Flame Jörmungandr,AUG | Flame Jörmungandr,Rifle,Restricted,,FALSE,FALSE,TRUE
+AUG,Fleet Flock,AUG | Fleet Flock,Rifle,Classified,,FALSE,FALSE,TRUE
+AUG,Hot Rod,AUG | Hot Rod,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AUG,Midnight Lily,AUG | Midnight Lily,Rifle,Restricted,,FALSE,FALSE,TRUE
+AUG,Momentum,AUG | Momentum,Rifle,Classified,,FALSE,FALSE,TRUE
+AUG,Navy Murano,AUG | Navy Murano,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+AUG,Plague,AUG | Plague,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AUG,Radiation Hazard,AUG | Radiation Hazard,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+AUG,Random Access,AUG | Random Access,Rifle,Restricted,,FALSE,FALSE,TRUE
+AUG,Ricochet,AUG | Ricochet,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AUG,Sand Storm,AUG | Sand Storm,Rifle,Restricted,,FALSE,FALSE,TRUE
+AUG,Snake Pit,AUG | Snake Pit,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+AUG,Spalted Wood,AUG | Spalted Wood,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+AUG,Storm,AUG | Storm,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+AUG,Stymphalian,AUG | Stymphalian,Rifle,Classified,,FALSE,FALSE,TRUE
+AUG,Surveillance,AUG | Surveillance,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+AUG,Sweeper,AUG | Sweeper,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+AUG,Syd Mead,AUG | Syd Mead,Rifle,Classified,,FALSE,FALSE,TRUE
+AUG,Tom Cat,AUG | Tom Cat,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AUG,Torque,AUG | Torque,Rifle,Restricted,,FALSE,FALSE,TRUE
+AUG,Triqua,AUG | Triqua,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AUG,Wings,AUG | Wings,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AWP,Acheron,AWP | Acheron,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AWP,Asiimov,AWP | Asiimov,Rifle,Covert,,FALSE,FALSE,TRUE
+AWP,Atheris,AWP | Atheris,Rifle,Restricted,,FALSE,FALSE,TRUE
+AWP,BOOM,AWP | BOOM,Rifle,Classified,,FALSE,FALSE,TRUE
+AWP,Black Nile,AWP | Black Nile,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AWP,Capillary,AWP | Capillary,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AWP,Chromatic Aberration,AWP | Chromatic Aberration,Rifle,Covert,,FALSE,FALSE,TRUE
+AWP,Chrome Cannon,AWP | Chrome Cannon,Rifle,Covert,,FALSE,FALSE,TRUE
+AWP,Containment Breach,AWP | Containment Breach,Rifle,Covert,,FALSE,FALSE,TRUE
+AWP,Corticera,AWP | Corticera,Rifle,Classified,,FALSE,FALSE,TRUE
+AWP,Desert Hydra,AWP | Desert Hydra,Rifle,Covert,,FALSE,FALSE,TRUE
+AWP,Dragon Lore,AWP | Dragon Lore,Rifle,Covert,,FALSE,FALSE,TRUE
+AWP,Duality,AWP | Duality,Rifle,Classified,,FALSE,FALSE,TRUE
+AWP,Electric Hive,AWP | Electric Hive,Rifle,Classified,,FALSE,FALSE,TRUE
+AWP,Elite Build,AWP | Elite Build,Rifle,Classified,,FALSE,FALSE,TRUE
+AWP,Exoskeleton,AWP | Exoskeleton,Rifle,Restricted,,FALSE,FALSE,TRUE
+AWP,Fade,AWP | Fade,Rifle,Covert,,FALSE,FALSE,TRUE
+AWP,Fever Dream,AWP | Fever Dream,Rifle,Classified,,FALSE,FALSE,TRUE
+AWP,Graphite,AWP | Graphite,Rifle,Classified,,FALSE,FALSE,TRUE
+AWP,Gungnir,AWP | Gungnir,Rifle,Covert,,FALSE,FALSE,TRUE
+AWP,Hyper Beast,AWP | Hyper Beast,Rifle,Covert,,FALSE,FALSE,TRUE
+AWP,Lightning Strike,AWP | Lightning Strike,Rifle,Covert,,FALSE,FALSE,TRUE
+AWP,Man-o'-war,AWP | Man-o'-war,Rifle,Covert,,FALSE,FALSE,TRUE
+AWP,Medusa,AWP | Medusa,Rifle,Covert,,FALSE,FALSE,TRUE
+AWP,Mortis,AWP | Mortis,Rifle,Classified,,FALSE,FALSE,TRUE
+AWP,Neo-Noir,AWP | Neo-Noir,Rifle,Covert,,FALSE,FALSE,TRUE
+AWP,Oni Taiji,AWP | Oni Taiji,Rifle,Covert,,FALSE,FALSE,TRUE
+AWP,PAW,AWP | PAW,Rifle,Restricted,,FALSE,FALSE,TRUE
+AWP,POP AWP,AWP | POP AWP,Rifle,Restricted,,FALSE,FALSE,TRUE
+AWP,Phobos,AWP | Phobos,Rifle,Restricted,,FALSE,FALSE,TRUE
+AWP,Pink DDPAT,AWP | Pink DDPAT,Rifle,Restricted,,FALSE,FALSE,TRUE
+AWP,Pit Viper,AWP | Pit Viper,Rifle,Restricted,,FALSE,FALSE,TRUE
+AWP,Redline,AWP | Redline,Rifle,Classified,,FALSE,FALSE,TRUE
+AWP,Safari Mesh,AWP | Safari Mesh,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+AWP,Silk Tiger,AWP | Silk Tiger,Rifle,Classified,,FALSE,FALSE,TRUE
+AWP,Snake Camo,AWP | Snake Camo,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+AWP,Sun in Leo,AWP | Sun in Leo,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+AWP,The Prince,AWP | The Prince,Rifle,Covert,,FALSE,FALSE,TRUE
+AWP,Wildfire,AWP | Wildfire,Rifle,Covert,,FALSE,FALSE,TRUE
+AWP,Worm God,AWP | Worm God,Rifle,Restricted,,FALSE,FALSE,TRUE
+CZ75-Auto,Army Sheen,CZ75-Auto | Army Sheen,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+CZ75-Auto,Chalice,CZ75-Auto | Chalice,Pistol,Restricted,,FALSE,FALSE,TRUE
+CZ75-Auto,Circaetus,CZ75-Auto | Circaetus,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+CZ75-Auto,Crimson Web,CZ75-Auto | Crimson Web,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+CZ75-Auto,Distressed,CZ75-Auto | Distressed,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+CZ75-Auto,Eco,CZ75-Auto | Eco,Pistol,Restricted,,FALSE,FALSE,TRUE
+CZ75-Auto,Emerald,CZ75-Auto | Emerald,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+CZ75-Auto,Emerald Quartz,CZ75-Auto | Emerald Quartz,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+CZ75-Auto,Framework,CZ75-Auto | Framework,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+CZ75-Auto,Green Plaid,CZ75-Auto | Green Plaid,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+CZ75-Auto,Hexane,CZ75-Auto | Hexane,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+CZ75-Auto,Imprint,CZ75-Auto | Imprint,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+CZ75-Auto,Indigo,CZ75-Auto | Indigo,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+CZ75-Auto,Jungle Dashed,CZ75-Auto | Jungle Dashed,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+CZ75-Auto,Midnight Palm,CZ75-Auto | Midnight Palm,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+CZ75-Auto,Nitro,CZ75-Auto | Nitro,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+CZ75-Auto,Poison Dart,CZ75-Auto | Poison Dart,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+CZ75-Auto,Pole Position,CZ75-Auto | Pole Position,Pistol,Restricted,,FALSE,FALSE,TRUE
+CZ75-Auto,Polymer,CZ75-Auto | Polymer,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+CZ75-Auto,Red Astor,CZ75-Auto | Red Astor,Pistol,Restricted,,FALSE,FALSE,TRUE
+CZ75-Auto,Silver,CZ75-Auto | Silver,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+CZ75-Auto,Syndicate,CZ75-Auto | Syndicate,Pistol,Restricted,,FALSE,FALSE,TRUE
+CZ75-Auto,Tacticat,CZ75-Auto | Tacticat,Pistol,Restricted,,FALSE,FALSE,TRUE
+CZ75-Auto,The Fuschia Is Now,CZ75-Auto | The Fuschia Is Now,Pistol,Classified,,FALSE,FALSE,TRUE
+CZ75-Auto,Tigris,CZ75-Auto | Tigris,Pistol,Restricted,,FALSE,FALSE,TRUE
+CZ75-Auto,Tread Plate,CZ75-Auto | Tread Plate,Pistol,Restricted,,FALSE,FALSE,TRUE
+CZ75-Auto,Tuxedo,CZ75-Auto | Tuxedo,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+CZ75-Auto,Twist,CZ75-Auto | Twist,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+CZ75-Auto,Vendetta,CZ75-Auto | Vendetta,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+CZ75-Auto,Victoria,CZ75-Auto | Victoria,Pistol,Covert,,FALSE,FALSE,TRUE
+CZ75-Auto,Xiangliu,CZ75-Auto | Xiangliu,Pistol,Classified,,FALSE,FALSE,TRUE
+CZ75-Auto,Yellow Jacket,CZ75-Auto | Yellow Jacket,Pistol,Classified,,FALSE,FALSE,TRUE
+Desert Eagle,Blaze,Desert Eagle | Blaze,Pistol,Restricted,,FALSE,FALSE,TRUE
+Desert Eagle,Blue Ply,Desert Eagle | Blue Ply,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Desert Eagle,Bronze Deco,Desert Eagle | Bronze Deco,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Desert Eagle,Cobalt Disruption,Desert Eagle | Cobalt Disruption,Pistol,Classified,,FALSE,FALSE,TRUE
+Desert Eagle,Code Red,Desert Eagle | Code Red,Pistol,Covert,,FALSE,FALSE,TRUE
+Desert Eagle,Conspiracy,Desert Eagle | Conspiracy,Pistol,Classified,,FALSE,FALSE,TRUE
+Desert Eagle,Corinthian,Desert Eagle | Corinthian,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Desert Eagle,Crimson Web,Desert Eagle | Crimson Web,Pistol,Restricted,,FALSE,FALSE,TRUE
+Desert Eagle,Directive,Desert Eagle | Directive,Pistol,Restricted,,FALSE,FALSE,TRUE
+Desert Eagle,Emerald Jörmungandr,Desert Eagle | Emerald Jörmungandr,Pistol,Restricted,,FALSE,FALSE,TRUE
+Desert Eagle,Fennec Fox,Desert Eagle | Fennec Fox,Pistol,Classified,,FALSE,FALSE,TRUE
+Desert Eagle,Golden Koi,Desert Eagle | Golden Koi,Pistol,Covert,,FALSE,FALSE,TRUE
+Desert Eagle,Hand Cannon,Desert Eagle | Hand Cannon,Pistol,Restricted,,FALSE,FALSE,TRUE
+Desert Eagle,Heirloom,Desert Eagle | Heirloom,Pistol,Restricted,,FALSE,FALSE,TRUE
+Desert Eagle,Hypnotic,Desert Eagle | Hypnotic,Pistol,Classified,,FALSE,FALSE,TRUE
+Desert Eagle,Kumicho Dragon,Desert Eagle | Kumicho Dragon,Pistol,Classified,,FALSE,FALSE,TRUE
+Desert Eagle,Light Rail,Desert Eagle | Light Rail,Pistol,Restricted,,FALSE,FALSE,TRUE
+Desert Eagle,Mecha Industries,Desert Eagle | Mecha Industries,Pistol,Classified,,FALSE,FALSE,TRUE
+Desert Eagle,Meteorite,Desert Eagle | Meteorite,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Desert Eagle,Midnight Storm,Desert Eagle | Midnight Storm,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Desert Eagle,Mudder,Desert Eagle | Mudder,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Desert Eagle,Naga,Desert Eagle | Naga,Pistol,Restricted,,FALSE,FALSE,TRUE
+Desert Eagle,Night,Desert Eagle | Night,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Desert Eagle,Night Heist,Desert Eagle | Night Heist,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Desert Eagle,Ocean Drive,Desert Eagle | Ocean Drive,Pistol,Covert,,FALSE,FALSE,TRUE
+Desert Eagle,Oxide Blaze,Desert Eagle | Oxide Blaze,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Desert Eagle,Pilot,Desert Eagle | Pilot,Pistol,Restricted,,FALSE,FALSE,TRUE
+Desert Eagle,Printstream,Desert Eagle | Printstream,Pistol,Covert,,FALSE,FALSE,TRUE
+Desert Eagle,Sputnik,Desert Eagle | Sputnik,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Desert Eagle,Sunset Storm 壱,Desert Eagle | Sunset Storm 壱,Pistol,Restricted,,FALSE,FALSE,TRUE
+Desert Eagle,Sunset Storm 弐,Desert Eagle | Sunset Storm 弐,Pistol,Restricted,,FALSE,FALSE,TRUE
+Desert Eagle,The Bronze,Desert Eagle | The Bronze,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Desert Eagle,Trigger Discipline,Desert Eagle | Trigger Discipline,Pistol,Restricted,,FALSE,FALSE,TRUE
+Desert Eagle,Urban DDPAT,Desert Eagle | Urban DDPAT,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Desert Eagle,Urban Rubble,Desert Eagle | Urban Rubble,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Dual Berettas,Anodized Navy,Dual Berettas | Anodized Navy,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Dual Berettas,Balance,Dual Berettas | Balance,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Dual Berettas,Black Limba,Dual Berettas | Black Limba,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Dual Berettas,Briar,Dual Berettas | Briar,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+Dual Berettas,Cartel,Dual Berettas | Cartel,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Dual Berettas,Cobalt Quartz,Dual Berettas | Cobalt Quartz,Pistol,Restricted,,FALSE,FALSE,TRUE
+Dual Berettas,Cobra Strike,Dual Berettas | Cobra Strike,Pistol,Classified,,FALSE,FALSE,TRUE
+Dual Berettas,Colony,Dual Berettas | Colony,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+Dual Berettas,Contractor,Dual Berettas | Contractor,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+Dual Berettas,Demolition,Dual Berettas | Demolition,Pistol,Restricted,,FALSE,FALSE,TRUE
+Dual Berettas,Dezastre,Dual Berettas | Dezastre,Pistol,Restricted,,FALSE,FALSE,TRUE
+Dual Berettas,Drift Wood,Dual Berettas | Drift Wood,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Dual Berettas,Dualing Dragons,Dual Berettas | Dualing Dragons,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Dual Berettas,Duelist,Dual Berettas | Duelist,Pistol,Restricted,,FALSE,FALSE,TRUE
+Dual Berettas,Elite 1.6,Dual Berettas | Elite 1.6,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Dual Berettas,Emerald,Dual Berettas | Emerald,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Dual Berettas,Flora Carnivora,Dual Berettas | Flora Carnivora,Pistol,Restricted,,FALSE,FALSE,TRUE
+Dual Berettas,Heist,Dual Berettas | Heist,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+Dual Berettas,Hemoglobin,Dual Berettas | Hemoglobin,Pistol,Restricted,,FALSE,FALSE,TRUE
+Dual Berettas,Hideout,Dual Berettas | Hideout,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Dual Berettas,Marina,Dual Berettas | Marina,Pistol,Restricted,,FALSE,FALSE,TRUE
+Dual Berettas,Melondrama,Dual Berettas | Melondrama,Pistol,Classified,,FALSE,FALSE,TRUE
+Dual Berettas,Moon in Libra,Dual Berettas | Moon in Libra,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+Dual Berettas,Oil Change,Dual Berettas | Oil Change,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+Dual Berettas,Panther,Dual Berettas | Panther,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Dual Berettas,Pyre,Dual Berettas | Pyre,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Dual Berettas,Retribution,Dual Berettas | Retribution,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Dual Berettas,Royal Consorts,Dual Berettas | Royal Consorts,Pistol,Restricted,,FALSE,FALSE,TRUE
+Dual Berettas,Shred,Dual Berettas | Shred,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Dual Berettas,Stained,Dual Berettas | Stained,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Dual Berettas,Switch Board,Dual Berettas | Switch Board,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Dual Berettas,Tread,Dual Berettas | Tread,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Dual Berettas,Twin Turbo,Dual Berettas | Twin Turbo,Pistol,Classified,,FALSE,FALSE,TRUE
+Dual Berettas,Urban Shock,Dual Berettas | Urban Shock,Pistol,Restricted,,FALSE,FALSE,TRUE
+Dual Berettas,Ventilators,Dual Berettas | Ventilators,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+FAMAS,Afterimage,FAMAS | Afterimage,Rifle,Classified,,FALSE,FALSE,TRUE
+FAMAS,CaliCamo,FAMAS | CaliCamo,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+FAMAS,Colony,FAMAS | Colony,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+FAMAS,Commemoration,FAMAS | Commemoration,Rifle,Covert,,FALSE,FALSE,TRUE
+FAMAS,Contrast Spray,FAMAS | Contrast Spray,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+FAMAS,Crypsis,FAMAS | Crypsis,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+FAMAS,Cyanospatter,FAMAS | Cyanospatter,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+FAMAS,Dark Water,FAMAS | Dark Water,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+FAMAS,Decommissioned,FAMAS | Decommissioned,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+FAMAS,Djinn,FAMAS | Djinn,Rifle,Classified,,FALSE,FALSE,TRUE
+FAMAS,Doomkitty,FAMAS | Doomkitty,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+FAMAS,Eye of Athena,FAMAS | Eye of Athena,Rifle,Classified,,FALSE,FALSE,TRUE
+FAMAS,Faulty Wiring,FAMAS | Faulty Wiring,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+FAMAS,Hexane,FAMAS | Hexane,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+FAMAS,Macabre,FAMAS | Macabre,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+FAMAS,Mecha Industries,FAMAS | Mecha Industries,Rifle,Classified,,FALSE,FALSE,TRUE
+FAMAS,Meltdown,FAMAS | Meltdown,Rifle,Classified,,FALSE,FALSE,TRUE
+FAMAS,Meow 36,FAMAS | Meow 36,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+FAMAS,Neural Net,FAMAS | Neural Net,Rifle,Restricted,,FALSE,FALSE,TRUE
+FAMAS,Night Borre,FAMAS | Night Borre,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+FAMAS,Prime Conspiracy,FAMAS | Prime Conspiracy,Rifle,Restricted,,FALSE,FALSE,TRUE
+FAMAS,Pulse,FAMAS | Pulse,Rifle,Restricted,,FALSE,FALSE,TRUE
+FAMAS,Rapid Eye Movement,FAMAS | Rapid Eye Movement,Rifle,Classified,,FALSE,FALSE,TRUE
+FAMAS,Roll Cage,FAMAS | Roll Cage,Rifle,Covert,,FALSE,FALSE,TRUE
+FAMAS,Sergeant,FAMAS | Sergeant,Rifle,Restricted,,FALSE,FALSE,TRUE
+FAMAS,Spitfire,FAMAS | Spitfire,Rifle,Restricted,,FALSE,FALSE,TRUE
+FAMAS,Styx,FAMAS | Styx,Rifle,Restricted,,FALSE,FALSE,TRUE
+FAMAS,Sundown,FAMAS | Sundown,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+FAMAS,Survivor Z,FAMAS | Survivor Z,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+FAMAS,Teardown,FAMAS | Teardown,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+FAMAS,Valence,FAMAS | Valence,Rifle,Restricted,,FALSE,FALSE,TRUE
+FAMAS,Waters of Nephthys,FAMAS | Waters of Nephthys,Rifle,Classified,,FALSE,FALSE,TRUE
+FAMAS,ZX Spectron,FAMAS | ZX Spectron,Rifle,Restricted,,FALSE,FALSE,TRUE
+Five-SeveN,Angry Mob,Five-SeveN | Angry Mob,Pistol,Covert,,FALSE,FALSE,TRUE
+Five-SeveN,Anodized Gunmetal,Five-SeveN | Anodized Gunmetal,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+Five-SeveN,Berries And Cherries,Five-SeveN | Berries And Cherries,Pistol,Restricted,,FALSE,FALSE,TRUE
+Five-SeveN,Boost Protocol,Five-SeveN | Boost Protocol,Pistol,Restricted,,FALSE,FALSE,TRUE
+Five-SeveN,Buddy,Five-SeveN | Buddy,Pistol,Restricted,,FALSE,FALSE,TRUE
+Five-SeveN,Candy Apple,Five-SeveN | Candy Apple,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Five-SeveN,Capillary,Five-SeveN | Capillary,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Five-SeveN,Case Hardened,Five-SeveN | Case Hardened,Pistol,Restricted,,FALSE,FALSE,TRUE
+Five-SeveN,Contractor,Five-SeveN | Contractor,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+Five-SeveN,Coolant,Five-SeveN | Coolant,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+Five-SeveN,Copper Galaxy,Five-SeveN | Copper Galaxy,Pistol,Restricted,,FALSE,FALSE,TRUE
+Five-SeveN,Crimson Blossom,Five-SeveN | Crimson Blossom,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Five-SeveN,Fairy Tale,Five-SeveN | Fairy Tale,Pistol,Classified,,FALSE,FALSE,TRUE
+Five-SeveN,Fall Hazard,Five-SeveN | Fall Hazard,Pistol,Classified,,FALSE,FALSE,TRUE
+Five-SeveN,Flame Test,Five-SeveN | Flame Test,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Five-SeveN,Forest Night,Five-SeveN | Forest Night,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+Five-SeveN,Fowl Play,Five-SeveN | Fowl Play,Pistol,Classified,,FALSE,FALSE,TRUE
+Five-SeveN,Hot Shot,Five-SeveN | Hot Shot,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Five-SeveN,Hybrid,Five-SeveN | Hybrid,Pistol,Restricted,,FALSE,FALSE,TRUE
+Five-SeveN,Hyper Beast,Five-SeveN | Hyper Beast,Pistol,Covert,,FALSE,FALSE,TRUE
+Five-SeveN,Jungle,Five-SeveN | Jungle,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+Five-SeveN,Kami,Five-SeveN | Kami,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Five-SeveN,Monkey Business,Five-SeveN | Monkey Business,Pistol,Classified,,FALSE,FALSE,TRUE
+Five-SeveN,Neon Kimono,Five-SeveN | Neon Kimono,Pistol,Restricted,,FALSE,FALSE,TRUE
+Five-SeveN,Nightshade,Five-SeveN | Nightshade,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Five-SeveN,Nitro,Five-SeveN | Nitro,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Five-SeveN,Orange Peel,Five-SeveN | Orange Peel,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Five-SeveN,Retrobution,Five-SeveN | Retrobution,Pistol,Restricted,,FALSE,FALSE,TRUE
+Five-SeveN,Scrawl,Five-SeveN | Scrawl,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Five-SeveN,Scumbria,Five-SeveN | Scumbria,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Five-SeveN,Silver Quartz,Five-SeveN | Silver Quartz,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Five-SeveN,Triumvirate,Five-SeveN | Triumvirate,Pistol,Restricted,,FALSE,FALSE,TRUE
+Five-SeveN,Urban Hazard,Five-SeveN | Urban Hazard,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Five-SeveN,Violent Daimyo,Five-SeveN | Violent Daimyo,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Five-SeveN,Withered Vine,Five-SeveN | Withered Vine,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+G3SG1,Ancient Ritual,G3SG1 | Ancient Ritual,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+G3SG1,Arctic Camo,G3SG1 | Arctic Camo,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+G3SG1,Azure Zebra,G3SG1 | Azure Zebra,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+G3SG1,Black Sand,G3SG1 | Black Sand,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+G3SG1,Chronos,G3SG1 | Chronos,Rifle,Restricted,,FALSE,FALSE,TRUE
+G3SG1,Contractor,G3SG1 | Contractor,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+G3SG1,Demeter,G3SG1 | Demeter,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+G3SG1,Desert Storm,G3SG1 | Desert Storm,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+G3SG1,Digital Mesh,G3SG1 | Digital Mesh,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+G3SG1,Dream Glade,G3SG1 | Dream Glade,Rifle,Restricted,,FALSE,FALSE,TRUE
+G3SG1,Flux,G3SG1 | Flux,Rifle,Classified,,FALSE,FALSE,TRUE
+G3SG1,Green Apple,G3SG1 | Green Apple,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+G3SG1,High Seas,G3SG1 | High Seas,Rifle,Restricted,,FALSE,FALSE,TRUE
+G3SG1,Hunter,G3SG1 | Hunter,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+G3SG1,Jungle Dashed,G3SG1 | Jungle Dashed,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+G3SG1,Keeping Tabs,G3SG1 | Keeping Tabs,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+G3SG1,Murky,G3SG1 | Murky,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+G3SG1,New Roots,G3SG1 | New Roots,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+G3SG1,Orange Crash,G3SG1 | Orange Crash,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+G3SG1,Orange Kimono,G3SG1 | Orange Kimono,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+G3SG1,Polar Camo,G3SG1 | Polar Camo,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+G3SG1,Safari Mesh,G3SG1 | Safari Mesh,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+G3SG1,Scavenger,G3SG1 | Scavenger,Rifle,Restricted,,FALSE,FALSE,TRUE
+G3SG1,Stinger,G3SG1 | Stinger,Rifle,Restricted,,FALSE,FALSE,TRUE
+G3SG1,The Executioner,G3SG1 | The Executioner,Rifle,Classified,,FALSE,FALSE,TRUE
+G3SG1,VariCamo,G3SG1 | VariCamo,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+G3SG1,Ventilator,G3SG1 | Ventilator,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+G3SG1,Violet Murano,G3SG1 | Violet Murano,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+Galil AR,Akoben,Galil AR | Akoben,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+Galil AR,Amber Fade,Galil AR | Amber Fade,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+Galil AR,Aqua Terrace,Galil AR | Aqua Terrace,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+Galil AR,Black Sand,Galil AR | Black Sand,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+Galil AR,Blue Titanium,Galil AR | Blue Titanium,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+Galil AR,CAUTION!,Galil AR | CAUTION!,Rifle,Restricted,,FALSE,FALSE,TRUE
+Galil AR,Cerberus,Galil AR | Cerberus,Rifle,Restricted,,FALSE,FALSE,TRUE
+Galil AR,Chatterbox,Galil AR | Chatterbox,Rifle,Covert,,FALSE,FALSE,TRUE
+Galil AR,Chromatic Aberration,Galil AR | Chromatic Aberration,Rifle,Classified,,FALSE,FALSE,TRUE
+Galil AR,Cold Fusion,Galil AR | Cold Fusion,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+Galil AR,Connexion,Galil AR | Connexion,Rifle,Restricted,,FALSE,FALSE,TRUE
+Galil AR,Crimson Tsunami,Galil AR | Crimson Tsunami,Rifle,Restricted,,FALSE,FALSE,TRUE
+Galil AR,Destroyer,Galil AR | Destroyer,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+Galil AR,Dusk Ruins,Galil AR | Dusk Ruins,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+Galil AR,Eco,Galil AR | Eco,Rifle,Classified,,FALSE,FALSE,TRUE
+Galil AR,Firefight,Galil AR | Firefight,Rifle,Restricted,,FALSE,FALSE,TRUE
+Galil AR,Hunting Blind,Galil AR | Hunting Blind,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+Galil AR,Kami,Galil AR | Kami,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+Galil AR,Orange DDPAT,Galil AR | Orange DDPAT,Rifle,Restricted,,FALSE,FALSE,TRUE
+Galil AR,Phoenix Blacklight,Galil AR | Phoenix Blacklight,Rifle,Restricted,,FALSE,FALSE,TRUE
+Galil AR,Rocket Pop,Galil AR | Rocket Pop,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+Galil AR,Sage Spray,Galil AR | Sage Spray,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+Galil AR,Sandstorm,Galil AR | Sandstorm,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+Galil AR,Shattered,Galil AR | Shattered,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+Galil AR,Signal,Galil AR | Signal,Rifle,Restricted,,FALSE,FALSE,TRUE
+Galil AR,Stone Cold,Galil AR | Stone Cold,Rifle,Restricted,,FALSE,FALSE,TRUE
+Galil AR,Sugar Rush,Galil AR | Sugar Rush,Rifle,Classified,,FALSE,FALSE,TRUE
+Galil AR,Tornado,Galil AR | Tornado,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+Galil AR,Tuxedo,Galil AR | Tuxedo,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+Galil AR,Urban Rubble,Galil AR | Urban Rubble,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+Galil AR,Vandal,Galil AR | Vandal,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+Galil AR,VariCamo,Galil AR | VariCamo,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+Galil AR,Winter Forest,Galil AR | Winter Forest,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+Glock-18,Block-18,Glock-18 | Block-18,Pistol,Restricted,,FALSE,FALSE,TRUE
+Glock-18,Blue Fissure,Glock-18 | Blue Fissure,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Glock-18,Brass,Glock-18 | Brass,Pistol,Restricted,,FALSE,FALSE,TRUE
+Glock-18,Bullet Queen,Glock-18 | Bullet Queen,Pistol,Covert,,FALSE,FALSE,TRUE
+Glock-18,Bunsen Burner,Glock-18 | Bunsen Burner,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Glock-18,Candy Apple,Glock-18 | Candy Apple,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Glock-18,Catacombs,Glock-18 | Catacombs,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Glock-18,Clear Polymer,Glock-18 | Clear Polymer,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Glock-18,Death Rattle,Glock-18 | Death Rattle,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Glock-18,Dragon Tattoo,Glock-18 | Dragon Tattoo,Pistol,Restricted,,FALSE,FALSE,TRUE
+Glock-18,Fade,Glock-18 | Fade,Pistol,Restricted,,FALSE,FALSE,TRUE
+Glock-18,Franklin,Glock-18 | Franklin,Pistol,Restricted,,FALSE,FALSE,TRUE
+Glock-18,Gamma Doppler,Glock-18 | Gamma Doppler,Pistol,Covert,,FALSE,FALSE,TRUE
+Glock-18,Grinder,Glock-18 | Grinder,Pistol,Restricted,,FALSE,FALSE,TRUE
+Glock-18,Groundwater,Glock-18 | Groundwater,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Glock-18,High Beam,Glock-18 | High Beam,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Glock-18,Ironwork,Glock-18 | Ironwork,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Glock-18,Moonrise,Glock-18 | Moonrise,Pistol,Restricted,,FALSE,FALSE,TRUE
+Glock-18,Neo-Noir,Glock-18 | Neo-Noir,Pistol,Covert,,FALSE,FALSE,TRUE
+Glock-18,Night,Glock-18 | Night,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Glock-18,Nuclear Garden,Glock-18 | Nuclear Garden,Pistol,Restricted,,FALSE,FALSE,TRUE
+Glock-18,Off World,Glock-18 | Off World,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Glock-18,Oxide Blaze,Glock-18 | Oxide Blaze,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Glock-18,Pink DDPAT,Glock-18 | Pink DDPAT,Pistol,Restricted,,FALSE,FALSE,TRUE
+Glock-18,Ramese's Reach,Glock-18 | Ramese's Reach,Pistol,Restricted,,FALSE,FALSE,TRUE
+Glock-18,Reactor,Glock-18 | Reactor,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Glock-18,Red Tire,Glock-18 | Red Tire,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Glock-18,Royal Legion,Glock-18 | Royal Legion,Pistol,Restricted,,FALSE,FALSE,TRUE
+Glock-18,Sacrifice,Glock-18 | Sacrifice,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Glock-18,Sand Dune,Glock-18 | Sand Dune,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Glock-18,Snack Attack,Glock-18 | Snack Attack,Pistol,Classified,,FALSE,FALSE,TRUE
+Glock-18,Steel Disruption,Glock-18 | Steel Disruption,Pistol,Restricted,,FALSE,FALSE,TRUE
+Glock-18,Synth Leaf,Glock-18 | Synth Leaf,Pistol,Restricted,,FALSE,FALSE,TRUE
+Glock-18,Twilight Galaxy,Glock-18 | Twilight Galaxy,Pistol,Classified,,FALSE,FALSE,TRUE
+Glock-18,Umbral Rabbit,Glock-18 | Umbral Rabbit,Pistol,Restricted,,FALSE,FALSE,TRUE
+Glock-18,Vogue,Glock-18 | Vogue,Pistol,Classified,,FALSE,FALSE,TRUE
+Glock-18,Warhawk,Glock-18 | Warhawk,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Glock-18,Wasteland Rebel,Glock-18 | Wasteland Rebel,Pistol,Covert,,FALSE,FALSE,TRUE
+Glock-18,Water Elemental,Glock-18 | Water Elemental,Pistol,Classified,,FALSE,FALSE,TRUE
+Glock-18,Weasel,Glock-18 | Weasel,Pistol,Restricted,,FALSE,FALSE,TRUE
+Glock-18,Winterized,Glock-18 | Winterized,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Glock-18,Wraiths,Glock-18 | Wraiths,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+M249,Aztec,M249 | Aztec,Heavy,Restricted,,FALSE,FALSE,TRUE
+M249,Blizzard Marbleized,M249 | Blizzard Marbleized,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+M249,Contrast Spray,M249 | Contrast Spray,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+M249,Deep Relief,M249 | Deep Relief,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+M249,Downtown,M249 | Downtown,Heavy,Restricted,,FALSE,FALSE,TRUE
+M249,Emerald Poison Dart,M249 | Emerald Poison Dart,Heavy,Restricted,,FALSE,FALSE,TRUE
+M249,Gator Mesh,M249 | Gator Mesh,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+M249,Humidor,M249 | Humidor,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+M249,Impact Drill,M249 | Impact Drill,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+M249,Jungle,M249 | Jungle,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+M249,Jungle DDPAT,M249 | Jungle DDPAT,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+M249,Magma,M249 | Magma,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+M249,Midnight Palm,M249 | Midnight Palm,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+M249,Nebula Crusader,M249 | Nebula Crusader,Heavy,Restricted,,FALSE,FALSE,TRUE
+M249,O.S.I.P.R.,M249 | O.S.I.P.R.,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+M249,Predator,M249 | Predator,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+M249,Shipping Forecast,M249 | Shipping Forecast,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+M249,Spectre,M249 | Spectre,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+M249,Submerged,M249 | Submerged,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+M249,System Lock,M249 | System Lock,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+M249,Warbird,M249 | Warbird,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+M4A1-S,Atomic Alloy,M4A1-S | Atomic Alloy,Rifle,Classified,,FALSE,FALSE,TRUE
+M4A1-S,Basilisk,M4A1-S | Basilisk,Rifle,Restricted,,FALSE,FALSE,TRUE
+M4A1-S,Black Lotus,M4A1-S | Black Lotus,Rifle,Classified,,FALSE,FALSE,TRUE
+M4A1-S,Blood Tiger,M4A1-S | Blood Tiger,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+M4A1-S,Blue Phosphor,M4A1-S | Blue Phosphor,Rifle,Classified,,FALSE,FALSE,TRUE
+M4A1-S,Boreal Forest,M4A1-S | Boreal Forest,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+M4A1-S,Briefing,M4A1-S | Briefing,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+M4A1-S,Bright Water,M4A1-S | Bright Water,Rifle,Restricted,,FALSE,FALSE,TRUE
+M4A1-S,Chantico's Fire,M4A1-S | Chantico's Fire,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A1-S,Control Panel,M4A1-S | Control Panel,Rifle,Classified,,FALSE,FALSE,TRUE
+M4A1-S,Cyrex,M4A1-S | Cyrex,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A1-S,Dark Water,M4A1-S | Dark Water,Rifle,Restricted,,FALSE,FALSE,TRUE
+M4A1-S,Decimator,M4A1-S | Decimator,Rifle,Classified,,FALSE,FALSE,TRUE
+M4A1-S,Emphorosaur-S,M4A1-S | Emphorosaur-S,Rifle,Restricted,,FALSE,FALSE,TRUE
+M4A1-S,Fizzy POP,M4A1-S | Fizzy POP,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+M4A1-S,Flashback,M4A1-S | Flashback,Rifle,Restricted,,FALSE,FALSE,TRUE
+M4A1-S,Golden Coil,M4A1-S | Golden Coil,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A1-S,Guardian,M4A1-S | Guardian,Rifle,Classified,,FALSE,FALSE,TRUE
+M4A1-S,Hot Rod,M4A1-S | Hot Rod,Rifle,Classified,,FALSE,FALSE,TRUE
+M4A1-S,Hyper Beast,M4A1-S | Hyper Beast,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A1-S,Icarus Fell,M4A1-S | Icarus Fell,Rifle,Restricted,,FALSE,FALSE,TRUE
+M4A1-S,Imminent Danger,M4A1-S | Imminent Danger,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A1-S,Knight,M4A1-S | Knight,Rifle,Classified,,FALSE,FALSE,TRUE
+M4A1-S,Leaded Glass,M4A1-S | Leaded Glass,Rifle,Classified,,FALSE,FALSE,TRUE
+M4A1-S,Master Piece,M4A1-S | Master Piece,Rifle,Classified,,FALSE,FALSE,TRUE
+M4A1-S,Mecha Industries,M4A1-S | Mecha Industries,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A1-S,Moss Quartz,M4A1-S | Moss Quartz,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+M4A1-S,Mud-Spec,M4A1-S | Mud-Spec,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+M4A1-S,Night Terror,M4A1-S | Night Terror,Rifle,Restricted,,FALSE,FALSE,TRUE
+M4A1-S,Nightmare,M4A1-S | Nightmare,Rifle,Classified,,FALSE,FALSE,TRUE
+M4A1-S,Nitro,M4A1-S | Nitro,Rifle,Restricted,,FALSE,FALSE,TRUE
+M4A1-S,Player Two,M4A1-S | Player Two,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A1-S,Printstream,M4A1-S | Printstream,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A1-S,VariCamo,M4A1-S | VariCamo,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+M4A1-S,Welcome to the Jungle,M4A1-S | Welcome to the Jungle,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A4,Asiimov,M4A4 | Asiimov,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A4,Bullet Rain,M4A4 | Bullet Rain,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A4,Buzz Kill,M4A4 | Buzz Kill,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A4,Converter,M4A4 | Converter,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+M4A4,Cyber Security,M4A4 | Cyber Security,Rifle,Classified,,FALSE,FALSE,TRUE
+M4A4,Dark Blossom,M4A4 | Dark Blossom,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+M4A4,Daybreak,M4A4 | Daybreak,Rifle,Restricted,,FALSE,FALSE,TRUE
+M4A4,Desert Storm,M4A4 | Desert Storm,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+M4A4,Desert-Strike,M4A4 | Desert-Strike,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A4,Desolate Space,M4A4 | Desolate Space,Rifle,Classified,,FALSE,FALSE,TRUE
+M4A4,Etch Lord,M4A4 | Etch Lord,Rifle,Restricted,,FALSE,FALSE,TRUE
+M4A4,Evil Daimyo,M4A4 | Evil Daimyo,Rifle,Restricted,,FALSE,FALSE,TRUE
+M4A4,Eye of Horus,M4A4 | Eye of Horus,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A4,Faded Zebra,M4A4 | Faded Zebra,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+M4A4,Global Offensive,M4A4 | Global Offensive,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+M4A4,Griffin,M4A4 | Griffin,Rifle,Restricted,,FALSE,FALSE,TRUE
+M4A4,Hellfire,M4A4 | Hellfire,Rifle,Classified,,FALSE,FALSE,TRUE
+M4A4,Howl,M4A4 | Howl,Rifle,Contraband,,FALSE,FALSE,TRUE
+M4A4,In Living Color,M4A4 | In Living Color,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A4,Jungle Tiger,M4A4 | Jungle Tiger,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+M4A4,Magnesium,M4A4 | Magnesium,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+M4A4,Mainframe,M4A4 | Mainframe,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+M4A4,Modern Hunter,M4A4 | Modern Hunter,Rifle,Restricted,,FALSE,FALSE,TRUE
+M4A4,Neo-Noir,M4A4 | Neo-Noir,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A4,Poly Mag,M4A4 | Poly Mag,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+M4A4,Poseidon,M4A4 | Poseidon,Rifle,Classified,,FALSE,FALSE,TRUE
+M4A4,Radiation Hazard,M4A4 | Radiation Hazard,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+M4A4,Red DDPAT,M4A4 | Red DDPAT,Rifle,Restricted,,FALSE,FALSE,TRUE
+M4A4,Royal Paladin,M4A4 | Royal Paladin,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A4,Spider Lily,M4A4 | Spider Lily,Rifle,Restricted,,FALSE,FALSE,TRUE
+M4A4,Temukau,M4A4 | Temukau,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A4,The Battlestar,M4A4 | The Battlestar,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A4,The Coalition,M4A4 | The Coalition,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A4,The Emperor,M4A4 | The Emperor,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A4,Tooth Fairy,M4A4 | Tooth Fairy,Rifle,Classified,,FALSE,FALSE,TRUE
+M4A4,Tornado,M4A4 | Tornado,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+M4A4,Urban DDPAT,M4A4 | Urban DDPAT,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+M4A4,X-Ray,M4A4 | X-Ray,Rifle,Covert,,FALSE,FALSE,TRUE
+M4A4,Zirka,M4A4 | Zirka,Rifle,Restricted,,FALSE,FALSE,TRUE
+M4A4,龍王 (Dragon King),M4A4 | 龍王 (Dragon King),Rifle,Classified,,FALSE,FALSE,TRUE
+MAC-10,Allure,MAC-10 | Allure,SMG,Restricted,,FALSE,FALSE,TRUE
+MAC-10,Aloha,MAC-10 | Aloha,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MAC-10,Amber Fade,MAC-10 | Amber Fade,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MAC-10,Button Masher,MAC-10 | Button Masher,SMG,Restricted,,FALSE,FALSE,TRUE
+MAC-10,Calf Skin,MAC-10 | Calf Skin,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+MAC-10,Candy Apple,MAC-10 | Candy Apple,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+MAC-10,Carnivore,MAC-10 | Carnivore,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MAC-10,Case Hardened,MAC-10 | Case Hardened,SMG,Restricted,,FALSE,FALSE,TRUE
+MAC-10,Classic Crate,MAC-10 | Classic Crate,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MAC-10,Commuter,MAC-10 | Commuter,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+MAC-10,Copper Borre,MAC-10 | Copper Borre,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MAC-10,Curse,MAC-10 | Curse,SMG,Restricted,,FALSE,FALSE,TRUE
+MAC-10,Disco Tech,MAC-10 | Disco Tech,SMG,Classified,,FALSE,FALSE,TRUE
+MAC-10,Echoing Sands,MAC-10 | Echoing Sands,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+MAC-10,Ensnared,MAC-10 | Ensnared,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MAC-10,Fade,MAC-10 | Fade,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MAC-10,Gold Brick,MAC-10 | Gold Brick,SMG,Restricted,,FALSE,FALSE,TRUE
+MAC-10,Graven,MAC-10 | Graven,SMG,Restricted,,FALSE,FALSE,TRUE
+MAC-10,Heat,MAC-10 | Heat,SMG,Restricted,,FALSE,FALSE,TRUE
+MAC-10,Hot Snakes,MAC-10 | Hot Snakes,SMG,Classified,,FALSE,FALSE,TRUE
+MAC-10,Indigo,MAC-10 | Indigo,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MAC-10,Lapis Gator,MAC-10 | Lapis Gator,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MAC-10,Last Dive,MAC-10 | Last Dive,SMG,Restricted,,FALSE,FALSE,TRUE
+MAC-10,Light Box,MAC-10 | Light Box,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MAC-10,Malachite,MAC-10 | Malachite,SMG,Restricted,,FALSE,FALSE,TRUE
+MAC-10,Monkeyflage,MAC-10 | Monkeyflage,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MAC-10,Neon Rider,MAC-10 | Neon Rider,SMG,Covert,,FALSE,FALSE,TRUE
+MAC-10,Nuclear Garden,MAC-10 | Nuclear Garden,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MAC-10,Oceanic,MAC-10 | Oceanic,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MAC-10,Palm,MAC-10 | Palm,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+MAC-10,Pipe Down,MAC-10 | Pipe Down,SMG,Restricted,,FALSE,FALSE,TRUE
+MAC-10,Propaganda,MAC-10 | Propaganda,SMG,Classified,,FALSE,FALSE,TRUE
+MAC-10,Rangeen,MAC-10 | Rangeen,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MAC-10,Red Filigree,MAC-10 | Red Filigree,SMG,Restricted,,FALSE,FALSE,TRUE
+MAC-10,Sakkaku,MAC-10 | Sakkaku,SMG,Restricted,,FALSE,FALSE,TRUE
+MAC-10,Sienna Damask,MAC-10 | Sienna Damask,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MAC-10,Silver,MAC-10 | Silver,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+MAC-10,Stalker,MAC-10 | Stalker,SMG,Covert,,FALSE,FALSE,TRUE
+MAC-10,Strats,MAC-10 | Strats,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MAC-10,Surfwood,MAC-10 | Surfwood,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MAC-10,Tatter,MAC-10 | Tatter,SMG,Restricted,,FALSE,FALSE,TRUE
+MAC-10,Tornado,MAC-10 | Tornado,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MAC-10,Toybox,MAC-10 | Toybox,SMG,Classified,,FALSE,FALSE,TRUE
+MAC-10,Ultraviolet,MAC-10 | Ultraviolet,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MAC-10,Urban DDPAT,MAC-10 | Urban DDPAT,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MAC-10,Whitefish,MAC-10 | Whitefish,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MAG-7,BI83 Spectrum,MAG-7 | BI83 Spectrum,Heavy,Restricted,,FALSE,FALSE,TRUE
+MAG-7,Bulldozer,MAG-7 | Bulldozer,Heavy,Restricted,,FALSE,FALSE,TRUE
+MAG-7,Carbon Fiber,MAG-7 | Carbon Fiber,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+MAG-7,Chainmail,MAG-7 | Chainmail,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+MAG-7,Cinquedea,MAG-7 | Cinquedea,Heavy,Classified,,FALSE,FALSE,TRUE
+MAG-7,Cobalt Core,MAG-7 | Cobalt Core,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+MAG-7,Copper Coated,MAG-7 | Copper Coated,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+MAG-7,Core Breach,MAG-7 | Core Breach,Heavy,Restricted,,FALSE,FALSE,TRUE
+MAG-7,Counter Terrace,MAG-7 | Counter Terrace,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+MAG-7,Firestarter,MAG-7 | Firestarter,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+MAG-7,Foresight,MAG-7 | Foresight,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+MAG-7,Hard Water,MAG-7 | Hard Water,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+MAG-7,Hazard,MAG-7 | Hazard,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+MAG-7,Heat,MAG-7 | Heat,Heavy,Restricted,,FALSE,FALSE,TRUE
+MAG-7,Heaven Guard,MAG-7 | Heaven Guard,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+MAG-7,Insomnia,MAG-7 | Insomnia,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+MAG-7,Irradiated Alert,MAG-7 | Irradiated Alert,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+MAG-7,Justice,MAG-7 | Justice,Heavy,Classified,,FALSE,FALSE,TRUE
+MAG-7,Memento,MAG-7 | Memento,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+MAG-7,Metallic DDPAT,MAG-7 | Metallic DDPAT,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+MAG-7,Monster Call,MAG-7 | Monster Call,Heavy,Restricted,,FALSE,FALSE,TRUE
+MAG-7,Navy Sheen,MAG-7 | Navy Sheen,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+MAG-7,Petroglyph,MAG-7 | Petroglyph,Heavy,Restricted,,FALSE,FALSE,TRUE
+MAG-7,Popdog,MAG-7 | Popdog,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+MAG-7,Praetorian,MAG-7 | Praetorian,Heavy,Restricted,,FALSE,FALSE,TRUE
+MAG-7,Prism Terrace,MAG-7 | Prism Terrace,Heavy,Restricted,,FALSE,FALSE,TRUE
+MAG-7,Rust Coat,MAG-7 | Rust Coat,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+MAG-7,SWAG-7,MAG-7 | SWAG-7,Heavy,Restricted,,FALSE,FALSE,TRUE
+MAG-7,Sand Dune,MAG-7 | Sand Dune,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+MAG-7,Seabird,MAG-7 | Seabird,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+MAG-7,Silver,MAG-7 | Silver,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+MAG-7,Sonar,MAG-7 | Sonar,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+MAG-7,Storm,MAG-7 | Storm,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+MP5-SD,Acid Wash,MP5-SD | Acid Wash,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP5-SD,Agent,MP5-SD | Agent,SMG,Restricted,,FALSE,FALSE,TRUE
+MP5-SD,Autumn Twilly,MP5-SD | Autumn Twilly,SMG,Restricted,,FALSE,FALSE,TRUE
+MP5-SD,Bamboo Garden,MP5-SD | Bamboo Garden,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MP5-SD,Co-Processor,MP5-SD | Co-Processor,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP5-SD,Condition Zero,MP5-SD | Condition Zero,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP5-SD,Desert Strike,MP5-SD | Desert Strike,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP5-SD,Dirt Drop,MP5-SD | Dirt Drop,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MP5-SD,Gauss,MP5-SD | Gauss,SMG,Restricted,,FALSE,FALSE,TRUE
+MP5-SD,Kitbash,MP5-SD | Kitbash,SMG,Restricted,,FALSE,FALSE,TRUE
+MP5-SD,Lab Rats,MP5-SD | Lab Rats,SMG,Restricted,,FALSE,FALSE,TRUE
+MP5-SD,Liquidation,MP5-SD | Liquidation,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP5-SD,Necro Jr.,MP5-SD | Necro Jr.,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP5-SD,Nitro,MP5-SD | Nitro,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+MP5-SD,Oxide Oasis,MP5-SD | Oxide Oasis,SMG,Classified,,FALSE,FALSE,TRUE
+MP5-SD,Phosphor,MP5-SD | Phosphor,SMG,Classified,,FALSE,FALSE,TRUE
+MP7,Abyssal Apparition,MP7 | Abyssal Apparition,SMG,Classified,,FALSE,FALSE,TRUE
+MP7,Akoben,MP7 | Akoben,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP7,Anodized Navy,MP7 | Anodized Navy,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP7,Armor Core,MP7 | Armor Core,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP7,Army Recon,MP7 | Army Recon,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MP7,Asterion,MP7 | Asterion,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MP7,Bloodsport,MP7 | Bloodsport,SMG,Covert,,FALSE,FALSE,TRUE
+MP7,Cirrus,MP7 | Cirrus,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP7,Fade,MP7 | Fade,SMG,Restricted,,FALSE,FALSE,TRUE
+MP7,Forest DDPAT,MP7 | Forest DDPAT,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MP7,Full Stop,MP7 | Full Stop,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP7,Groundwater,MP7 | Groundwater,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MP7,Guerrilla,MP7 | Guerrilla,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP7,Gunsmoke,MP7 | Gunsmoke,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+MP7,Impire,MP7 | Impire,SMG,Restricted,,FALSE,FALSE,TRUE
+MP7,Just Smile,MP7 | Just Smile,SMG,Restricted,,FALSE,FALSE,TRUE
+MP7,Mischief,MP7 | Mischief,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP7,Motherboard,MP7 | Motherboard,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+MP7,Nemesis,MP7 | Nemesis,SMG,Classified,,FALSE,FALSE,TRUE
+MP7,Neon Ply,MP7 | Neon Ply,SMG,Restricted,,FALSE,FALSE,TRUE
+MP7,Ocean Foam,MP7 | Ocean Foam,SMG,Restricted,,FALSE,FALSE,TRUE
+MP7,Olive Plaid,MP7 | Olive Plaid,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MP7,Orange Peel,MP7 | Orange Peel,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+MP7,Powercore,MP7 | Powercore,SMG,Restricted,,FALSE,FALSE,TRUE
+MP7,Prey,MP7 | Prey,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MP7,Scorched,MP7 | Scorched,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MP7,Skulls,MP7 | Skulls,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP7,Special Delivery,MP7 | Special Delivery,SMG,Restricted,,FALSE,FALSE,TRUE
+MP7,Sunbaked,MP7 | Sunbaked,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MP7,Tall Grass,MP7 | Tall Grass,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+MP7,Teal Blossom,MP7 | Teal Blossom,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP7,Urban Hazard,MP7 | Urban Hazard,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP7,Vault Heist,MP7 | Vault Heist,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+MP7,Whiteout,MP7 | Whiteout,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP9,Airlock,MP9 | Airlock,SMG,Classified,,FALSE,FALSE,TRUE
+MP9,Army Sheen,MP9 | Army Sheen,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MP9,Bioleak,MP9 | Bioleak,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP9,Black Sand,MP9 | Black Sand,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP9,Bulldozer,MP9 | Bulldozer,SMG,Restricted,,FALSE,FALSE,TRUE
+MP9,Capillary,MP9 | Capillary,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP9,Dark Age,MP9 | Dark Age,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP9,Dart,MP9 | Dart,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP9,Deadly Poison,MP9 | Deadly Poison,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP9,Dry Season,MP9 | Dry Season,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MP9,Featherweight,MP9 | Featherweight,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP9,Food Chain,MP9 | Food Chain,SMG,Classified,,FALSE,FALSE,TRUE
+MP9,Goo,MP9 | Goo,SMG,Restricted,,FALSE,FALSE,TRUE
+MP9,Green Plaid,MP9 | Green Plaid,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MP9,Hot Rod,MP9 | Hot Rod,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP9,Hydra,MP9 | Hydra,SMG,Classified,,FALSE,FALSE,TRUE
+MP9,Hypnotic,MP9 | Hypnotic,SMG,Restricted,,FALSE,FALSE,TRUE
+MP9,Modest Threat,MP9 | Modest Threat,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP9,Mount Fuji,MP9 | Mount Fuji,SMG,Restricted,,FALSE,FALSE,TRUE
+MP9,Music Box,MP9 | Music Box,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP9,Old Roots,MP9 | Old Roots,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+MP9,Orange Peel,MP9 | Orange Peel,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+MP9,Pandora's Box,MP9 | Pandora's Box,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP9,Rose Iron,MP9 | Rose Iron,SMG,Restricted,,FALSE,FALSE,TRUE
+MP9,Ruby Poison Dart,MP9 | Ruby Poison Dart,SMG,Restricted,,FALSE,FALSE,TRUE
+MP9,Sand Dashed,MP9 | Sand Dashed,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MP9,Sand Scale,MP9 | Sand Scale,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP9,Setting Sun,MP9 | Setting Sun,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+MP9,Slide,MP9 | Slide,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MP9,Stained Glass,MP9 | Stained Glass,SMG,Restricted,,FALSE,FALSE,TRUE
+MP9,Starlight Protector,MP9 | Starlight Protector,SMG,Covert,,FALSE,FALSE,TRUE
+MP9,Storm,MP9 | Storm,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+MP9,Wild Lily,MP9 | Wild Lily,SMG,Classified,,FALSE,FALSE,TRUE
+Negev,Anodized Navy,Negev | Anodized Navy,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Negev,Army Sheen,Negev | Army Sheen,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+Negev,Boroque Sand,Negev | Boroque Sand,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+Negev,Bratatat,Negev | Bratatat,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Negev,Bulkhead,Negev | Bulkhead,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+Negev,CaliCamo,Negev | CaliCamo,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+Negev,Dazzle,Negev | Dazzle,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Negev,Desert-Strike,Negev | Desert-Strike,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Negev,Drop Me,Negev | Drop Me,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Negev,Infrastructure,Negev | Infrastructure,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Negev,Lionfish,Negev | Lionfish,Heavy,Restricted,,FALSE,FALSE,TRUE
+Negev,Loudmouth,Negev | Loudmouth,Heavy,Restricted,,FALSE,FALSE,TRUE
+Negev,Man-o'-war,Negev | Man-o'-war,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Negev,Mjölnir,Negev | Mjölnir,Heavy,Classified,,FALSE,FALSE,TRUE
+Negev,Nuclear Waste,Negev | Nuclear Waste,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+Negev,Palm,Negev | Palm,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+Negev,Phoenix Stencil,Negev | Phoenix Stencil,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Negev,Power Loader,Negev | Power Loader,Heavy,Restricted,,FALSE,FALSE,TRUE
+Negev,Prototype,Negev | Prototype,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Negev,Terrain,Negev | Terrain,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Negev,Ultralight,Negev | Ultralight,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Negev,dev_texture,Negev | dev_texture,Heavy,Restricted,,FALSE,FALSE,TRUE
+Nova,Antique,Nova | Antique,Heavy,Classified,,FALSE,FALSE,TRUE
+Nova,Army Sheen,Nova | Army Sheen,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+Nova,Baroque Orange,Nova | Baroque Orange,Heavy,Restricted,,FALSE,FALSE,TRUE
+Nova,Blaze Orange,Nova | Blaze Orange,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Nova,Bloomstick,Nova | Bloomstick,Heavy,Classified,,FALSE,FALSE,TRUE
+Nova,Caged Steel,Nova | Caged Steel,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+Nova,Candy Apple,Nova | Candy Apple,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+Nova,Clear Polymer,Nova | Clear Polymer,Heavy,Restricted,,FALSE,FALSE,TRUE
+Nova,Dark Sigil,Nova | Dark Sigil,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Nova,Exo,Nova | Exo,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Nova,Forest Leaves,Nova | Forest Leaves,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+Nova,Ghost Camo,Nova | Ghost Camo,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Nova,Gila,Nova | Gila,Heavy,Restricted,,FALSE,FALSE,TRUE
+Nova,Graphite,Nova | Graphite,Heavy,Restricted,,FALSE,FALSE,TRUE
+Nova,Green Apple,Nova | Green Apple,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+Nova,Hyper Beast,Nova | Hyper Beast,Heavy,Classified,,FALSE,FALSE,TRUE
+Nova,Interlock,Nova | Interlock,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Nova,Koi,Nova | Koi,Heavy,Restricted,,FALSE,FALSE,TRUE
+Nova,Mandrel,Nova | Mandrel,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+Nova,Modern Hunter,Nova | Modern Hunter,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Nova,Moon in Libra,Nova | Moon in Libra,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+Nova,Plume,Nova | Plume,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Nova,Polar Mesh,Nova | Polar Mesh,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+Nova,Predator,Nova | Predator,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+Nova,Quick Sand,Nova | Quick Sand,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Nova,Ranger,Nova | Ranger,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Nova,Red Quartz,Nova | Red Quartz,Heavy,Restricted,,FALSE,FALSE,TRUE
+Nova,Rising Skull,Nova | Rising Skull,Heavy,Restricted,,FALSE,FALSE,TRUE
+Nova,Rust Coat,Nova | Rust Coat,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+Nova,Sand Dune,Nova | Sand Dune,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+Nova,Sobek's Bite,Nova | Sobek's Bite,Heavy,Restricted,,FALSE,FALSE,TRUE
+Nova,Tempest,Nova | Tempest,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Nova,Toy Soldier,Nova | Toy Soldier,Heavy,Restricted,,FALSE,FALSE,TRUE
+Nova,Walnut,Nova | Walnut,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+Nova,Wild Six,Nova | Wild Six,Heavy,Restricted,,FALSE,FALSE,TRUE
+Nova,Windblown,Nova | Windblown,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Nova,Wood Fired,Nova | Wood Fired,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+P2000,Acid Etched,P2000 | Acid Etched,Pistol,Restricted,,FALSE,FALSE,TRUE
+P2000,Amber Fade,P2000 | Amber Fade,Pistol,Restricted,,FALSE,FALSE,TRUE
+P2000,Chainmail,P2000 | Chainmail,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P2000,Coach Class,P2000 | Coach Class,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+P2000,Corticera,P2000 | Corticera,Pistol,Classified,,FALSE,FALSE,TRUE
+P2000,Dispatch,P2000 | Dispatch,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P2000,Fire Elemental,P2000 | Fire Elemental,Pistol,Covert,,FALSE,FALSE,TRUE
+P2000,Gnarled,P2000 | Gnarled,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P2000,Granite Marbleized,P2000 | Granite Marbleized,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+P2000,Grassland,P2000 | Grassland,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+P2000,Grassland Leaves,P2000 | Grassland Leaves,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+P2000,Handgun,P2000 | Handgun,Pistol,Restricted,,FALSE,FALSE,TRUE
+P2000,Imperial,P2000 | Imperial,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P2000,Imperial Dragon,P2000 | Imperial Dragon,Pistol,Classified,,FALSE,FALSE,TRUE
+P2000,Ivory,P2000 | Ivory,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P2000,Lifted Spirits,P2000 | Lifted Spirits,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P2000,Obsidian,P2000 | Obsidian,Pistol,Restricted,,FALSE,FALSE,TRUE
+P2000,Ocean Foam,P2000 | Ocean Foam,Pistol,Classified,,FALSE,FALSE,TRUE
+P2000,Oceanic,P2000 | Oceanic,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P2000,Panther Camo,P2000 | Panther Camo,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+P2000,Pathfinder,P2000 | Pathfinder,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+P2000,Pulse,P2000 | Pulse,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P2000,Red FragCam,P2000 | Red FragCam,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P2000,Scorpion,P2000 | Scorpion,Pistol,Restricted,,FALSE,FALSE,TRUE
+P2000,Silver,P2000 | Silver,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P2000,Space Race,P2000 | Space Race,Pistol,Restricted,,FALSE,FALSE,TRUE
+P2000,Turf,P2000 | Turf,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P2000,Urban Hazard,P2000 | Urban Hazard,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P2000,Wicked Sick,P2000 | Wicked Sick,Pistol,Classified,,FALSE,FALSE,TRUE
+P2000,Woodsman,P2000 | Woodsman,Pistol,Restricted,,FALSE,FALSE,TRUE
+P250,Apep's Curse,P250 | Apep's Curse,Pistol,Classified,,FALSE,FALSE,TRUE
+P250,Asiimov,P250 | Asiimov,Pistol,Classified,,FALSE,FALSE,TRUE
+P250,Bengal Tiger,P250 | Bengal Tiger,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P250,Black & Tan,P250 | Black & Tan,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P250,Bone Mask,P250 | Bone Mask,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+P250,Boreal Forest,P250 | Boreal Forest,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+P250,Cartel,P250 | Cartel,Pistol,Classified,,FALSE,FALSE,TRUE
+P250,Cassette,P250 | Cassette,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P250,Contaminant,P250 | Contaminant,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P250,Contamination,P250 | Contamination,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+P250,Crimson Kimono,P250 | Crimson Kimono,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+P250,Cyber Shell,P250 | Cyber Shell,Pistol,Restricted,,FALSE,FALSE,TRUE
+P250,Dark Filigree,P250 | Dark Filigree,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+P250,Digital Architect,P250 | Digital Architect,Pistol,Restricted,,FALSE,FALSE,TRUE
+P250,Drought,P250 | Drought,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+P250,Exchanger,P250 | Exchanger,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P250,Facets,P250 | Facets,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+P250,Facility Draft,P250 | Facility Draft,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+P250,Forest Night,P250 | Forest Night,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+P250,Franklin,P250 | Franklin,Pistol,Classified,,FALSE,FALSE,TRUE
+P250,Gunsmoke,P250 | Gunsmoke,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+P250,Hive,P250 | Hive,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P250,Inferno,P250 | Inferno,Pistol,Restricted,,FALSE,FALSE,TRUE
+P250,Iron Clad,P250 | Iron Clad,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P250,Mehndi,P250 | Mehndi,Pistol,Classified,,FALSE,FALSE,TRUE
+P250,Metallic DDPAT,P250 | Metallic DDPAT,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+P250,Mint Kimono,P250 | Mint Kimono,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+P250,Modern Hunter,P250 | Modern Hunter,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P250,Muertos,P250 | Muertos,Pistol,Classified,,FALSE,FALSE,TRUE
+P250,Nevermore,P250 | Nevermore,Pistol,Restricted,,FALSE,FALSE,TRUE
+P250,Nuclear Threat,P250 | Nuclear Threat,Pistol,Restricted,,FALSE,FALSE,TRUE
+P250,Re.built,P250 | Re.built,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P250,Red Rock,P250 | Red Rock,Pistol,Restricted,,FALSE,FALSE,TRUE
+P250,Ripple,P250 | Ripple,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P250,Sand Dune,P250 | Sand Dune,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+P250,See Ya Later,P250 | See Ya Later,Pistol,Covert,,FALSE,FALSE,TRUE
+P250,Splash,P250 | Splash,Pistol,Restricted,,FALSE,FALSE,TRUE
+P250,Steel Disruption,P250 | Steel Disruption,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P250,Supernova,P250 | Supernova,Pistol,Restricted,,FALSE,FALSE,TRUE
+P250,Undertow,P250 | Undertow,Pistol,Classified,,FALSE,FALSE,TRUE
+P250,Valence,P250 | Valence,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P250,Verdigris,P250 | Verdigris,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P250,Vino Primo,P250 | Vino Primo,Pistol,Restricted,,FALSE,FALSE,TRUE
+P250,Visions,P250 | Visions,Pistol,Classified,,FALSE,FALSE,TRUE
+P250,Whiteout,P250 | Whiteout,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+P250,Wingshot,P250 | Wingshot,Pistol,Restricted,,FALSE,FALSE,TRUE
+P250,X-Ray,P250 | X-Ray,Pistol,Restricted,,FALSE,FALSE,TRUE
+P90,Ancient Earth,P90 | Ancient Earth,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+P90,Ash Wood,P90 | Ash Wood,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+P90,Asiimov,P90 | Asiimov,SMG,Covert,,FALSE,FALSE,TRUE
+P90,Astral Jörmungandr,P90 | Astral Jörmungandr,SMG,Restricted,,FALSE,FALSE,TRUE
+P90,Baroque Red,P90 | Baroque Red,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+P90,Blind Spot,P90 | Blind Spot,SMG,Restricted,,FALSE,FALSE,TRUE
+P90,Chopper,P90 | Chopper,SMG,Restricted,,FALSE,FALSE,TRUE
+P90,Cocoa Rampage,P90 | Cocoa Rampage,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+P90,Cold Blooded,P90 | Cold Blooded,SMG,Classified,,FALSE,FALSE,TRUE
+P90,Death Grip,P90 | Death Grip,SMG,Restricted,,FALSE,FALSE,TRUE
+P90,Death by Kitty,P90 | Death by Kitty,SMG,Covert,,FALSE,FALSE,TRUE
+P90,Desert DDPAT,P90 | Desert DDPAT,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+P90,Desert Warfare,P90 | Desert Warfare,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+P90,Elite Build,P90 | Elite Build,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+P90,Emerald Dragon,P90 | Emerald Dragon,SMG,Classified,,FALSE,FALSE,TRUE
+P90,Facility Negative,P90 | Facility Negative,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+P90,Fallout Warning,P90 | Fallout Warning,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+P90,Freight,P90 | Freight,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+P90,Glacier Mesh,P90 | Glacier Mesh,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+P90,Grim,P90 | Grim,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+P90,Leather,P90 | Leather,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+P90,Module,P90 | Module,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+P90,Neoqueen,P90 | Neoqueen,SMG,Restricted,,FALSE,FALSE,TRUE
+P90,Nostalgia,P90 | Nostalgia,SMG,Classified,,FALSE,FALSE,TRUE
+P90,Off World,P90 | Off World,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+P90,Run and Hide,P90 | Run and Hide,SMG,Classified,,FALSE,FALSE,TRUE
+P90,Sand Spray,P90 | Sand Spray,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+P90,ScaraB Rush,P90 | ScaraB Rush,SMG,Restricted,,FALSE,FALSE,TRUE
+P90,Schematic,P90 | Schematic,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+P90,Scorched,P90 | Scorched,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+P90,Shallow Grave,P90 | Shallow Grave,SMG,Classified,,FALSE,FALSE,TRUE
+P90,Shapewood,P90 | Shapewood,SMG,Classified,,FALSE,FALSE,TRUE
+P90,Storm,P90 | Storm,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+P90,Sunset Lily,P90 | Sunset Lily,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+P90,Teardown,P90 | Teardown,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+P90,Tiger Pit,P90 | Tiger Pit,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+P90,Traction,P90 | Traction,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+P90,Trigon,P90 | Trigon,SMG,Classified,,FALSE,FALSE,TRUE
+P90,Vent Rush,P90 | Vent Rush,SMG,Restricted,,FALSE,FALSE,TRUE
+P90,Verdant Growth,P90 | Verdant Growth,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+P90,Virus,P90 | Virus,SMG,Restricted,,FALSE,FALSE,TRUE
+PP-Bizon,Anolis,PP-Bizon | Anolis,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+PP-Bizon,Antique,PP-Bizon | Antique,SMG,Restricted,,FALSE,FALSE,TRUE
+PP-Bizon,Bamboo Print,PP-Bizon | Bamboo Print,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+PP-Bizon,Blue Streak,PP-Bizon | Blue Streak,SMG,Restricted,,FALSE,FALSE,TRUE
+PP-Bizon,Brass,PP-Bizon | Brass,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+PP-Bizon,Breaker Box,PP-Bizon | Breaker Box,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+PP-Bizon,Candy Apple,PP-Bizon | Candy Apple,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+PP-Bizon,Carbon Fiber,PP-Bizon | Carbon Fiber,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+PP-Bizon,Chemical Green,PP-Bizon | Chemical Green,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+PP-Bizon,Cobalt Halftone,PP-Bizon | Cobalt Halftone,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+PP-Bizon,Death Rattle,PP-Bizon | Death Rattle,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+PP-Bizon,Embargo,PP-Bizon | Embargo,SMG,Restricted,,FALSE,FALSE,TRUE
+PP-Bizon,Facility Sketch,PP-Bizon | Facility Sketch,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+PP-Bizon,Forest Leaves,PP-Bizon | Forest Leaves,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+PP-Bizon,Fuel Rod,PP-Bizon | Fuel Rod,SMG,Restricted,,FALSE,FALSE,TRUE
+PP-Bizon,Harvester,PP-Bizon | Harvester,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+PP-Bizon,High Roller,PP-Bizon | High Roller,SMG,Classified,,FALSE,FALSE,TRUE
+PP-Bizon,Irradiated Alert,PP-Bizon | Irradiated Alert,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+PP-Bizon,Judgement of Anubis,PP-Bizon | Judgement of Anubis,SMG,Covert,,FALSE,FALSE,TRUE
+PP-Bizon,Jungle Slipstream,PP-Bizon | Jungle Slipstream,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+PP-Bizon,Lumen,PP-Bizon | Lumen,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+PP-Bizon,Modern Hunter,PP-Bizon | Modern Hunter,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+PP-Bizon,Night Ops,PP-Bizon | Night Ops,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+PP-Bizon,Night Riot,PP-Bizon | Night Riot,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+PP-Bizon,Osiris,PP-Bizon | Osiris,SMG,Restricted,,FALSE,FALSE,TRUE
+PP-Bizon,Photic Zone,PP-Bizon | Photic Zone,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+PP-Bizon,Runic,PP-Bizon | Runic,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+PP-Bizon,Rust Coat,PP-Bizon | Rust Coat,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+PP-Bizon,Sand Dashed,PP-Bizon | Sand Dashed,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+PP-Bizon,Seabird,PP-Bizon | Seabird,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+PP-Bizon,Space Cat,PP-Bizon | Space Cat,SMG,Restricted,,FALSE,FALSE,TRUE
+PP-Bizon,Urban Dashed,PP-Bizon | Urban Dashed,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+PP-Bizon,Water Sigil,PP-Bizon | Water Sigil,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+R8 Revolver,Amber Fade,R8 Revolver | Amber Fade,Pistol,Classified,,FALSE,FALSE,TRUE
+R8 Revolver,Banana Cannon,R8 Revolver | Banana Cannon,Pistol,Restricted,,FALSE,FALSE,TRUE
+R8 Revolver,Blaze,R8 Revolver | Blaze,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+R8 Revolver,Bone Forged,R8 Revolver | Bone Forged,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+R8 Revolver,Bone Mask,R8 Revolver | Bone Mask,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+R8 Revolver,Canal Spray,R8 Revolver | Canal Spray,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+R8 Revolver,Crazy 8,R8 Revolver | Crazy 8,Pistol,Restricted,,FALSE,FALSE,TRUE
+R8 Revolver,Crimson Web,R8 Revolver | Crimson Web,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+R8 Revolver,Desert Brush,R8 Revolver | Desert Brush,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+R8 Revolver,Fade,R8 Revolver | Fade,Pistol,Covert,,FALSE,FALSE,TRUE
+R8 Revolver,Grip,R8 Revolver | Grip,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+R8 Revolver,Inlay,R8 Revolver | Inlay,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+R8 Revolver,Junk Yard,R8 Revolver | Junk Yard,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+R8 Revolver,Llama Cannon,R8 Revolver | Llama Cannon,Pistol,Classified,,FALSE,FALSE,TRUE
+R8 Revolver,Memento,R8 Revolver | Memento,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+R8 Revolver,Night,R8 Revolver | Night,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+R8 Revolver,Nitro,R8 Revolver | Nitro,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+R8 Revolver,Phoenix Marker,R8 Revolver | Phoenix Marker,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+R8 Revolver,Reboot,R8 Revolver | Reboot,Pistol,Restricted,,FALSE,FALSE,TRUE
+R8 Revolver,Skull Crusher,R8 Revolver | Skull Crusher,Pistol,Classified,,FALSE,FALSE,TRUE
+R8 Revolver,Survivalist,R8 Revolver | Survivalist,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+SCAR-20,Army Sheen,SCAR-20 | Army Sheen,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+SCAR-20,Assault,SCAR-20 | Assault,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SCAR-20,Bloodsport,SCAR-20 | Bloodsport,Rifle,Classified,,FALSE,FALSE,TRUE
+SCAR-20,Blueprint,SCAR-20 | Blueprint,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SCAR-20,Brass,SCAR-20 | Brass,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SCAR-20,Carbon Fiber,SCAR-20 | Carbon Fiber,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+SCAR-20,Cardiac,SCAR-20 | Cardiac,Rifle,Classified,,FALSE,FALSE,TRUE
+SCAR-20,Contractor,SCAR-20 | Contractor,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+SCAR-20,Crimson Web,SCAR-20 | Crimson Web,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SCAR-20,Cyrex,SCAR-20 | Cyrex,Rifle,Classified,,FALSE,FALSE,TRUE
+SCAR-20,Emerald,SCAR-20 | Emerald,Rifle,Restricted,,FALSE,FALSE,TRUE
+SCAR-20,Enforcer,SCAR-20 | Enforcer,Rifle,Restricted,,FALSE,FALSE,TRUE
+SCAR-20,Fragments,SCAR-20 | Fragments,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SCAR-20,Green Marine,SCAR-20 | Green Marine,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SCAR-20,Grotto,SCAR-20 | Grotto,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SCAR-20,Jungle Slipstream,SCAR-20 | Jungle Slipstream,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SCAR-20,Magna Carta,SCAR-20 | Magna Carta,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SCAR-20,Outbreak,SCAR-20 | Outbreak,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SCAR-20,Palm,SCAR-20 | Palm,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+SCAR-20,Poultrygeist,SCAR-20 | Poultrygeist,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SCAR-20,Powercore,SCAR-20 | Powercore,Rifle,Restricted,,FALSE,FALSE,TRUE
+SCAR-20,Sand Mesh,SCAR-20 | Sand Mesh,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+SCAR-20,Splash Jam,SCAR-20 | Splash Jam,Rifle,Classified,,FALSE,FALSE,TRUE
+SCAR-20,Stone Mosaico,SCAR-20 | Stone Mosaico,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+SCAR-20,Storm,SCAR-20 | Storm,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+SCAR-20,Torn,SCAR-20 | Torn,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SG 553,Aerial,SG 553 | Aerial,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SG 553,Aloha,SG 553 | Aloha,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SG 553,Anodized Navy,SG 553 | Anodized Navy,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SG 553,Army Sheen,SG 553 | Army Sheen,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+SG 553,Atlas,SG 553 | Atlas,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SG 553,Barricade,SG 553 | Barricade,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+SG 553,Bleached,SG 553 | Bleached,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+SG 553,Bulldozer,SG 553 | Bulldozer,Rifle,Restricted,,FALSE,FALSE,TRUE
+SG 553,Candy Apple,SG 553 | Candy Apple,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+SG 553,Colony IV,SG 553 | Colony IV,Rifle,Classified,,FALSE,FALSE,TRUE
+SG 553,Cyberforce,SG 553 | Cyberforce,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SG 553,Cyrex,SG 553 | Cyrex,Rifle,Classified,,FALSE,FALSE,TRUE
+SG 553,Damascus Steel,SG 553 | Damascus Steel,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SG 553,Danger Close,SG 553 | Danger Close,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SG 553,Darkwing,SG 553 | Darkwing,Rifle,Restricted,,FALSE,FALSE,TRUE
+SG 553,Desert Blossom,SG 553 | Desert Blossom,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SG 553,Dragon Tech,SG 553 | Dragon Tech,Rifle,Restricted,,FALSE,FALSE,TRUE
+SG 553,Fallout Warning,SG 553 | Fallout Warning,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+SG 553,Gator Mesh,SG 553 | Gator Mesh,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+SG 553,Hazard Pay,SG 553 | Hazard Pay,Rifle,Classified,,FALSE,FALSE,TRUE
+SG 553,Heavy Metal,SG 553 | Heavy Metal,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SG 553,Hypnotic,SG 553 | Hypnotic,Rifle,Restricted,,FALSE,FALSE,TRUE
+SG 553,Integrale,SG 553 | Integrale,Rifle,Classified,,FALSE,FALSE,TRUE
+SG 553,Lush Ruins,SG 553 | Lush Ruins,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+SG 553,Ol' Rusty,SG 553 | Ol' Rusty,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SG 553,Phantom,SG 553 | Phantom,Rifle,Restricted,,FALSE,FALSE,TRUE
+SG 553,Pulse,SG 553 | Pulse,Rifle,Restricted,,FALSE,FALSE,TRUE
+SG 553,Tiger Moth,SG 553 | Tiger Moth,Rifle,Restricted,,FALSE,FALSE,TRUE
+SG 553,Tornado,SG 553 | Tornado,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+SG 553,Traveler,SG 553 | Traveler,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+SG 553,Triarch,SG 553 | Triarch,Rifle,Restricted,,FALSE,FALSE,TRUE
+SG 553,Ultraviolet,SG 553 | Ultraviolet,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SG 553,Wave Spray,SG 553 | Wave Spray,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SG 553,Waves Perforated,SG 553 | Waves Perforated,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+SSG 08,Abyss,SSG 08 | Abyss,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SSG 08,Acid Fade,SSG 08 | Acid Fade,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SSG 08,Azure Glyph,SSG 08 | Azure Glyph,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+SSG 08,Big Iron,SSG 08 | Big Iron,Rifle,Classified,,FALSE,FALSE,TRUE
+SSG 08,Blood in the Water,SSG 08 | Blood in the Water,Rifle,Covert,,FALSE,FALSE,TRUE
+SSG 08,Bloodshot,SSG 08 | Bloodshot,Rifle,Classified,,FALSE,FALSE,TRUE
+SSG 08,Blue Spruce,SSG 08 | Blue Spruce,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+SSG 08,Carbon Fiber,SSG 08 | Carbon Fiber,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+SSG 08,Dark Water,SSG 08 | Dark Water,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SSG 08,Death Strike,SSG 08 | Death Strike,Rifle,Classified,,FALSE,FALSE,TRUE
+SSG 08,Death's Head,SSG 08 | Death's Head,Rifle,Restricted,,FALSE,FALSE,TRUE
+SSG 08,Detour,SSG 08 | Detour,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SSG 08,Dezastre,SSG 08 | Dezastre,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SSG 08,Dragonfire,SSG 08 | Dragonfire,Rifle,Covert,,FALSE,FALSE,TRUE
+SSG 08,Fever Dream,SSG 08 | Fever Dream,Rifle,Restricted,,FALSE,FALSE,TRUE
+SSG 08,Ghost Crusader,SSG 08 | Ghost Crusader,Rifle,Restricted,,FALSE,FALSE,TRUE
+SSG 08,Hand Brake,SSG 08 | Hand Brake,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SSG 08,Jungle Dashed,SSG 08 | Jungle Dashed,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+SSG 08,Lichen Dashed,SSG 08 | Lichen Dashed,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+SSG 08,Mainframe 001,SSG 08 | Mainframe 001,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SSG 08,Mayan Dreams,SSG 08 | Mayan Dreams,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+SSG 08,Necropos,SSG 08 | Necropos,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SSG 08,Orange Filigree,SSG 08 | Orange Filigree,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SSG 08,Parallax,SSG 08 | Parallax,Rifle,Restricted,,FALSE,FALSE,TRUE
+SSG 08,Prey,SSG 08 | Prey,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+SSG 08,Red Stone,SSG 08 | Red Stone,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+SSG 08,Sand Dune,SSG 08 | Sand Dune,Rifle,Consumer Grade,,FALSE,FALSE,TRUE
+SSG 08,Sea Calico,SSG 08 | Sea Calico,Rifle,Restricted,,FALSE,FALSE,TRUE
+SSG 08,Slashed,SSG 08 | Slashed,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SSG 08,Spring Twilly,SSG 08 | Spring Twilly,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SSG 08,Threat Detected,SSG 08 | Threat Detected,Rifle,Mil-Spec,,FALSE,FALSE,TRUE
+SSG 08,Tropical Storm,SSG 08 | Tropical Storm,Rifle,Industrial Grade,,FALSE,FALSE,TRUE
+SSG 08,Turbo Peek,SSG 08 | Turbo Peek,Rifle,Classified,,FALSE,FALSE,TRUE
+Sawed-Off,Amber Fade,Sawed-Off | Amber Fade,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Sawed-Off,Analog Input,Sawed-Off | Analog Input,Heavy,Restricted,,FALSE,FALSE,TRUE
+Sawed-Off,Apocalypto,Sawed-Off | Apocalypto,Heavy,Restricted,,FALSE,FALSE,TRUE
+Sawed-Off,Bamboo Shadow,Sawed-Off | Bamboo Shadow,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+Sawed-Off,Black Sand,Sawed-Off | Black Sand,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Sawed-Off,Brake Light,Sawed-Off | Brake Light,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Sawed-Off,Clay Ambush,Sawed-Off | Clay Ambush,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+Sawed-Off,Copper,Sawed-Off | Copper,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Sawed-Off,Devourer,Sawed-Off | Devourer,Heavy,Classified,,FALSE,FALSE,TRUE
+Sawed-Off,First Class,Sawed-Off | First Class,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Sawed-Off,Forest DDPAT,Sawed-Off | Forest DDPAT,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+Sawed-Off,Fubar,Sawed-Off | Fubar,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Sawed-Off,Full Stop,Sawed-Off | Full Stop,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Sawed-Off,Highwayman,Sawed-Off | Highwayman,Heavy,Restricted,,FALSE,FALSE,TRUE
+Sawed-Off,Irradiated Alert,Sawed-Off | Irradiated Alert,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+Sawed-Off,Jungle Thicket,Sawed-Off | Jungle Thicket,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+Sawed-Off,Kiss♥Love,Sawed-Off | Kiss♥Love,Heavy,Classified,,FALSE,FALSE,TRUE
+Sawed-Off,Limelight,Sawed-Off | Limelight,Heavy,Restricted,,FALSE,FALSE,TRUE
+Sawed-Off,Morris,Sawed-Off | Morris,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Sawed-Off,Mosaico,Sawed-Off | Mosaico,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+Sawed-Off,Orange DDPAT,Sawed-Off | Orange DDPAT,Heavy,Restricted,,FALSE,FALSE,TRUE
+Sawed-Off,Origami,Sawed-Off | Origami,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Sawed-Off,Parched,Sawed-Off | Parched,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+Sawed-Off,Rust Coat,Sawed-Off | Rust Coat,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+Sawed-Off,Sage Spray,Sawed-Off | Sage Spray,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+Sawed-Off,Serenity,Sawed-Off | Serenity,Heavy,Restricted,,FALSE,FALSE,TRUE
+Sawed-Off,Snake Camo,Sawed-Off | Snake Camo,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+Sawed-Off,Spirit Board,Sawed-Off | Spirit Board,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Sawed-Off,The Kraken,Sawed-Off | The Kraken,Heavy,Covert,,FALSE,FALSE,TRUE
+Sawed-Off,Wasteland Princess,Sawed-Off | Wasteland Princess,Heavy,Classified,,FALSE,FALSE,TRUE
+Sawed-Off,Yorick,Sawed-Off | Yorick,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Sawed-Off,Zander,Sawed-Off | Zander,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Army Mesh,Tec-9 | Army Mesh,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+Tec-9,Avalanche,Tec-9 | Avalanche,Pistol,Restricted,,FALSE,FALSE,TRUE
+Tec-9,Bamboo Forest,Tec-9 | Bamboo Forest,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+Tec-9,Bamboozle,Tec-9 | Bamboozle,Pistol,Restricted,,FALSE,FALSE,TRUE
+Tec-9,Blast From the Past,Tec-9 | Blast From the Past,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Blue Titanium,Tec-9 | Blue Titanium,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Brass,Tec-9 | Brass,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Brother,Tec-9 | Brother,Pistol,Restricted,,FALSE,FALSE,TRUE
+Tec-9,Cracked Opal,Tec-9 | Cracked Opal,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Cut Out,Tec-9 | Cut Out,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Decimator,Tec-9 | Decimator,Pistol,Classified,,FALSE,FALSE,TRUE
+Tec-9,Flash Out,Tec-9 | Flash Out,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Fubar,Tec-9 | Fubar,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Fuel Injector,Tec-9 | Fuel Injector,Pistol,Classified,,FALSE,FALSE,TRUE
+Tec-9,Groundwater,Tec-9 | Groundwater,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+Tec-9,Hades,Tec-9 | Hades,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Tec-9,Ice Cap,Tec-9 | Ice Cap,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Isaac,Tec-9 | Isaac,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Jambiya,Tec-9 | Jambiya,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Mummy's Rot,Tec-9 | Mummy's Rot,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Nuclear Threat,Tec-9 | Nuclear Threat,Pistol,Restricted,,FALSE,FALSE,TRUE
+Tec-9,Orange Murano,Tec-9 | Orange Murano,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Tec-9,Ossified,Tec-9 | Ossified,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Phoenix Chalk,Tec-9 | Phoenix Chalk,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+Tec-9,Re-Entry,Tec-9 | Re-Entry,Pistol,Restricted,,FALSE,FALSE,TRUE
+Tec-9,Rebel,Tec-9 | Rebel,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Red Quartz,Tec-9 | Red Quartz,Pistol,Restricted,,FALSE,FALSE,TRUE
+Tec-9,Remote Control,Tec-9 | Remote Control,Pistol,Classified,,FALSE,FALSE,TRUE
+Tec-9,Rust Leaf,Tec-9 | Rust Leaf,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+Tec-9,Safety Net,Tec-9 | Safety Net,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Sandstorm,Tec-9 | Sandstorm,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Slag,Tec-9 | Slag,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Snek-9,Tec-9 | Snek-9,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Terrace,Tec-9 | Terrace,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Titanium Bit,Tec-9 | Titanium Bit,Pistol,Restricted,,FALSE,FALSE,TRUE
+Tec-9,Tornado,Tec-9 | Tornado,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+Tec-9,Toxic,Tec-9 | Toxic,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+Tec-9,Urban DDPAT,Tec-9 | Urban DDPAT,Pistol,Consumer Grade,,FALSE,FALSE,TRUE
+Tec-9,VariCamo,Tec-9 | VariCamo,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+UMP-45,Arctic Wolf,UMP-45 | Arctic Wolf,SMG,Restricted,,FALSE,FALSE,TRUE
+UMP-45,Blaze,UMP-45 | Blaze,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+UMP-45,Bone Pile,UMP-45 | Bone Pile,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+UMP-45,Briefing,UMP-45 | Briefing,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+UMP-45,Caramel,UMP-45 | Caramel,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+UMP-45,Carbon Fiber,UMP-45 | Carbon Fiber,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+UMP-45,Corporal,UMP-45 | Corporal,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+UMP-45,Crime Scene,UMP-45 | Crime Scene,SMG,Restricted,,FALSE,FALSE,TRUE
+UMP-45,Day Lily,UMP-45 | Day Lily,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+UMP-45,Delusion,UMP-45 | Delusion,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+UMP-45,Exposure,UMP-45 | Exposure,SMG,Restricted,,FALSE,FALSE,TRUE
+UMP-45,Facility Dark,UMP-45 | Facility Dark,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+UMP-45,Fade,UMP-45 | Fade,SMG,Classified,,FALSE,FALSE,TRUE
+UMP-45,Fallout Warning,UMP-45 | Fallout Warning,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+UMP-45,Full Stop,UMP-45 | Full Stop,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+UMP-45,Gold Bismuth,UMP-45 | Gold Bismuth,SMG,Restricted,,FALSE,FALSE,TRUE
+UMP-45,Grand Prix,UMP-45 | Grand Prix,SMG,Restricted,,FALSE,FALSE,TRUE
+UMP-45,Gunsmoke,UMP-45 | Gunsmoke,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+UMP-45,Houndstooth,UMP-45 | Houndstooth,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+UMP-45,Indigo,UMP-45 | Indigo,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+UMP-45,Labyrinth,UMP-45 | Labyrinth,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+UMP-45,Mechanism,UMP-45 | Mechanism,SMG,Industrial Grade,,FALSE,FALSE,TRUE
+UMP-45,Metal Flowers,UMP-45 | Metal Flowers,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+UMP-45,Minotaur's Labyrinth,UMP-45 | Minotaur's Labyrinth,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+UMP-45,Momentum,UMP-45 | Momentum,SMG,Classified,,FALSE,FALSE,TRUE
+UMP-45,Moonrise,UMP-45 | Moonrise,SMG,Restricted,,FALSE,FALSE,TRUE
+UMP-45,Motorized,UMP-45 | Motorized,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+UMP-45,Mudder,UMP-45 | Mudder,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+UMP-45,Oscillator,UMP-45 | Oscillator,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+UMP-45,Plastique,UMP-45 | Plastique,SMG,Restricted,,FALSE,FALSE,TRUE
+UMP-45,Primal Saber,UMP-45 | Primal Saber,SMG,Classified,,FALSE,FALSE,TRUE
+UMP-45,Riot,UMP-45 | Riot,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+UMP-45,Roadblock,UMP-45 | Roadblock,SMG,Mil-Spec,,FALSE,FALSE,TRUE
+UMP-45,Scaffold,UMP-45 | Scaffold,SMG,Restricted,,FALSE,FALSE,TRUE
+UMP-45,Scorched,UMP-45 | Scorched,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+UMP-45,Urban DDPAT,UMP-45 | Urban DDPAT,SMG,Consumer Grade,,FALSE,FALSE,TRUE
+UMP-45,Wild Child,UMP-45 | Wild Child,SMG,Classified,,FALSE,FALSE,TRUE
+USP-S,Ancient Visions,USP-S | Ancient Visions,Pistol,Restricted,,FALSE,FALSE,TRUE
+USP-S,Black Lotus,USP-S | Black Lotus,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+USP-S,Blood Tiger,USP-S | Blood Tiger,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+USP-S,Blueprint,USP-S | Blueprint,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+USP-S,Business Class,USP-S | Business Class,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+USP-S,Caiman,USP-S | Caiman,Pistol,Classified,,FALSE,FALSE,TRUE
+USP-S,Check Engine,USP-S | Check Engine,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+USP-S,Cortex,USP-S | Cortex,Pistol,Classified,,FALSE,FALSE,TRUE
+USP-S,Cyrex,USP-S | Cyrex,Pistol,Restricted,,FALSE,FALSE,TRUE
+USP-S,Dark Water,USP-S | Dark Water,Pistol,Restricted,,FALSE,FALSE,TRUE
+USP-S,Desert Tactical,USP-S | Desert Tactical,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+USP-S,Flashback,USP-S | Flashback,Pistol,Restricted,,FALSE,FALSE,TRUE
+USP-S,Forest Leaves,USP-S | Forest Leaves,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+USP-S,Guardian,USP-S | Guardian,Pistol,Restricted,,FALSE,FALSE,TRUE
+USP-S,Jawbreaker,USP-S | Jawbreaker,Pistol,Classified,,FALSE,FALSE,TRUE
+USP-S,Kill Confirmed,USP-S | Kill Confirmed,Pistol,Covert,,FALSE,FALSE,TRUE
+USP-S,Lead Conduit,USP-S | Lead Conduit,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+USP-S,Monster Mashup,USP-S | Monster Mashup,Pistol,Classified,,FALSE,FALSE,TRUE
+USP-S,Neo-Noir,USP-S | Neo-Noir,Pistol,Covert,,FALSE,FALSE,TRUE
+USP-S,Night Ops,USP-S | Night Ops,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+USP-S,Orange Anolis,USP-S | Orange Anolis,Pistol,Restricted,,FALSE,FALSE,TRUE
+USP-S,Orion,USP-S | Orion,Pistol,Classified,,FALSE,FALSE,TRUE
+USP-S,Overgrowth,USP-S | Overgrowth,Pistol,Restricted,,FALSE,FALSE,TRUE
+USP-S,Para Green,USP-S | Para Green,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+USP-S,Pathfinder,USP-S | Pathfinder,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+USP-S,Printstream,USP-S | Printstream,Pistol,Covert,,FALSE,FALSE,TRUE
+USP-S,Purple DDPAT,USP-S | Purple DDPAT,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+USP-S,Road Rash,USP-S | Road Rash,Pistol,Restricted,,FALSE,FALSE,TRUE
+USP-S,Royal Blue,USP-S | Royal Blue,Pistol,Industrial Grade,,FALSE,FALSE,TRUE
+USP-S,Serum,USP-S | Serum,Pistol,Classified,,FALSE,FALSE,TRUE
+USP-S,Stainless,USP-S | Stainless,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+USP-S,Target Acquired,USP-S | Target Acquired,Pistol,Classified,,FALSE,FALSE,TRUE
+USP-S,The Traitor,USP-S | The Traitor,Pistol,Covert,,FALSE,FALSE,TRUE
+USP-S,Ticket to Hell,USP-S | Ticket to Hell,Pistol,Restricted,,FALSE,FALSE,TRUE
+USP-S,Torque,USP-S | Torque,Pistol,Mil-Spec,,FALSE,FALSE,TRUE
+USP-S,Whiteout,USP-S | Whiteout,Pistol,Classified,,FALSE,FALSE,TRUE
+XM1014,Ancient Lore,XM1014 | Ancient Lore,Heavy,Restricted,,FALSE,FALSE,TRUE
+XM1014,Banana Leaf,XM1014 | Banana Leaf,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+XM1014,Black Tie,XM1014 | Black Tie,Heavy,Restricted,,FALSE,FALSE,TRUE
+XM1014,Blaze Orange,XM1014 | Blaze Orange,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+XM1014,Blue Spruce,XM1014 | Blue Spruce,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+XM1014,Blue Steel,XM1014 | Blue Steel,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+XM1014,Blue Tire,XM1014 | Blue Tire,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+XM1014,Bone Machine,XM1014 | Bone Machine,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+XM1014,CaliCamo,XM1014 | CaliCamo,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+XM1014,Charter,XM1014 | Charter,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+XM1014,Elegant Vines,XM1014 | Elegant Vines,Heavy,Restricted,,FALSE,FALSE,TRUE
+XM1014,Entombed,XM1014 | Entombed,Heavy,Classified,,FALSE,FALSE,TRUE
+XM1014,Fallout Warning,XM1014 | Fallout Warning,Heavy,Industrial Grade,,FALSE,FALSE,TRUE
+XM1014,Frost Borre,XM1014 | Frost Borre,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+XM1014,Grassland,XM1014 | Grassland,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+XM1014,Heaven Guard,XM1014 | Heaven Guard,Heavy,Restricted,,FALSE,FALSE,TRUE
+XM1014,Hieroglyph,XM1014 | Hieroglyph,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+XM1014,Incinegator,XM1014 | Incinegator,Heavy,Classified,,FALSE,FALSE,TRUE
+XM1014,Irezumi,XM1014 | Irezumi,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+XM1014,Jungle,XM1014 | Jungle,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+XM1014,Oxide Blaze,XM1014 | Oxide Blaze,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+XM1014,Quicksilver,XM1014 | Quicksilver,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+XM1014,Red Leather,XM1014 | Red Leather,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+XM1014,Red Python,XM1014 | Red Python,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+XM1014,Scumbria,XM1014 | Scumbria,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+XM1014,Seasons,XM1014 | Seasons,Heavy,Restricted,,FALSE,FALSE,TRUE
+XM1014,Slipstream,XM1014 | Slipstream,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+XM1014,Teclu Burner,XM1014 | Teclu Burner,Heavy,Restricted,,FALSE,FALSE,TRUE
+XM1014,Tranquility,XM1014 | Tranquility,Heavy,Classified,,FALSE,FALSE,TRUE
+XM1014,Urban Perforated,XM1014 | Urban Perforated,Heavy,Consumer Grade,,FALSE,FALSE,TRUE
+XM1014,VariCamo Blue,XM1014 | VariCamo Blue,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+XM1014,Watchdog,XM1014 | Watchdog,Heavy,Mil-Spec,,FALSE,FALSE,TRUE
+XM1014,XOXO,XM1014 | XOXO,Heavy,Classified,,FALSE,FALSE,TRUE
+XM1014,Ziggy,XM1014 | Ziggy,Heavy,Restricted,,FALSE,FALSE,TRUE
+XM1014,Zombie Offensive,XM1014 | Zombie Offensive,Heavy,Restricted,,FALSE,FALSE,TRUE
