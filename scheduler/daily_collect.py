@@ -9,16 +9,21 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(ROOT_DIR)
 sys.path.append(os.path.join(ROOT_DIR, "src"))
 
+# Force system streams to reconfigure to UTF-8 to prevent Windows terminal charmap crashes
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+
 # Now this and all internal database/scraper imports will resolve perfectly
 from src.collection_manager import CollectionManager
 
-# Configure logging
+# Configure logging with explicit UTF-8 encoding rules
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler("scheduler.log"),
-        logging.StreamHandler()
+        logging.FileHandler("scheduler.log", encoding="utf-8"),
+        logging.StreamHandler(sys.stdout)
     ]
 )
 
