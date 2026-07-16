@@ -7,6 +7,11 @@ __pycache__/
 .venv/
 venv/
 
+# Ignore local tracking state so you don't fight over the current_index
+queue_state.json
+scheduler.log
+purge_nulls
+
 # VS Code
 .vscode/
 
