@@ -28,12 +28,12 @@ logging.basicConfig(
 )
 
 # Configuration constants
-WATCHLIST_NAME = "all_weapons"
+WATCHLIST_NAME = "all_weapons_with_wears"  # 👈 Change "all_weapons" to "all_weapons_with_wears"
 WATCHLIST_PATH = f"data/watchlists/{WATCHLIST_NAME}.txt"
 RESUME_MODE = True
 SINCE_HOURS = 20
 
-RATE_LIMIT_BACKOFF_MINUTES = 60
+RATE_LIMIT_BACKOFF_MINUTES = 90
 STANDARD_COOLDOWN_MINUTES = 10
 
 def main():

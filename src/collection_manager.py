@@ -1,73 +1,123 @@
 import os
 import sys
+import json
+import time
+import random
 import logging
-from datetime import datetime, timedelta, timezone
-from sqlalchemy import text
+import traceback
+from datetime import datetime, timedelta
 
-# Native database & tracking engine dependencies
-from src.scraper import SteamMarketScraper
-from src.database import SessionLocal, MarketHistory, Skin, get_or_create_skin, insert_market_history
-from scheduler.state import load_state, save_state
+logger = logging.getLogger(__name__)
 
-logger = logging.getLogger("csmid.collection_manager")
+# 🔍 DIAGNOSTIC IMPORT SYSTEM: Exposes hidden internal dependency bugs
+try:
+    from src.scraper import SteamMarketScraper
+    from src.database import DatabaseManager 
+except ImportError as e:
+    logger.warning(f"Could not import via absolute 'src.' path: {e}. Attempting direct relative imports...")
+    try:
+        from scraper import SteamMarketScraper
+        from database import DatabaseManager
+    except ImportError as e2:
+        logger.critical("❌ CRITICAL IMPORT FAILURE: Scraper or Database files failed to load entirely.")
+        logger.critical("Below is the underlying error stack trace detailing what went wrong (e.g., missing pip libraries):")
+        logger.critical("\n" + "="*60 + "\n" + traceback.format_exc() + "="*60)
+        sys.exit("\nExecution halted: Fix the missing modules or syntax errors listed above to continue.")
 
 class CollectionManager:
-    def __init__(self):
+    def __init__(self, state_file_path="queue_state.json"):
+        self.state_file_path = state_file_path
+        self.scraper = None
+        self.db = None
+        
+        # Initialize the web scraper interface securely
         try:
             self.scraper = SteamMarketScraper()
-            logger.info("SteamMarketScraper engine successfully initialized.")
         except Exception as e:
-            logger.error(f"Failed to instantiate SteamMarketScraper engine: {e}")
-            self.scraper = None
+            logger.error(f"Failed to initialize SteamMarketScraper instance: {e}")
 
-        self.session = SessionLocal()
-        
-    def get_recently_collected_names(self, since_hours=20) -> set:
-        """Queries MarketHistory for skins successfully updated within the window to skip them."""
-        time_threshold = datetime.now(timezone.utc) - timedelta(hours=since_hours)
-        
+        # Initialize the database manager interface securely
         try:
-            recent_records = (
-                self.session.query(MarketHistory.market_hash_name)
-                .filter(MarketHistory.collected_at_utc >= time_threshold)
-                .filter(MarketHistory.success == True)
-                .all()
-            )
-            names_set = {record[0] for record in recent_records}
-            return names_set
+            self.db = DatabaseManager()
         except Exception as e:
-            logger.error(f"Database query failed in get_recently_collected_names: {e}")
-            return set()
+            logger.error(f"Failed to initialize DatabaseManager instance: {e}")
 
-    def _store_record(self, record_data):
-        """
-        Inserts the scraped observation into the database using native helpers.
-        Handles both dictionary formats and raw class objects defensively.
-        """
+    def load_queue_state(self) -> dict:
+        """Loads current progress metadata. Returns default configuration if state is missing."""
+        if os.path.exists(self.state_file_path):
+            try:
+                with open(self.state_file_path, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception as e:
+                logger.error(f"Error reading queue state file: {e}")
+        
+        return {
+            "current_index": 0,
+            "batch_size": 120,
+            "last_skin": None,
+            "status": "IDLE"
+        }
+
+    def save_queue_state(self, state: dict):
+        """Saves current engine progress safely."""
         try:
-            if isinstance(record_data, dict):
-                market_hash_name = record_data.get("market_hash_name")
-            else:
-                market_hash_name = getattr(record_data, "market_hash_name", None)
-
-            if not market_hash_name:
-                raise ValueError("Scraped payload is missing a valid 'market_hash_name' property.")
-
-            skin = get_or_create_skin(self.session, market_hash_name)
-            insert_market_history(self.session, skin, record_data)
-            self.session.commit()
+            with open(self.state_file_path, "w", encoding="utf-8") as f:
+                json.dump(state, f, indent=2)
         except Exception as e:
-            self.session.rollback()
-            logger.error(f"Failed to commit market record to database: {e}")
-            raise e
+            logger.error(f"Error writing queue state file: {e}")
+
+    def _is_recently_scraped(self, skin_name: str, since_hours: int) -> bool:
+        """Queries the local database to see if a skin was parsed within the cooldown frame."""
+        if not self.db:
+            return False
+            
+        try:
+            if hasattr(self.db, "is_skin_fresh"):
+                return self.db.is_skin_fresh(skin_name, since_hours)
+                
+            conn = getattr(self.db, "conn", None) or getattr(self.db, "connection", None)
+            if conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    "SELECT timestamp FROM prices WHERE skin_name = ? ORDER BY timestamp DESC LIMIT 1", 
+                    (skin_name,)
+                )
+                row = cursor.fetchone()
+                if row:
+                    last_time_str = row[0]
+                    try:
+                        last_time = datetime.strptime(last_time_str, "%Y-%m-%d %H:%M:%S")
+                    except ValueError:
+                        last_time = datetime.fromisoformat(last_time_str)
+                        
+                    if datetime.now() - last_time < timedelta(hours=since_hours):
+                        return True
+        except Exception as e:
+            logger.debug(f"Could not determine database history for '{skin_name}': {e}")
+        
+        return False
+
+    def _store_record(self, data):
+        """Pushes successfully scraped information to the database."""
+        if self.db and hasattr(self.db, "insert_price"):
+            try:
+                self.db.insert_price(data)
+                return
+            except Exception as e:
+                logger.error(f"Failed to insert skin data into database: {e}")
+                
+        logger.info(f"Fallback Storage: Standard insertion failed, logging raw: {data}")
 
     def collect_skin(self, skin_name: str) -> int:
         """
-        Collects a single skin. 
-        Returns 0 on success, 2 on HTTP 429, 1 on other errors.
+        Scrapes a single item.
+        Returns:
+            0: Clean success.
+            2: Active HTTP 429 (Rate Limit detected).
+            1: Minor skip-worthy execution error.
         """
         if not self.scraper:
-            logger.error(f"Scraper core is uninitialized. Skipping active call for: {skin_name}")
+            logger.error(f"Scraper core is uninitialized. skipping collection: {skin_name}")
             return 1
 
         logger.info(f"Scraping skin data for: {skin_name}")
@@ -78,8 +128,6 @@ class CollectionManager:
                 logger.error(f"Scraper returned empty payload response for {skin_name}")
                 return 1
 
-            # --- DEFENSIVE DATA EXTRACTION LAYER ---
-            # Handles both standard dicts and RawMarketRecord custom objects seamlessly
             if isinstance(result, dict):
                 status_code = result.get("status_code")
                 success = result.get("success")
@@ -87,7 +135,6 @@ class CollectionManager:
             else:
                 status_code = getattr(result, "status_code", None)
                 success = getattr(result, "success", None)
-                # Fallback to the object itself if it doesn't wrap data inside an attribute
                 data = getattr(result, "data", result)
 
             if status_code == 429:
@@ -102,66 +149,103 @@ class CollectionManager:
             return 1
             
         except Exception as e:
+            error_msg = str(e)
+            
+            # 🔴 CRITICAL PATCH: Catch core connection exceptions that mention rate constraints
+            if "429" in error_msg or "rate limited" in error_msg.lower():
+                logger.error(f"Rate limit exception intercepted for {skin_name}: {error_msg}")
+                return 2
+                
             logger.error(f"Unexpected error collecting skin {skin_name}: {e}")
             return 1
 
-    def collect_queue(self, watchlist_path: str, resume: bool = False, since_hours: int = 20) -> int:
+    def collect_queue(self, watchlist_path: str, resume: bool = True, since_hours: int = 20) -> int:
         """
-        Reads the target watchlist, checks the skip list (DB), slices the batch 
-        using queue_state.json, and runs the collection engine.
+        Processes queue chunks safely.
+        Returns:
+            0: Clean run completion.
+            2: Rate limiting triggered (Back off).
+            1: Unhandled errors.
         """
-        try:
-            with open(watchlist_path, "r", encoding="utf-8") as f:
-                all_skins = [line.strip() for line in f if line.strip()]
-        except FileNotFoundError:
+        if not os.path.exists(watchlist_path):
             logger.error(f"Watchlist file not found: {watchlist_path}")
             return 1
+            
+        with open(watchlist_path, "r", encoding="utf-8") as f:
+            all_skins = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+            
+        if not all_skins:
+            logger.warning(f"Target watchlist contains no entries: {watchlist_path}")
+            return 0
 
-        skip_names = set()
-        if resume:
-            skip_names = self.get_recently_collected_names(since_hours=since_hours)
-            logger.info(f"Resume active: Skipping {len(skip_names)} skins collected in past {since_hours} hours.")
-
-        state = load_state()
-        start_idx = state["current_index"]
-        batch_size = state["batch_size"]
+        state = self.load_queue_state() if resume else {
+            "current_index": 0,
+            "batch_size": 120,
+            "last_skin": None,
+            "status": "RUNNING"
+        }
+        
+        start_idx = state.get("current_index", 0)
+        batch_size = state.get("batch_size", 120)
         
         if start_idx >= len(all_skins):
-            logger.info("Reached the end of the watchlist. Resetting queue index to 0.")
+            logger.info("Index out of list bounds. Resetting pipeline index to 0.")
             start_idx = 0
-
+            
         end_idx = min(start_idx + batch_size, len(all_skins))
-        target_batch = all_skins[start_idx:end_idx]
+        skins_to_process = all_skins[start_idx:end_idx]
         
-        logger.info(f"Processing queue batch: Index {start_idx} to {end_idx} (Total skins: {len(all_skins)})")
+        logger.info(f"Starting pipeline chunk from index {start_idx} to {end_idx} of {len(all_skins)} total skins.")
+        
+        state["status"] = "RUNNING"
+        self.save_queue_state(state)
 
-        for current_idx, skin in enumerate(target_batch, start=start_idx):
-            if skin in skip_names:
-                logger.info(f"Skipping (Already fresh in DB): {skin}")
+        for offset, skin_name in enumerate(skins_to_process):
+            current_skin_index = start_idx + offset
+            
+            if self._is_recently_scraped(skin_name, since_hours):
+                logger.info(f"Skipping {skin_name} (scraped within last {since_hours} hours)")
+                state["current_index"] = current_skin_index + 1
+                state["last_skin"] = skin_name
+                self.save_queue_state(state)
                 continue
                 
-            exit_code = self.collect_skin(skin)
+            status_code = self.collect_skin(skin_name)
             
-            if exit_code == 2:
-                save_state(
-                    current_index=current_idx, 
-                    batch_size=batch_size, 
-                    last_skin=skin, 
-                    status="RATE_LIMITED"
-                )
-                return 2 
+            if status_code == 2:
+                state["status"] = "RATE_LIMITED"
+                state["current_index"] = current_skin_index 
+                state["last_skin"] = skin_name
+                self.save_queue_state(state)
+                logger.warning(f"Scheduler aborting. Process halted at index {current_skin_index} ({skin_name})")
+                return 2
                 
-            if exit_code != 0:
-                logger.warning(f"Failed to scrape {skin}, moving on...")
+            if status_code == 0:
+                state["current_index"] = current_skin_index + 1
+                state["last_skin"] = skin_name
+                self.save_queue_state(state)
+            else:
+                logger.warning(f"Error handling skin {skin_name}. Progressing index forward.")
+                state["current_index"] = current_skin_index + 1
+                state["last_skin"] = skin_name
+                self.save_queue_state(state)
 
-        new_start_index = end_idx
-        status = "COMPLETED" if new_start_index >= len(all_skins) else "RUNNING"
+            # 🎲 HUMAN-LIKE JITTER DELAY
+            if offset < len(skins_to_process) - 1:
+                base_delay = 15.0
+                jitter = random.uniform(0.0, 10.0)
+                total_sleep = base_delay + jitter
+                logger.info(f"Waiting {total_sleep:.2f}s before next request... (Jitter: +{jitter:.2f}s)")
+                time.sleep(total_sleep)
+
+        logger.info(f"Successfully processed batch up to index {end_idx}.")
         
-        save_state(
-            current_index=new_start_index, 
-            batch_size=batch_size, 
-            last_skin=target_batch[-1] if target_batch else None, 
-            status=status
-        )
-        
+        if end_idx >= len(all_skins):
+            logger.info("Entire watchlist cleared. Resetting loop indexes to 0.")
+            state["current_index"] = 0
+            state["status"] = "COMPLETED"
+        else:
+            state["status"] = "IDLE"
+            
+        self.save_queue_state(state)
         return 0
