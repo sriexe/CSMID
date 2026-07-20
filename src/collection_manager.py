@@ -67,31 +67,36 @@ class CollectionManager:
             logger.error(f"Error writing queue state file: {e}")
 
     def _is_recently_scraped(self, skin_name: str, since_hours: int) -> bool:
-        """Queries the local database to see if a skin was parsed within the cooldown frame."""
+        """Queries the Supabase cloud database to see if a skin has been parsed recently."""
         if not self.db:
             return False
             
         try:
+            # 1. First Choice: Use the robust built-in method in database.py if it exists
+            if hasattr(self.db, "is_recently_scraped"):
+                return self.db.is_recently_scraped(skin_name, since_hours)
+            
+            # 2. Second Choice: Check fallback naming
             if hasattr(self.db, "is_skin_fresh"):
                 return self.db.is_skin_fresh(skin_name, since_hours)
                 
+            # 3. Dynamic Postgres Fallback: Direct query with proper syntax
             conn = getattr(self.db, "conn", None) or getattr(self.db, "connection", None)
             if conn:
-                cursor = conn.cursor()
-                cursor.execute(
-                    "SELECT timestamp FROM prices WHERE skin_name = ? ORDER BY timestamp DESC LIMIT 1", 
-                    (skin_name,)
-                )
-                row = cursor.fetchone()
-                if row:
-                    last_time_str = row[0]
-                    try:
-                        last_time = datetime.strptime(last_time_str, "%Y-%m-%d %H:%M:%S")
-                    except ValueError:
-                        last_time = datetime.fromisoformat(last_time_str)
-                        
-                    if datetime.now() - last_time < timedelta(hours=since_hours):
-                        return True
+                with conn.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        SELECT EXISTS (
+                            SELECT 1 FROM market_history 
+                            WHERE skin_name = %s 
+                            AND scraped_at > NOW() - (%s * INTERVAL '1 hour')
+                        );
+                        """, 
+                        (skin_name, int(since_hours))
+                    )
+                    row = cursor.fetchone()
+                    return row[0] if row else False
+                    
         except Exception as e:
             logger.debug(f"Could not determine database history for '{skin_name}': {e}")
         
@@ -99,12 +104,31 @@ class CollectionManager:
 
     def _store_record(self, data):
         """Pushes successfully scraped information to the database."""
-        if self.db and hasattr(self.db, "insert_price"):
+        if not self.db:
+            logger.warning(f"Fallback Storage: No database connection, logging raw: {data}")
+            return
+
+        # 1. Attempt to use database.py's insert_price
+        if hasattr(self.db, "insert_price"):
             try:
                 self.db.insert_price(data)
                 return
             except Exception as e:
-                logger.error(f"Failed to insert skin data into database: {e}")
+                logger.error(f"Failed to insert skin data using insert_price: {e}")
+
+        # 2. Fallback: Attempt to use insert_market_data directly
+        if hasattr(self.db, "insert_market_data"):
+            try:
+                # Extract clean variables from scraper dict format
+                skin_name = data.get("skin_name") or data.get("market_hash_name")
+                lowest_price = data.get("lowest_price")
+                median_price = data.get("median_price")
+                volume = data.get("volume")
+                
+                self.db.insert_market_data(skin_name, lowest_price, median_price, volume)
+                return
+            except Exception as e:
+                logger.error(f"Failed to insert skin data using insert_market_data: {e}")
                 
         logger.info(f"Fallback Storage: Standard insertion failed, logging raw: {data}")
 
@@ -151,7 +175,7 @@ class CollectionManager:
         except Exception as e:
             error_msg = str(e)
             
-            # 🔴 CRITICAL PATCH: Catch core connection exceptions that mention rate constraints
+            # Catch core connection exceptions that mention rate constraints
             if "429" in error_msg or "rate limited" in error_msg.lower():
                 logger.error(f"Rate limit exception intercepted for {skin_name}: {error_msg}")
                 return 2
@@ -203,8 +227,9 @@ class CollectionManager:
         for offset, skin_name in enumerate(skins_to_process):
             current_skin_index = start_idx + offset
             
+            # 🛡️ THE DEDUPLICATION SHIELD
             if self._is_recently_scraped(skin_name, since_hours):
-                logger.info(f"Skipping {skin_name} (scraped within last {since_hours} hours)")
+                logger.info(f"⏭️ [SKIP] {skin_name} (scraped within last {since_hours} hours)")
                 state["current_index"] = current_skin_index + 1
                 state["last_skin"] = skin_name
                 self.save_queue_state(state)

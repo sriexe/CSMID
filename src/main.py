@@ -1,41 +1,59 @@
-import sys
-import argparse
-from src.collection_manager import CollectionManager
+import time
+import logging
 
-def cmd_collect(args):
-    manager = CollectionManager()
-    
-    # Single Skin Mode
-    if args.skin:
-        exit_code = manager.collect_skin(args.skin)
-        sys.exit(exit_code)
-        
-    # Watchlist Queue Mode
-    if args.watchlist:
-        # Construct path to watchlist file (e.g., data/watchlists/all_weapons.txt)
-        watchlist_path = f"data/watchlists/{args.watchlist}.txt"
-        
-        exit_code = manager.collect_queue(
-            watchlist_path=watchlist_path,
-            resume=args.resume,
-            since_hours=args.since_hours
-        )
-        sys.exit(exit_code)
+# Import your classes (Ensure the file names match your actual structure)
+from csmid.scraper import SteamMarketScraper
+from database import DatabaseManager  
 
-def main():
-    parser = argparse.ArgumentParser(description="CSMID Data Collection CLI")
-    subparsers = parser.add_subparsers(dest="command", required=True)
-    
-    collect_parser = subparsers.add_parser("collect", help="Collect market data")
-    collect_parser.add_argument("--skin", type=str, help="Collect a single specific skin")
-    collect_parser.add_argument("--watchlist", type=str, help="Watchlist name (e.g., all_weapons)")
-    collect_parser.add_argument("--resume", action="store_true", help="Skip skins collected recently")
-    collect_parser.add_argument("--since-hours", type=int, default=20, help="Hours window for resume skip logic")
-    
-    args = parser.parse_args()
-    
-    if args.command == "collect":
-        cmd_collect(args)
+# Setup logging
+logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(name)s:%(message)s")
+logger = logging.getLogger("CSMID.bulk_scraper")
+
+def run_bulk_scrape():
+    # Initialize the Scraper and Database
+    scraper = SteamMarketScraper(min_request_interval=4.0)
+    db = DatabaseManager()
+
+    # Define the list of items you want to track
+    target_skins = [
+        "Clutch Case",
+        "Dreams & Nightmares Case",
+        "AK-47 | Redline (Field-Tested)",
+        "AWP | Asiimov (Field-Tested)",
+        "Desert Eagle | Printstream (Minimal Wear)",
+        "M4A1-S | Printstream (Field-Tested)"
+    ]
+
+    logger.info(f"Starting bulk scrape for {len(target_skins)} items...")
+
+    for skin_name in target_skins:
+        logger.info(f"--- Processing: {skin_name} ---")
+        
+        # 1. Check if it was already scraped recently (Saves API credits!)
+        # Using a 12-hour threshold so it updates twice a day
+        if db.is_recently_scraped(skin_name, hours_threshold=12):
+            logger.info(f"⏭️ Skipped {skin_name}: Already scraped recently.")
+            continue
+            
+        # 2. Scrape the data from Steam via Proxy
+        price_data = scraper.get_price(appid=730, market_hash_name=skin_name)
+        
+        # 3. Save to Supabase
+        if price_data:
+            # Inject the skin name into the dict so your DatabaseManager can read it
+            price_data["skin_name"] = skin_name 
+            
+            db.insert_price(price_data)
+            logger.info(f"✅ Saved new price for {skin_name} to Supabase.")
+        else:
+            logger.error(f"❌ Failed to scrape {skin_name}")
+            
+        # 4. Safe delay to prevent proxy rate-limiting
+        time.sleep(2)
+        
+    # Clean up the DB connection when finished
+    db.close()
+    logger.info("Bulk scrape complete!")
 
 if __name__ == "__main__":
-    main()
+    run_bulk_scrape()
