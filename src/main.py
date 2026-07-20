@@ -1,59 +1,48 @@
 import time
 import logging
+from src.scraper import SteamMarketScraper
+from src.database import DatabaseManager  
 
-# Import your classes (Ensure the file names match your actual structure)
-from csmid.scraper import SteamMarketScraper
-from database import DatabaseManager  
-
-# Setup logging
-logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(name)s:%(message)s")
-logger = logging.getLogger("CSMID.bulk_scraper")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logger = logging.getLogger("CSMID.main")
 
 def run_bulk_scrape():
-    # Initialize the Scraper and Database
     scraper = SteamMarketScraper(min_request_interval=4.0)
     db = DatabaseManager()
 
-    # Define the list of items you want to track
-    target_skins = [
-        "Clutch Case",
-        "Dreams & Nightmares Case",
-        "AK-47 | Redline (Field-Tested)",
-        "AWP | Asiimov (Field-Tested)",
-        "Desert Eagle | Printstream (Minimal Wear)",
-        "M4A1-S | Printstream (Field-Tested)"
-    ]
+    # 1. Automatically pull the dynamic target list from your Supabase control panel
+    target_skins = db.get_active_targets()
+    
+    if not target_skins:
+        logger.warning("No active items found in the tracked_items table! Run run_discovery.py first.")
+        db.close()
+        return
 
-    logger.info(f"Starting bulk scrape for {len(target_skins)} items...")
+    logger.info(f"Starting tracking run for {len(target_skins)} items loaded from Supabase...")
 
     for skin_name in target_skins:
         logger.info(f"--- Processing: {skin_name} ---")
         
-        # 1. Check if it was already scraped recently (Saves API credits!)
-        # Using a 12-hour threshold so it updates twice a day
+        # 2. Check if it was already updated recently (Saves ScrapingAnt credits)
         if db.is_recently_scraped(skin_name, hours_threshold=12):
-            logger.info(f"⏭️ Skipped {skin_name}: Already scraped recently.")
+            logger.info(f"⏭️ Skipped {skin_name}: Already up to date.")
             continue
             
-        # 2. Scrape the data from Steam via Proxy
+        # 3. Scrape price data using residential proxies
         price_data = scraper.get_price(appid=730, market_hash_name=skin_name)
         
-        # 3. Save to Supabase
+        # 4. Save clean data straight to your ledger
         if price_data:
-            # Inject the skin name into the dict so your DatabaseManager can read it
             price_data["skin_name"] = skin_name 
-            
             db.insert_price(price_data)
-            logger.info(f"✅ Saved new price for {skin_name} to Supabase.")
+            logger.info(f"✅ Logged fresh prices for {skin_name}")
         else:
-            logger.error(f"❌ Failed to scrape {skin_name}")
+            logger.error(f"❌ Failed to reach Steam backend for {skin_name}")
             
-        # 4. Safe delay to prevent proxy rate-limiting
-        time.sleep(2)
+        time.sleep(2) # Safe breathing window for proxy rotation
         
-    # Clean up the DB connection when finished
     db.close()
-    logger.info("Bulk scrape complete!")
+    logger.info("🏁 Historical price log run completed successfully.")
 
 if __name__ == "__main__":
     run_bulk_scrape()
