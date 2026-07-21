@@ -4,7 +4,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Use environment variable or fallback to a default topic
 NTFY_TOPIC = os.getenv("NTFY_TOPIC", "csmid-tracker-sri-99")
 
 def send_push_notification(title: str, message: str, priority: str = "default"):
@@ -14,13 +13,17 @@ def send_push_notification(title: str, message: str, priority: str = "default"):
     """
     try:
         url = f"https://ntfy.sh/{NTFY_TOPIC}"
+        
+        # Strip any non-ASCII characters from header strings to prevent latin-1 encoding errors
+        safe_title = title.encode('ascii', 'ignore').decode('ascii').strip()
+        
         response = requests.post(
             url,
-            data=message.encode('utf-8'),
+            data=message.encode('utf-8'),  # Body supports UTF-8 (emojis included!)
             headers={
-                "Title": title,
+                "Title": safe_title if safe_title else "CSMID Alert",
                 "Priority": priority,
-                "Tags": "chart_with_upwards_trend,game"
+                "Tags": "chart_with_upwards_trend,game"  # Keep tag strings pure ASCII
             },
             timeout=10
         )
