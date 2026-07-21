@@ -1,6 +1,7 @@
 import logging
 from src.database import DatabaseManager
 from discoverer import SteamMarketDiscoverer
+from src.notifier import send_push_notification
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("CSMID.run_discovery")
@@ -31,7 +32,7 @@ if __name__ == "__main__":
     
     
 # At the end of your discovery function in run_discovery.py
-from src.notifier import send_push_notification
+
 
 def notify_discovery_results(new_skins_added):
     if not new_skins_added:
