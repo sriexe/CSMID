@@ -28,3 +28,32 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
+    
+# At the end of your discovery function in run_discovery.py
+from src.notifier import send_push_notification
+
+def notify_discovery_results(new_skins_added):
+    if not new_skins_added:
+        send_push_notification(
+            title="🔍 Weekly Discovery Complete",
+            message="Checked Steam catalog. No new skins were added today (checklist is up to date)."
+        )
+        return
+
+    # Grab sample data (Head & Tail)
+    count = len(new_skins_added)
+    head_samples = new_skins_added[:3]
+    tail_samples = new_skins_added[-2:] if count > 3 else []
+
+    sample_text = "\n• " + "\n• ".join(head_samples)
+    if tail_samples:
+        sample_text += "\n...\n• " + "\n• ".join(tail_samples)
+
+    msg = f"Added {count} new skins to tracking!\n\nSamples:{sample_text}"
+    
+    send_push_notification(
+        title=f"🎉 Discovery: +{count} New Skins Tracked!",
+        message=msg,
+        priority="high"
+    )
