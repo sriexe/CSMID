@@ -1,218 +1,222 @@
+# CSMID — Counter-Strike Market Intelligence Dataset
 
-🔍 Key File Explanations:
-main.py: Your "Price Update" engine. It strictly looks at the items you are already tracking and grabs their latest market price. Contains guardrails (e.g., skips if scraped < 12 hours ago) to conserve API credits.
+A local Python pipeline that collects CS2 skin price history from the
+Steam Community Market and stores it in SQLite, as the foundation for
+later feature engineering and an ML-based buy/sell recommendation
+engine.
 
-run_discovery.py: Your "Radar". It scans the Steam Market for popular items (up to 500 items deep) and adds any newly discovered skins to your database. It ends by pinging your phone with a summary.
-
-src/notifier.py: The bridge to your phone. Uses ntfy.sh to send priority alerts without needing complex developer accounts.
-
-⚙️ Prerequisites
-Before running the project locally or on GitHub, you need the following free accounts:
-
-Supabase: Free PostgreSQL database to store your item list and price history.
-
-ScrapingAnt: Web scraping API to bypass Steam's rate limits.
-
-ntfy: A free app on iOS/Android for push notifications. Create a unique topic name in the app (e.g., csmid-tracker-myname).
-
-🚀 Installation & Local Setup
-1. Clone the repository
-Bash
-git clone [https://github.com/YOUR-USERNAME/CSMID.git](https://github.com/YOUR-USERNAME/CSMID.git)
-cd CSMID
-2. Set up the Python Environment
-It is recommended to use Python 3.11+.
-
-Bash
-# Create a virtual environment
-python -m venv venv
-
-# Activate virtual environment (Windows)
-venv\\Scripts\\activate
-# Activate virtual environment (Mac/Linux)
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-3. Environment Variables
-Create a .env file in the root directory (or export them in your terminal) with the following keys:
-
-Code snippet
-SUPABASE_DB_URL=postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT].supabase.co:5432/postgres
-SCRAPINGANT_API_KEY=your_scrapingant_key_here
-NTFY_TOPIC=your_secret_ntfy_topic_name
-🏃‍♂️ How to Run the Scripts Locally
-Depending on what you want to achieve, run one of the two main scripts from your terminal:
-
-To find new skins and add them to your tracking list:
-
-Bash
-python run_discovery.py
-(You will receive a phone notification with head/tail samples once this finishes).
-
-To update the prices of the skins you are already tracking:
-
-Bash
-python main.py
-(Ensure it has been at least 12 hours since your last scrape, or adjust the hours_threshold inside main.py).
-
-☁️ Cloud Automation (GitHub Actions)
-This project is designed to run on autopilot in the cloud. You do not need to leave your PC on!
-
-Go to your GitHub Repository -> Settings -> Secrets and variables -> Actions.
-
-Add your environment variables (SUPABASE_DB_URL, SCRAPINGANT_API_KEY, NTFY_TOPIC) as Repository Secrets.
-
-The workflows in .github/workflows/ will automatically execute:
-
-Discovery Daemon: Runs every Sunday at midnight UTC to find new skins.
-
-Scraper Daemon: Runs every 6-12 hours to build your historical price charts.
-
-🔮 Roadmap: Phase 2 (Month 3+)
-Once sufficient data (approx. 3 months of 6-hour price intervals) is collected, the system architecture will shift from Data Collection to Data Prediction:
-
-Transition from fixed schedules to Volatility-Based Scraping (scraping high-volume items faster than stable cases).
-
-Implementation of a predict.py module using Pandas/Statsmodels to calculate Moving Averages and RSI.
-
-Automated Buy/Sell signal notifications based on arbitrage opportunities.
-"""
-
-with open('README.md', 'w', encoding='utf-8') as f:
-f.write(markdown_content)
-
-print("[file-tag: code-generated-file-readme-md-1]")
-
-
-```text?code_stdout&code_event_index=1
-[file-tag: code-generated-file-readme-md-1]
-
-Your Markdown file is ready
-MD icon
-README
- MD 
-Open
-
-I have generated a clean, professional README.md that perfectly outlines your current project architecture. It clearly breaks down the difference between main.py and run_discovery.py, guides anyone (like your friends) through local setup and environment variables, and notes the future transition into the predictive modeling phase!
-
-
-
-
-
-Gemini is AI and can make mistakes.
-
-# 📈 CSMID - CS2 Market Intelligence Engine
-
-An automated, cloud-hosted tracking and market intelligence engine for Counter-Strike 2 skins. This system automatically discovers trending items on the Steam Community Market, logs their prices into a Postgres database (Supabase) at regular intervals, and sends push notifications to your phone.
+Right now this is a **data collection project**, not yet a prediction
+engine. The immediate goal is to build up a clean historical price
+dataset (multiple snapshots per skin over time); analytics and ML are
+planned once there's enough history to make them meaningful.
 
 ---
 
-## 🏗️ Project Structure & File Roles
-
-The repository is structured to separate cloud workflows, source logic, and executable entry points.
+## Project Structure
 
 ```text
 CSMID/
 │
-├── .github/workflows/
-│   ├── discovery.yml      # GitHub Action: Runs run_discovery.py every Sunday
-│   └── scraper.yml        # GitHub Action: Runs main.py every 6-12 hours
-│
 ├── src/
-│   ├── database.py        # Connects to Supabase; manages inserts to tracked_items & market_history
-│   ├── discoverer.py      # Contains logic to parse Steam market pages for top items
-│   └── notifier.py        # Handles instant phone push notifications via ntfy.sh
+│   ├── main.py                # CLI entry point (collect, list)
+│   ├── collection_manager.py  # Core collection logic: fetch, store, batch, resume
+│   ├── scraper.py             # Steam Community Market client (shells out to curl)
+│   ├── database.py            # SQLAlchemy models + SQLite connection (skins, market_history)
+│   ├── config.py              # Paths: DB location, data dirs, default watchlist
+│   └── diagnose_steam.py      # Standalone diagnostic script for probing Steam's rate limits
 │
-├── main.py                # 🟢 THE PRICE SCRAPER: Fetches live prices for skins already in the database
-├── run_discovery.py       # 🔵 THE DISCOVERER: Finds new trending skins on Steam and adds them to tracking
-├── requirements.txt       # Python dependencies (requests, psycopg2-binary, etc.)
-└── README.md              # Project documentation
+├── scheduler/
+│   ├── daily_collect.py       # Long-running loop: runs collection on a schedule, backs off on 429s
+│   ├── manager.py             # Prints the next queue batch (prototype, not yet wired to collection)
+│   ├── collection_queue.py    # Slices the master catalog into fixed-size batches
+│   ├── state.py                # Load/save queue_state.json
+│   └── queue_state.json       # Persisted queue position (current_index, batch_size)
+│
+├── tools/
+│   ├── import_master_catalog.py    # raw_catalog/*.json -> data/master/master_skins.csv
+│   ├── generate_watchlists.py      # master_skins.csv -> per-category watchlist .txt files
+│   ├── download_catalog.py         # Framework for pulling the raw skin catalog (source TBD)
+│   └── test_manager.py             # Quick manual smoke test for CollectionManager
+│
+├── data/
+│   ├── raw_catalog/           # Raw skin catalog JSON (source data for the importer)
+│   ├── master/
+│   │   └── master_skins.csv   # Deduplicated catalog: weapon, skin_name, market_hash_name, rarity, etc.
+│   ├── watchlists/            # Generated: all_weapons.txt, rifles.txt, smgs.txt, pistols.txt, heavy.txt
+│   │                          # (+ legacy manually-maintained watchlists: core.txt, cases.txt, knives.txt, gloves.txt)
+│   ├── processed/             # Dataset exports for handoff (see tools/export_dataset.py)
+│   ├── raw/                   # Reserved for raw scrape output
+│   └── backups/               # Reserved for DB backups
+│
+├── tests/                     # pytest suite (scraper, database)
+├── docs/
+├── requirements.txt
+├── csmid.db                   # SQLite database (created on first run, gitignored)
+└── README.md
 ```
 
-### 🔍 Key File Explanations:
-*   **`main.py`**: Your "Price Update" engine. It strictly looks at the items you are already tracking and grabs their latest market price. Contains guardrails (e.g., skips if scraped < 12 hours ago) to conserve API credits.
-*   **`run_discovery.py`**: Your "Radar". It scans the Steam Market for popular items (up to 500 items deep) and adds any newly discovered skins to your database. It ends by pinging your phone with a summary.
-*   **`src/notifier.py`**: The bridge to your phone. Uses `ntfy.sh` to send priority alerts without needing complex developer accounts.
+---
+
+## Architecture
+
+```text
+Steam Community Market (priceoverview endpoint)
+        │
+        ▼
+scraper.py            (curl subprocess — see "Why curl" below)
+        │
+        ▼
+collection_manager.py (throttling, storage, resume, batch orchestration)
+        │
+        ▼
+database.py            (SQLAlchemy → SQLite: skins, market_history)
+        │
+        ▼
+tools/export_dataset.py  (flat CSV export for downstream analytics/ML)
+```
+
+The catalog side is a separate pipeline that feeds watchlists into the
+collector above:
+
+```text
+data/raw_catalog/*.json
+        │
+        ▼
+tools/import_master_catalog.py
+        │
+        ▼
+data/master/master_skins.csv   (1157 unique weapon skins)
+        │
+        ▼
+tools/generate_watchlists.py
+        │
+        ▼
+data/watchlists/*.txt  →  used by `collect --watchlist NAME`
+```
 
 ---
 
-## ⚙️ Prerequisites
+## Why curl instead of `requests`
 
-Before running the project locally or on GitHub, you need the following free accounts:
-1.  **[Supabase](https://supabase.com/)**: Free PostgreSQL database to store your item list and price history.
-2.  **[ScrapingAnt](https://scrapingant.com/)**: Web scraping API to bypass Steam's rate limits.
-3.  **[ntfy](https://ntfy.sh/)**: A free app on iOS/Android for push notifications. Create a unique topic name in the app (e.g., `csmid-tracker-myname`).
+The scraper shells out to the system `curl` binary rather than using
+Python's `requests` library. This was confirmed empirically: `requests`
+gets blocked (HTTP 429) by Steam's Akamai-fronted bot detection almost
+immediately, while `curl` hitting the exact same URL from the same IP
+at the same moment succeeds reliably. The leading explanation is
+TLS/HTTP client fingerprinting rather than headers or IP reputation
+(both were tested and ruled out first). See the module docstring in
+`src/scraper.py` for details.
+
+**This means `curl` must be available on PATH.** It ships by default
+on Windows 10/11 and most Linux/macOS systems; check with
+`curl --version`.
 
 ---
 
-## 🚀 Installation & Local Setup
+## Setup
 
-### 1. Clone the repository
+Requires Python 3.11+ and `curl` on PATH.
+
 ```bash
-git clone https://github.com/YOUR-USERNAME/CSMID.git
+git clone https://github.com/sriexe/CSMID.git
 cd CSMID
-```
 
-### 2. Set up the Python Environment
-It is recommended to use Python 3.11+.
-```bash
-# Create a virtual environment
-python -m venv venv
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# Mac/Linux
+source .venv/bin/activate
 
-# Activate virtual environment (Windows)
-venv\Scripts\activate
-# Activate virtual environment (Mac/Linux)
-source venv/bin/activate
-
-# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 3. Environment Variables
-Create a `.env` file in the root directory (or export them in your terminal) with the following keys:
-```env
-SUPABASE_DB_URL=postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT].supabase.co:5432/postgres
-SCRAPINGANT_API_KEY=your_scrapingant_key_here
-NTFY_TOPIC=your_secret_ntfy_topic_name
-```
+No external accounts, API keys, or `.env` file are needed — this
+project only talks to Steam's public, unauthenticated
+`priceoverview` endpoint and stores everything locally in SQLite.
 
 ---
 
-## 🏃‍♂️ How to Run the Scripts Locally
+## Usage
 
-Depending on what you want to achieve, run one of the two main scripts from your terminal:
-
-**To find new skins and add them to your tracking list:**
+**Collect prices for a specific category:**
 ```bash
-python run_discovery.py
+python src/main.py collect --watchlist rifles
+python src/main.py collect --watchlist smgs
+python src/main.py collect --watchlist pistols
+python src/main.py collect --watchlist heavy
+python src/main.py collect --watchlist all_weapons
 ```
-*(You will receive a phone notification with head/tail samples once this finishes).*
 
-**To update the prices of the skins you are already tracking:**
+**Collect a single skin:**
 ```bash
-python main.py
+python src/main.py collect --skin "AK-47 | Slate (Minimal Wear)"
 ```
-*(Ensure it has been at least 12 hours since your last scrape, or adjust the `hours_threshold` inside `main.py`).*
+
+**Resume after a rate-limit stop** (skips skins already collected
+within the lookback window instead of re-fetching them):
+```bash
+python src/main.py collect --watchlist all_weapons --resume --since-hours 20
+```
+
+**View recently collected records:**
+```bash
+python src/main.py list --limit 20
+python src/main.py list --skin "AK-47 | Slate (Minimal Wear)"
+```
+
+**Regenerate watchlists** after updating the master catalog:
+```bash
+python tools/generate_watchlists.py
+```
 
 ---
 
-## ☁️ Cloud Automation (GitHub Actions)
+## Automated / scheduled collection
 
-This project is designed to run on autopilot in the cloud. You do not need to leave your PC on!
+`scheduler/daily_collect.py` runs collection in a long-lived local
+loop (not GitHub Actions/cloud — this runs on your own machine):
 
-1. Go to your GitHub Repository -> **Settings** -> **Secrets and variables** -> **Actions**.
-2. Add your environment variables (`SUPABASE_DB_URL`, `SCRAPINGANT_API_KEY`, `NTFY_TOPIC`) as **Repository Secrets**.
-3. The workflows in `.github/workflows/` will automatically execute:
-   * **Discovery Daemon**: Runs every Sunday at midnight UTC to find new skins.
-   * **Scraper Daemon**: Runs every 6-12 hours to build your historical price charts.
+```bash
+python scheduler/daily_collect.py
+```
+
+It runs `collect --watchlist all_weapons --resume` once, then:
+- if it finishes cleanly, sleeps ~24h before running again,
+- if Steam returns a 429, backs off (starting at 90 minutes, doubling
+  on consecutive rate limits, capped at 8h) before retrying — rather
+  than retrying blindly, which was confirmed to extend the block
+  rather than recover from it.
+
+The `scheduler/collection_queue.py` + `manager.py` + `state.py` set is
+a separate, earlier prototype for batch-based (rather than
+watchlist-based) collection with persisted queue position — currently
+not wired into the main collection path.
 
 ---
 
-## 🔮 Roadmap: Phase 2 (Month 3+)
-Once sufficient data (approx. 3 months of 6-hour price intervals) is collected, the system architecture will shift from *Data Collection* to *Data Prediction*:
-* Transition from fixed schedules to **Volatility-Based Scraping** (scraping high-volume items faster than stable cases).
-* Implementation of a `predict.py` module using Pandas/Statsmodels to calculate Moving Averages and RSI.
-* Automated Buy/Sell signal notifications based on arbitrage opportunities.
-README.md
-Displaying README.md.
+## Known constraints
+
+- **Steam rate limits aggressively** for sustained, unauthenticated
+  request sequences. There's no confirmed safe request volume or
+  cooldown duration — `src/diagnose_steam.py` exists specifically to
+  probe this empirically rather than relying on assumed numbers.
+- **No price data currently informs the master catalog.** Every skin
+  in `master_skins.csv` (all rarities, all price tiers) is collected
+  equally — filtering happens by weapon type only, not by value.
+- This runs **locally**, on-demand or via the scheduler script above.
+  There is currently no cloud/CI automation.
+
+---
+
+## Roadmap
+
+- [x] SQLite + SQLAlchemy storage
+- [x] curl-based scraper (bypasses `requests` 429s)
+- [x] Master catalog (1157 skins) + category watchlists
+- [x] CLI collection with `--watchlist` / `--resume`
+- [x] Rate-limit-aware backoff in the daily scheduler
+- [ ] Finish wiring the queue-based batch prototype (or retire it in
+      favor of the watchlist-based flow, once one approach proves out)
+- [ ] Dataset export for handoff to collaborator (analytics/ML)
+- [ ] Feature engineering (moving averages, RSI, volatility, etc.)
+- [ ] ML models + buy/sell recommendation engine
