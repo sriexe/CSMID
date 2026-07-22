@@ -3,6 +3,8 @@ import random
 import logging
 import requests
 
+from src.env import SCRAPINGANT_API_KEY
+
 logger = logging.getLogger("CSMID.discoverer")
 
 class SteamMarketDiscoverer:
@@ -12,7 +14,7 @@ class SteamMarketDiscoverer:
     """
     def __init__(self, timeout: float = 15.0):
         self.timeout = timeout
-        self.api_key = "REDACTED_SCRAPINGANT_API_KEY"
+        self.api_key = SCRAPINGANT_API_KEY
 
     def discover_popular_skins(self, max_items: int = 500, items_per_page: int = 100):
         """
