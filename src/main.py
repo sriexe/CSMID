@@ -1,8 +1,19 @@
 import time
 import logging
+
 from src.scraper import SteamMarketScraper
 from src.database import DatabaseManager 
 from src.analytics import run_and_notify_analytics  # 👈 Added analytics import
+from src.env import SUPABASE_URL, SUPABASE_KEY
+
+try:
+    from supabase import create_client
+except ImportError:  # pragma: no cover - optional dependency in some environments
+    create_client = None
+
+supabase = None
+if create_client and SUPABASE_URL and SUPABASE_KEY:
+    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("CSMID.main")
