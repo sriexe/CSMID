@@ -1,9 +1,10 @@
+import os
 import sqlite3
 import psycopg2
 from datetime import datetime
 
-# 🔑 Paste your connection string here (replace YOUR_ACTUAL_PASSWORD_HERE with your password)
-SUPABASE_URL = "***REMOVED***"
+from src.env import SUPABASE_URL
+
 SQLITE_DB_PATH = "csmid.db"
 
 def migrate():
