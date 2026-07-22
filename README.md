@@ -38,6 +38,16 @@ DatabaseManager.insert_price()  →  market_history table (Supabase)
         │
         ▼
 src/notifier.py → ntfy.sh → phone push notification
+
+        (run manually, not yet on the cron above)
+        ▼
+src/analytics.py  →  calculate_market_metrics()
+        │
+        ▼
+DIP/SPIKE signal detection (24h % change + 7-day SMA deviation)
+        │
+        ▼
+src/notifier.py → ntfy.sh → phone push notification
 ```
 
 ### Path B — Local (manual / long-running on your machine)
@@ -74,6 +84,7 @@ CSMID/
 │
 ├── src/
 │   ├── main.py                 # Cloud price-scraper entrypoint (Path A) — loops tracked_items
+│   ├── analytics.py            # Signal detection: 24h % change + true 7-day SMA deviation → DIP/SPIKE alerts
 │   ├── collection_manager.py   # Local queue-driven collector (Path B) — batching, resume, backoff signal
 │   ├── scraper.py              # Steam priceoverview client, routed through ScrapingAnt (residential proxy)
 │   ├── database.py             # DatabaseManager — psycopg2 client for Supabase (market_history, tracked_items)
@@ -156,10 +167,10 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-> `requirements.txt` currently lists `requests`, `beautifulsoup4`, and
-> `pytest`. `psycopg2-binary` (required by `src/database.py`) isn't
-> listed yet — install it manually for now:
-> `pip install psycopg2-binary`
+> `requirements.txt` currently lists `requests` twice (an older entry
+> plus a newer block) alongside `beautifulsoup4`, `pytest`,
+> `psycopg2-binary`, and `pandas` (needed by `src/analytics.py`).
+> Functional as-is, just not deduplicated.
 
 ### Environment variables
 
@@ -218,7 +229,31 @@ secrets, two workflows run unattended:
 
 ---
 
-## Known issues / current limitations
+## Analytics engine — signal detection
+
+`src/analytics.py` scans the last 14 days of `market_history` per skin
+and flags two signal types:
+
+- **DIP** (potential buy) — price dropped ≥8% in the last 24h, **or**
+  sits ≥10% below its trailing 7-day simple moving average.
+- **SPIKE** (potential sell) — price rose ≥10% in the last 24h, **or**
+  sits ≥12% above its trailing 7-day SMA.
+
+Column names (`skin_name`/`market_hash_name`, `lowest_price`/
+`median_price`/etc.) are auto-detected from whatever's actually in the
+table, so it tolerates schema changes without code edits. Flagged
+skins are pushed to your phone via `ntfy`, top 5 summarized per run.
+
+Run it manually:
+```bash
+python -m src.analytics
+```
+
+**Not yet on a schedule** — `scraper.yaml` only runs the price
+collector (`src/main.py`) every 6 hours; analytics isn't chained after
+it yet. Wiring that in is the natural next step once you're ready.
+
+---
 
 Documented for transparency, not addressed by this README:
 
@@ -252,8 +287,9 @@ Documented for transparency, not addressed by this README:
 - [x] Scheduled price collection → Supabase
 - [x] Push notifications on discovery runs
 - [x] Cloud automation via GitHub Actions (no always-on PC required)
+- [x] Analytics engine — DIP/SPIKE signal detection (24h % change + 7-day SMA)
+- [ ] Wire `src/analytics.py` into the scraper cron (currently manual-only)
 - [ ] Reconcile the two collection paths into one
 - [ ] Move all secrets to environment-variable-only
 - [ ] Volatility-aware scraping (frequent for volatile items, sparse for stable ones)
-- [ ] `predict.py`: moving averages, RSI, and other technical features
-- [ ] Buy/sell signal notifications
+- [ ] Buy/sell signal notifications beyond DIP/SPIKE (e.g. incorporating patch-note/news events)
