@@ -25,6 +25,9 @@ purge_nulls
 
 # Environment variables
 .env
+.env.local
+.venv/
+__pycache__/
 
 # OS files
 .DS_Store

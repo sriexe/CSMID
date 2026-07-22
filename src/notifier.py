@@ -1,10 +1,9 @@
-import os
 import requests
 import logging
 
-logger = logging.getLogger(__name__)
+from src.env import NTFY_TOPIC, NTFY_SERVER
 
-NTFY_TOPIC = os.getenv("NTFY_TOPIC", "csmid-tracker-sri-99")
+logger = logging.getLogger(__name__)
 
 def send_push_notification(title: str, message: str, priority: str = "default"):
     """
@@ -12,7 +11,7 @@ def send_push_notification(title: str, message: str, priority: str = "default"):
     Priority levels: min, low, default, high, urgent
     """
     try:
-        url = f"https://ntfy.sh/{NTFY_TOPIC}"
+        url = f"{NTFY_SERVER.rstrip('/')}/{NTFY_TOPIC.lstrip('/')}"
         
         # Strip any non-ASCII characters from header strings to prevent latin-1 encoding errors
         safe_title = title.encode('ascii', 'ignore').decode('ascii').strip()
