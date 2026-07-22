@@ -58,7 +58,7 @@ def calculate_market_metrics():
 
     for skin_name, group in grouped:
         if len(group) < 2:
-            continue  # Need at least 2 data points to calculate trends
+            continue  # Need at least 2 data points
 
         group = group.sort_values('scraped_at')
         
@@ -66,8 +66,10 @@ def calculate_market_metrics():
         latest_price = float(latest_row['price_clean'])
         latest_time = latest_row['scraped_at']
 
-        # 1. Calculate 7-Day Simple Moving Average (SMA)
-        sma_7d = group['price_clean'].mean()
+        # 1. FIX: Calculate TRUE 7-Day Simple Moving Average (SMA)
+        seven_days_ago = latest_time - timedelta(days=7)
+        group_7d = group[group['scraped_at'] >= seven_days_ago]
+        sma_7d = group_7d['price_clean'].mean() if not group_7d.empty else latest_price
 
         # 2. Find record closest to 24 hours ago
         target_24h_time = latest_time - timedelta(hours=24)
@@ -78,7 +80,7 @@ def calculate_market_metrics():
         # 3. Calculate percentage metrics
         delta_24h = ((latest_price - price_24h_ago) / price_24h_ago) * 100 if price_24h_ago > 0 else 0.0
         sma_dev = ((latest_price - sma_7d) / sma_7d) * 100 if sma_7d > 0 else 0.0
-
+        
         # --- SIGNAL THRESHOLDS ---
         if delta_24h <= -8.0 or sma_dev <= -10.0:
             alerts.append({
