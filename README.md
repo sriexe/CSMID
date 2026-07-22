@@ -288,8 +288,28 @@ Documented for transparency, not addressed by this README:
 - [x] Push notifications on discovery runs
 - [x] Cloud automation via GitHub Actions (no always-on PC required)
 - [x] Analytics engine — DIP/SPIKE signal detection (24h % change + 7-day SMA)
+
+**Next up (in order):**
+- [ ] **Anomaly filtering in `src/analytics.py`** — guard DIP/SPIKE
+      signals against bad single data points (e.g. a stray
+      misclick/quick-sell listing) before wiring analytics onto a
+      schedule. Do this first — automating a signal engine that can
+      still be fooled by one bad row is worse than leaving it manual.
 - [ ] Wire `src/analytics.py` into the scraper cron (currently manual-only)
+- [ ] **Database RPCs** (read-only Supabase SQL functions) for the
+      friend's frontend — build when he's actually ready to start, not
+      before; timed to his readiness, not a fixed date.
 - [ ] Reconcile the two collection paths into one
 - [ ] Move all secrets to environment-variable-only
 - [ ] Volatility-aware scraping (frequent for volatile items, sparse for stable ones)
 - [ ] Buy/sell signal notifications beyond DIP/SPIKE (e.g. incorporating patch-note/news events)
+
+**Optional, no dependency — build anytime:**
+- [ ] Portfolio P&L tracking (new, independent `user_inventory` table;
+      doesn't touch `market_history` or the scraper)
+
+**Deliberately deferred — phase 3+:**
+- [ ] Multi-marketplace arbitrage (CSFloat/Skinport, etc.) — a second
+      full scraping pipeline with its own rate limits and schema; not
+      worth starting until the Steam-only dataset has actually produced
+      something the friend can build on
