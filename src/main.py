@@ -1,7 +1,8 @@
 import time
 import logging
 from src.scraper import SteamMarketScraper
-from src.database import DatabaseManager  
+from src.database import DatabaseManager 
+from src.analytics import run_and_notify_analytics  # 👈 Added analytics import
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("CSMID.main")
@@ -43,6 +44,9 @@ def run_bulk_scrape():
         
     db.close()
     logger.info("🏁 Historical price log run completed successfully.")
+
+    # 📊 5. TRIGGER ANALYTICS & MARKET SIGNAL ALERTS HERE
+    run_and_notify_analytics()
 
 if __name__ == "__main__":
     run_bulk_scrape()
