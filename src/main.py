@@ -1,9 +1,15 @@
+import os
+import sys
 import time
 import logging
 
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
 from src.scraper import SteamMarketScraper
-from src.database import DatabaseManager 
-from src.analytics import run_and_notify_analytics  # 👈 Added analytics import
+from src.database import DatabaseManager
+from src.analytics import run_and_notify_analytics
 from src.env import SUPABASE_URL, SUPABASE_KEY
 
 try:

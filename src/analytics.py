@@ -1,7 +1,14 @@
+import os
+import sys
 import logging
 import warnings
 from datetime import timedelta
 import pandas as pd
+
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
 from src.database import DatabaseManager
 from src.notifier import send_push_notification
 from src.env import SUPABASE_URL, SUPABASE_KEY, NTFY_TOPIC, NTFY_SERVER
