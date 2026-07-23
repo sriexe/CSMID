@@ -28,6 +28,7 @@ purge_nulls
 .env.local
 .venv/
 __pycache__/
+.git-rewrite.txt
 
 # OS files
 .DS_Store
