@@ -14,6 +14,12 @@ from src.database import DatabaseManager
 from src.analytics import run_and_notify_analytics
 from src.env import SUPABASE_URL, SUPABASE_KEY
 
+# Optional import for Discovery Phase
+try:
+    from run_discovery import run_discovery
+except ImportError:
+    run_discovery = None
+
 try:
     from supabase import create_client
 except ImportError:  # pragma: no cover - optional dependency in some environments
@@ -43,13 +49,27 @@ def run_pipeline(
     """
     Unified CLI pipeline runner.
     
-    :param mode: 'all' (scrape + analytics), 'scrape' (only scrape), 'analytics' (only analytics)
+    :param mode: 'all' (scrape + analytics), 'scrape' (only scrape), 'analytics' (only analytics), 'discovery' (only discovery)
     :param limit: Max number of items to process (great for local testing)
     :param dry_run: If True, skips DB writes and alert notifications
     :param ignore_cache: If True, bypasses the 12-hour recency check
     """
     scraper = SteamMarketScraper(min_request_interval=4.0)
     db: Optional[DatabaseManager] = None
+
+    # ------------------------------------------------------------------
+    # 0. DISCOVERY PHASE
+    # ------------------------------------------------------------------
+    if mode == "discovery":
+        logger.info(f"--- Starting Skin Discovery Phase (Dry Run: {dry_run}) ---")
+        if dry_run:
+            logger.info("🧪 [Dry Run] Skipping database updates for newly discovered skins.")
+        elif run_discovery:
+            run_discovery()
+            logger.info("✅ Skin discovery complete. Tracked items updated in Supabase.")
+        else:
+            logger.error("Could not import 'run_discovery' from src.run_discovery.")
+        return
 
     # ------------------------------------------------------------------
     # 1. SCRAPE PHASE
@@ -74,7 +94,7 @@ def run_pipeline(
             target_skins = SAMPLE_TARGETS
 
         if not target_skins:
-            logger.warning("No active items found in the tracked_items table! Run run_discovery.py first.")
+            logger.warning("No active items found in the tracked_items table! Run python -m src.main --mode discovery first.")
             if db:
                 db.close()
             return
@@ -130,7 +150,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="CSMID Market Scraper & Analytics Pipeline")
     parser.add_argument(
         "--mode",
-        choices=["all", "scrape", "analytics"],
+        choices=["all", "scrape", "analytics", "discovery"],
         default="all",
         help="Pipeline phase to execute (default: all)"
     )
