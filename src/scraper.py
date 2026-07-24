@@ -94,7 +94,7 @@ class SteamMarketScraper:
                         logger.warning("Steam API returned success=False for %s", market_hash_name)
                 elif res.status_code == 429:
                     logger.warning("Rate limited by Steam (429) on attempt %d for %s", attempt, market_hash_name)
-                    time.sleep(self.min_request_interval * attempt * 2)
+                    raise RuntimeError(f"Steam rate limited for {market_hash_name}")
                 else:
                     logger.warning("HTTP %d for %s (attempt %d)", res.status_code, market_hash_name, attempt)
 

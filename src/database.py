@@ -1,7 +1,10 @@
 import logging
 import os
+import sqlite3
+from pathlib import Path
 from typing import Optional, Any, List, Dict
 
+import config
 from src.env import SUPABASE_DB_URL
 
 logger = logging.getLogger("CSMID.database")
@@ -11,6 +14,62 @@ try:
     import psycopg2.extras
 except ImportError:  # pragma: no cover - optional dependency in some environments
     psycopg2 = None
+
+
+_sqlite_conn: Optional[sqlite3.Connection] = None
+
+
+def init_db() -> sqlite3.Connection:
+    """Initialize a lightweight SQLite database for local compatibility tests."""
+    global _sqlite_conn
+    db_path = Path(getattr(config, "DB_PATH", config.DATABASE_PATH))
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    _sqlite_conn = sqlite3.connect(db_path)
+    _sqlite_conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS records (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            source TEXT NOT NULL,
+            title TEXT NOT NULL,
+            url TEXT NOT NULL,
+            raw_data TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """
+    )
+    _sqlite_conn.commit()
+    return _sqlite_conn
+
+
+def insert_record(source: str, title: str, url: str, raw_data: str) -> int:
+    """Insert a record into the compatibility SQLite database."""
+    conn = _sqlite_conn or init_db()
+    cursor = conn.execute(
+        "INSERT INTO records (source, title, url, raw_data) VALUES (?, ?, ?, ?)",
+        (source, title, url, raw_data),
+    )
+    conn.commit()
+    return int(cursor.lastrowid)
+
+
+def fetch_records(limit: int = 10) -> List[Dict[str, Any]]:
+    """Fetch records from the compatibility SQLite database."""
+    conn = _sqlite_conn or init_db()
+    rows = conn.execute(
+        "SELECT id, source, title, url, raw_data, created_at FROM records ORDER BY id DESC LIMIT ?",
+        (limit,),
+    ).fetchall()
+    return [
+        {
+            "id": row[0],
+            "source": row[1],
+            "title": row[2],
+            "url": row[3],
+            "raw_data": row[4],
+            "created_at": row[5],
+        }
+        for row in rows
+    ]
 
 
 class DatabaseManager:
@@ -46,30 +105,51 @@ class DatabaseManager:
             created_at TIMESTAMPTZ DEFAULT NOW()
         );
 
-        -- Add missing columns if tracked_items pre-existed with an older schema
         ALTER TABLE tracked_items ADD COLUMN IF NOT EXISTS hash_name TEXT;
         ALTER TABLE tracked_items ADD COLUMN IF NOT EXISTS item_type TEXT DEFAULT 'skin';
         ALTER TABLE tracked_items ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
 
-        -- Relax NOT NULL constraint on legacy skin_name column if present
-        DO $$ 
-        BEGIN 
+        DO $$
+        BEGIN
             IF EXISTS (
-                SELECT 1 FROM information_schema.columns 
+                SELECT 1 FROM information_schema.columns
                 WHERE table_name='tracked_items' AND column_name='skin_name'
-            ) THEN 
+            ) THEN
                 ALTER TABLE tracked_items ALTER COLUMN skin_name DROP NOT NULL;
-            END IF; 
+            END IF;
         END $$;
 
-        -- Ensure UNIQUE constraint on hash_name for ON CONFLICT upsert queries
-        DO $$ 
-        BEGIN 
+        DO $$
+        BEGIN
             IF NOT EXISTS (
                 SELECT 1 FROM pg_constraint WHERE conname = 'tracked_items_hash_name_key'
-            ) THEN 
+            ) THEN
                 ALTER TABLE tracked_items ADD CONSTRAINT tracked_items_hash_name_key UNIQUE (hash_name);
-            END IF; 
+            END IF;
+        END $$;
+
+        CREATE TABLE IF NOT EXISTS market_history (
+            id BIGSERIAL PRIMARY KEY,
+            skin_name TEXT NOT NULL,
+            lowest_price NUMERIC(10, 2),
+            median_price NUMERIC(10, 2),
+            volume INT,
+            scraped_at TIMESTAMPTZ DEFAULT NOW()
+        );
+
+        ALTER TABLE market_history ADD COLUMN IF NOT EXISTS skin_name TEXT;
+        ALTER TABLE market_history ADD COLUMN IF NOT EXISTS lowest_price NUMERIC(10, 2);
+        ALTER TABLE market_history ADD COLUMN IF NOT EXISTS median_price NUMERIC(10, 2);
+        ALTER TABLE market_history ADD COLUMN IF NOT EXISTS volume INT;
+        ALTER TABLE market_history ADD COLUMN IF NOT EXISTS scraped_at TIMESTAMPTZ;
+
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns WHERE table_name='market_history' AND column_name='hash_name'
+            ) THEN
+                ALTER TABLE market_history ADD COLUMN hash_name TEXT;
+            END IF;
         END $$;
 
         CREATE TABLE IF NOT EXISTS price_history (
@@ -80,6 +160,24 @@ class DatabaseManager:
             volume INT,
             scraped_at TIMESTAMPTZ DEFAULT NOW()
         );
+
+        DO $$
+        BEGIN
+            IF EXISTS (
+                SELECT 1 FROM information_schema.tables WHERE table_name='market_history'
+            ) AND EXISTS (
+                SELECT 1 FROM information_schema.tables WHERE table_name='price_history'
+            ) THEN
+                INSERT INTO price_history (hash_name, lowest_price, median_price, volume, scraped_at)
+                SELECT COALESCE(hash_name, skin_name, 'unknown'), lowest_price, median_price, volume, scraped_at
+                FROM market_history
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM price_history ph
+                    WHERE ph.hash_name = COALESCE(market_history.hash_name, market_history.skin_name, 'unknown')
+                      AND ph.scraped_at = market_history.scraped_at
+                );
+            END IF;
+        END $$;
         """
         try:
             with self.conn.cursor() as cur:
@@ -141,8 +239,8 @@ class DatabaseManager:
             return False
 
         query = """
-        SELECT 1 FROM price_history
-        WHERE hash_name = %s 
+        SELECT 1 FROM market_history
+        WHERE skin_name = %s
           AND scraped_at >= NOW() - (INTERVAL '1 hour' * %s)
         LIMIT 1;
         """
@@ -169,7 +267,7 @@ class DatabaseManager:
             return
 
         query = """
-        INSERT INTO price_history (hash_name, lowest_price, median_price, volume)
+        INSERT INTO market_history (skin_name, lowest_price, median_price, volume)
         VALUES (%s, %s, %s, %s);
         """
         try:
@@ -205,12 +303,12 @@ class DatabaseManager:
             return []
 
         target_name = hash_name or skin_name
-        query = "SELECT id, hash_name, lowest_price, median_price, volume, scraped_at FROM price_history"
+        query = "SELECT id, skin_name AS hash_name, lowest_price, median_price, volume, scraped_at FROM market_history"
         conditions = []
         params = []
 
         if target_name:
-            conditions.append("hash_name = %s")
+            conditions.append("skin_name = %s")
             params.append(target_name)
 
         if days:

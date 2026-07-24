@@ -132,6 +132,36 @@ class CollectionManager:
                 
         logger.info(f"Fallback Storage: Standard insertion failed, logging raw: {data}")
 
+    def collect_batch(self, skin_names: list[str], since_hours: int = 20) -> dict:
+        """Compatibility wrapper for older batch-style callers."""
+        if not skin_names:
+            return {"processed": 0, "successes": 0, "failures": 0, "skipped": 0, "rate_limited": 0}
+
+        results = {
+            "processed": 0,
+            "successes": 0,
+            "failures": 0,
+            "skipped": 0,
+            "rate_limited": 0,
+        }
+
+        for skin_name in skin_names:
+            if self._is_recently_scraped(skin_name, since_hours):
+                results["skipped"] += 1
+                continue
+
+            status_code = self.collect_skin(skin_name)
+            results["processed"] += 1
+            if status_code == 0:
+                results["successes"] += 1
+            elif status_code == 2:
+                results["rate_limited"] += 1
+                results["failures"] += 1
+            else:
+                results["failures"] += 1
+
+        return results
+
     def collect_skin(self, skin_name: str) -> int:
         """
         Scrapes a single item.

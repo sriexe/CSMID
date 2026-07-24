@@ -5,6 +5,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 # Database location
 DATABASE_PATH = PROJECT_ROOT / "csmid.db"
+DB_PATH = DATABASE_PATH
 
 # Data folders
 RAW_DATA_DIR = PROJECT_ROOT / "data" / "raw"
