@@ -1,75 +1,58 @@
-# CSMID — CS2 Market Intelligence Dataset
+# CSMID — CS2 Market Intelligence Engine
 
 An automated system that tracks Counter-Strike 2 skin prices from the
-Steam Community Market over time, storing them in a cloud Postgres
-database (Supabase) for later feature engineering and ML-driven
-buy/sell analysis.
+Steam Community Market, stores them in Supabase (Postgres), detects
+buy/sell signals, and pushes alerts to your phone via ntfy.
 
-**Status:** Active data collection. The system discovers and prices
-skins on a schedule; analytics/ML are a later phase once enough price
-history has accumulated (see Roadmap).
+**Status:** Active data collection, running unattended on a twice-daily
+GitHub Actions schedule.
 
 ---
 
-## How data actually moves through this project
+## Architecture
 
-There are currently **two separate collection paths** in this repo —
-worth understanding both since they don't share the same code:
+Everything now runs through one unified entrypoint:
 
-### Path A — Cloud (GitHub Actions, unattended)
 ```text
-.github/workflows/discovery.yml  (weekly, Sun 00:00 UTC)
+.github/workflows/pipeline.yml   (cron: 00:00 & 12:00 UTC, or manual dispatch)
         │
         ▼
-run_discovery.py → discoverer.py → ScrapingAnt → Steam Market search
+python -m src.main   →   run_pipeline(mode, limit, dry_run, ignore_cache)
         │
-        ▼
-DatabaseManager.insert_tracked_item()  →  tracked_items table (Supabase)
+        ├── SCRAPE PHASE (mode: "all" or "scrape")
+        │       │
+        │       ▼
+        │   DatabaseManager.get_active_targets()  (tracked_items table)
+        │       │
+        │       ▼
+        │   SteamMarketScraper.get_price()
+        │       │
+        │       ▼
+        │   Multi-tier proxy cascade:
+        │   ScrapingAnt → ScraperAPI → ZenRows → ScrapingBee → direct
+        │       │
+        │       ▼
+        │   DatabaseManager.insert_price()  →  market_history table
         │
-        │   (separately, every 6h)
-        ▼
-.github/workflows/scraper.yaml
-        │
-        ▼
-src/main.py → src/scraper.py → ScrapingAnt → Steam priceoverview
-        │
-        ▼
-DatabaseManager.insert_price()  →  market_history table (Supabase)
-        │
-        ▼
-src/notifier.py → ntfy.sh → phone push notification
-
-        (run manually, not yet on the cron above)
-        ▼
-src/analytics.py  →  calculate_market_metrics()
-        │
-        ▼
-DIP/SPIKE signal detection (24h % change + 7-day SMA deviation)
-        │
-        ▼
-src/notifier.py → ntfy.sh → phone push notification
+        └── ANALYTICS PHASE (mode: "all" or "analytics")
+                │
+                ▼
+            calculate_market_metrics() — 14-day query, true 7-day SMA
+                │
+                ▼
+            DIP/SPIKE signal detection
+                │
+                ▼
+            send_push_notification() → ntfy.sh → phone
 ```
 
-### Path B — Local (manual / long-running on your machine)
-```text
-scheduler/daily_collect.py  (while True loop, backs off on 429)
-        │
-        ▼
-src/collection_manager.py → collect_queue() → collect_skin()
-        │
-        ▼
-src/scraper.py.fetch_price()   ← NOTE: different method than Path A calls
-        │
-        ▼
-DatabaseManager  →  Supabase
-```
+A separate, older local path (`scheduler/daily_collect.py` →
+`src/collection_manager.py`) still exists in the repo but is **not
+currently functional** — see Known Issues.
 
-**These two paths call the scraper differently** — Path A's
-`src/main.py` calls `scraper.get_price(appid=..., market_hash_name=...)`,
-while Path B's `collection_manager.py` calls `scraper.fetch_price(skin_name)`.
-Only `get_price()` currently exists on `SteamMarketScraper`, so Path B
-will fail at that call until reconciled. Documented here as-is per
-current code; not something this README fixes.
+Skin discovery (finding new items to track) is handled by
+`run_discovery.py` + `discoverer.py`, but is currently **manual-only**
+— see Known Issues.
 
 ---
 
@@ -79,78 +62,80 @@ current code; not something this README fixes.
 CSMID/
 │
 ├── .github/workflows/
-│   ├── discovery.yml          # Weekly: runs run_discovery.py (cron: 0 0 * * 0)
-│   └── scraper.yaml           # Every 6h: runs `python -m src.main` (cron: 0 */6 * * *)
+│   └── pipeline.yml            # Twice-daily: scrape + analytics, unified
 │
 ├── src/
-│   ├── main.py                 # Cloud price-scraper entrypoint (Path A) — loops tracked_items
-│   ├── analytics.py            # Signal detection: 24h % change + true 7-day SMA deviation → DIP/SPIKE alerts
-│   ├── collection_manager.py   # Local queue-driven collector (Path B) — batching, resume, backoff signal
-│   ├── scraper.py              # Steam priceoverview client, routed through ScrapingAnt (residential proxy)
-│   ├── database.py             # DatabaseManager — psycopg2 client for Supabase (market_history, tracked_items)
-│   ├── proxy_manager.py        # Local HTTP proxy pool manager (loaded but not currently used by scraper.py)
-│   ├── notifier.py             # ntfy.sh push notification client
-│   ├── config.py               # Local paths (legacy — used by the original SQLite-era tooling below)
-│   └── diagnose_steam.py       # Standalone script for empirically testing safe request spacing against Steam
+│   ├── main.py                  # Unified CLI entrypoint — run_pipeline()
+│   ├── analytics.py              # Signal detection — calculate_market_metrics(), run_and_notify_analytics()
+│   ├── scraper.py                # SteamMarketScraper — multi-tier proxy cascade, get_price()
+│   ├── database.py               # DatabaseManager — psycopg2 client for Supabase
+│   ├── env.py                    # Environment variable loading (.env locally, GitHub Secrets in cloud)
+│   ├── notifier.py               # ntfy.sh push notification client
+│   ├── proxy_manager.py          # Local HTTP proxy pool manager (currently unused by scraper.py)
+│   ├── collection_manager.py     # Local queue-driven collector — currently broken, see Known Issues
+│   ├── config.py                 # Legacy local paths (pre-cloud tooling)
+│   └── diagnose_steam.py         # Standalone script for empirically testing safe request spacing
 │
-├── discoverer.py                # SteamMarketDiscoverer — pages Steam's market search via ScrapingAnt
-├── run_discovery.py             # Path A entrypoint: discovers skins, adds to tracked_items, sends notification
-├── init_supabase.py             # One-off: initializes Supabase tables
-├── migrate_to_supabase.py       # One-off: migrates data into Supabase
-├── purge_nulls.py               # Maintenance: cleans null/invalid rows
-├── update_proxies.py            # Maintenance: refreshes proxies.txt / _proxies.txt
-├── proxies.txt / _proxies.txt   # Local proxy pool lists (used by proxy_manager.py, currently unused by scraper.py)
+├── discoverer.py                 # SteamMarketDiscoverer — pages Steam's market search via ScrapingAnt
+├── run_discovery.py              # Discovery entrypoint — manual only, see Known Issues
+├── init_supabase.py              # One-off: initializes Supabase tables
+├── migrate_to_supabase.py        # One-off: migrates data into Supabase
+├── purge_nulls.py                # Maintenance: cleans null/invalid rows
+├── update_proxies.py             # Maintenance: refreshes proxies.txt / _proxies.txt
 │
-├── scheduler/                   # Path B — local long-running collector
-│   ├── daily_collect.py         # Main loop: calls collection_manager, backs off 90min on rate limit
-│   ├── collection_queue.py      # Slices master catalog into fixed-size batches (earlier prototype)
-│   ├── manager.py               # Prints next queue batch (earlier prototype, not wired to Path B directly)
-│   └── state.py                 # Load/save queue_state.json
+├── scheduler/                    # Older local collection path — not currently wired to a working scraper call
+│   ├── daily_collect.py
+│   ├── collection_queue.py
+│   ├── manager.py
+│   └── state.py
 │
-├── tools/                       # Catalog-building pipeline (feeds watchlists, used by both paths' watchlist files)
-│   ├── import_master_catalog.py # data/raw_catalog/*.json → data/master/master_skins.csv
-│   ├── generate_watchlists.py   # master_skins.csv → per-category watchlist .txt files
-│   ├── download_catalog.py      # Framework for pulling the raw skin catalog (source TBD)
-│   └── test_manager.py          # Manual smoke test for CollectionManager
+├── tools/                        # Catalog-building pipeline (feeds watchlists)
+│   ├── import_master_catalog.py  # data/raw_catalog/*.json → data/master/master_skins.csv
+│   ├── generate_watchlists.py    # master_skins.csv → per-category watchlist .txt files
+│   ├── download_catalog.py
+│   └── test_manager.py
 │
-├── generate_watchlist.py        # Root-level variant: adds wear-condition suffixes → all_weapons_with_wears.txt
+├── generate_watchlist.py         # Root-level variant: adds wear-condition suffixes
 │
 ├── data/
-│   ├── raw_catalog/             # Raw skin catalog JSON (source for the importer)
-│   ├── master/master_skins.csv  # Deduplicated catalog: weapon, skin_name, market_hash_name, rarity, etc.
-│   ├── watchlists/               # all_weapons.txt, all_weapons_with_wears.txt, rifles.txt, smgs.txt,
-│   │                              # pistols.txt, heavy.txt, cases.txt, knives.txt, gloves.txt, core.txt
-│   ├── processed/                # Dataset exports
-│   ├── raw/                      # Reserved for raw scrape output
-│   ├── source/                   # skins_source.csv
-│   └── backups/
+│   ├── raw_catalog/              # Raw skin catalog JSON
+│   ├── master/master_skins.csv   # Deduplicated catalog: weapon, skin_name, rarity, etc.
+│   ├── watchlists/                # Generated category watchlists
+│   ├── processed/ raw/ source/ backups/
 │
-├── docs/                        # Handover_V0.5.txt, Handover_V0.6.txt — project history/context notes
-├── tests/                       # pytest suite
+├── docs/                          # Handover_V0.5.txt, Handover_V0.6.txt — project history
+├── tests/                         # pytest suite (conftest, database, env)
+├── .env.example                   # Template for local environment variables
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## Why ScrapingAnt instead of a direct request
+## Environment Variables
 
-Steam's Community Market blocks sustained unauthenticated request
-sequences (HTTP 429), which was confirmed through direct testing
-(`src/diagnose_steam.py`). This project's earlier local-only version
-worked around it using the system `curl` binary (a TLS-fingerprinting
-workaround); the current cloud version instead routes every request
-through **ScrapingAnt**, using its residential proxy pool and a
-`Referer` header that mimics arriving from Steam's own market page.
+Set locally via `.env` (see `.env.example`) and as **GitHub repository
+secrets** (`Settings → Secrets and variables → Actions`) for the cloud
+pipeline:
+
+| Variable | Required | Purpose |
+|---|---|---|
+| `SUPABASE_URL` | Yes | Supabase project REST API URL |
+| `SUPABASE_KEY` | Yes | Supabase anon/public key |
+| `SUPABASE_DB_URL` | Yes | Direct Postgres connection string |
+| `NTFY_TOPIC` | Yes | Your ntfy.sh topic name |
+| `NTFY_SERVER` | No | Custom ntfy server (defaults to `https://ntfy.sh`) |
+| `SCRAPINGANT_API_KEY` | No | Tier 1 proxy provider |
+| `SCRAPERAPI_KEY` | No | Tier 2 proxy provider (fallback) |
+| `ZENROWS_API_KEY` | No | Tier 3 proxy provider (fallback) |
+| `SCRAPINGBEE_API_KEY` | No | Tier 4 proxy provider (fallback) |
+
+The scraper tries providers in order and falls through to the next
+(then to a direct request) if one is missing or fails. `src/database.py`
+and `src/env.py` fail loudly (raise, rather than silently falling back
+to a default) if `SUPABASE_DB_URL` isn't set.
 
 ---
-
-## Prerequisites
-
-- Python 3.11+
-- A [Supabase](https://supabase.com) project (free tier Postgres database)
-- A [ScrapingAnt](https://scrapingant.com) API key
-- The [ntfy](https://ntfy.sh) app (iOS/Android) with a topic name of your choosing, for push notifications
 
 ## Setup
 
@@ -165,46 +150,33 @@ python -m venv .venv
 source .venv/bin/activate
 
 pip install -r requirements.txt
+cp .env.example .env   # then fill in your real values
 ```
-
-> `requirements.txt` currently lists `requests` twice (an older entry
-> plus a newer block) alongside `beautifulsoup4`, `pytest`,
-> `psycopg2-binary`, and `pandas` (needed by `src/analytics.py`).
-> Functional as-is, just not deduplicated.
-
-### Environment variables
-
-Set these locally (e.g. in a `.env` file, or exported in your shell)
-and as **GitHub repository secrets** (`Settings → Secrets and
-variables → Actions`) for the cloud workflows:
-
-| Variable | Purpose |
-|---|---|
-| `SUPABASE_DB_URL` | Postgres connection string for `market_history` / `tracked_items` |
-| `NTFY_TOPIC` | Your private ntfy.sh topic name, for push notifications |
-
-`SCRAPINGANT_API_KEY` — currently hardcoded directly in `src/scraper.py`
-and `discoverer.py` rather than read from an environment variable.
-Documented here as-is; planned to move to a secret later.
 
 ---
 
 ## Running locally
 
-**Discover new skins and add them to tracking:**
+The unified CLI supports flags built specifically for local testing
+without spending API credits or needing full credentials:
+
+```bash
+# Fast dry-run on 2 sample items, no DB writes, no ntfy alerts
+python -m src.main --dry-run --limit 2
+
+# Full run: scrape every tracked item, then run analytics
+python -m src.main
+
+# Analytics only, against existing data
+python -m src.main --mode analytics
+
+# Force a fresh scrape, bypassing the 12h recency check
+python -m src.main --mode scrape --limit 1 --ignore-cache
+```
+
+**Discover new skins** (not currently scheduled — run manually):
 ```bash
 python run_discovery.py
-```
-
-**Update prices for everything currently tracked (one pass):**
-```bash
-python -m src.main
-```
-
-**Run the local long-lived scheduler** (Path B — loops indefinitely,
-processes the watchlist in batches, backs off 90+ minutes on a 429):
-```bash
-python scheduler/daily_collect.py
 ```
 
 **Rebuild the master catalog / watchlists**, if the raw catalog changes:
@@ -215,17 +187,12 @@ python tools/generate_watchlists.py
 
 ---
 
-## Cloud automation (GitHub Actions)
+## Cloud automation
 
-Once `SUPABASE_DB_URL` and `NTFY_TOPIC` are added as repository
-secrets, two workflows run unattended:
-
-- **`discovery.yml`** — every Sunday at 00:00 UTC, scans up to 500
-  popular market items and adds any newly seen skins to `tracked_items`,
-  then sends a push-notification summary.
-- **`scraper.yaml`** — every 6 hours, fetches current prices for every
-  active row in `tracked_items` and appends them to `market_history`,
-  skipping any skin already scraped in the last 12 hours.
+`pipeline.yml` runs `python -m src.main` (default `mode="all"`) twice
+daily — 00:00 and 12:00 UTC — scraping every active `tracked_items` row
+and running analytics/alerts immediately after, in one job. Trigger it
+manually anytime from the Actions tab (`workflow_dispatch`).
 
 ---
 
@@ -235,49 +202,42 @@ secrets, two workflows run unattended:
 and flags two signal types:
 
 - **DIP** (potential buy) — price dropped ≥8% in the last 24h, **or**
-  sits ≥10% below its trailing 7-day simple moving average.
+  sits ≥10% below its trailing **7-day** simple moving average
+  (correctly windowed to 7 days, not the full 14-day query range).
 - **SPIKE** (potential sell) — price rose ≥10% in the last 24h, **or**
   sits ≥12% above its trailing 7-day SMA.
 
 Column names (`skin_name`/`market_hash_name`, `lowest_price`/
 `median_price`/etc.) are auto-detected from whatever's actually in the
-table, so it tolerates schema changes without code edits. Flagged
-skins are pushed to your phone via `ntfy`, top 5 summarized per run.
-
-Run it manually:
-```bash
-python -m src.analytics
-```
-
-**Not yet on a schedule** — `scraper.yaml` only runs the price
-collector (`src/main.py`) every 6 hours; analytics isn't chained after
-it yet. Wiring that in is the natural next step once you're ready.
+table. Flagged skins are pushed to your phone via ntfy.
 
 ---
 
-Documented for transparency, not addressed by this README:
+## Known issues / current limitations
 
-- **Rate-limit handling in `src/scraper.py` retries on HTTP 429**
-  instead of aborting immediately — repeated hits to an active block
-  have empirically been shown (locally, via `diagnose_steam.py`-style
-  testing) to extend rather than resolve it.
-- **Two independent collection paths** (cloud vs. local scheduler) use
-  different scraper method signatures (`get_price` vs `fetch_price`);
-  only `get_price` currently exists.
-- **`SUPABASE_DB_URL` and the ScrapingAnt API key have hardcoded
-  fallback/default values** in source (`src/database.py`,
-  `discoverer.py`, `src/scraper.py`). Planned to move to
-  environment-variable-only once the current 3-month data collection
-  run is complete.
+- **Skin discovery is no longer scheduled.** `discovery.yml` was
+  removed; `run_discovery.py` still works but must be run manually, or
+  `tracked_items` will never pick up newly popular skins on its own.
+- **The local scheduler path is broken.** `src/collection_manager.py`
+  calls `self.scraper.fetch_price(skin_name)`, but `SteamMarketScraper`
+  only defines `get_price(appid, market_hash_name)` — no `fetch_price`
+  method exists. `scheduler/daily_collect.py` will fail immediately if
+  run. The cloud pipeline (`pipeline.yml` → `src/main.py`) is the
+  actively maintained path; this local path hasn't been updated to
+  match and is effectively dead code right now.
+- **Old commits still contain the original hardcoded credentials**
+  in git history (the strings themselves, not live in any current
+  file). Both the Supabase DB password and the ScrapingAnt key have
+  since been rotated, so the historical exposure no longer grants
+  access to anything live — but the strings remain visible to anyone
+  browsing old commits on GitHub.
 - `src/proxy_manager.py` and `proxies.txt`/`_proxies.txt` are loaded
-  but not currently used for actual requests (ScrapingAnt handles
-  proxying instead).
+  but not currently used by `scraper.py` — the proxy providers above
+  handle proxying instead.
 - `tools/generate_watchlists.py` and the root-level
-  `generate_watchlist.py` overlap in purpose (category watchlists vs.
-  wear-condition watchlists) and aren't yet consolidated.
+  `generate_watchlist.py` overlap in purpose and aren't consolidated.
 - `data/master/master_skins.csv` has no price data, so "all skins" and
-  "cheap skins" are the same set today — filtering is by weapon type
-  only, not value or rarity.
+  "cheap skins" are the same set — filtering is by weapon type only.
 
 ---
 
@@ -285,31 +245,27 @@ Documented for transparency, not addressed by this README:
 
 - [x] Skin discovery via Steam Market search (ScrapingAnt-routed)
 - [x] Scheduled price collection → Supabase
-- [x] Push notifications on discovery runs
-- [x] Cloud automation via GitHub Actions (no always-on PC required)
-- [x] Analytics engine — DIP/SPIKE signal detection (24h % change + 7-day SMA)
+- [x] Push notifications on discovery/analytics runs
+- [x] Cloud automation via GitHub Actions
+- [x] Analytics engine — DIP/SPIKE signal detection (24h % change + true 7-day SMA)
+- [x] Unified `src/main.py` CLI with `--mode`/`--limit`/`--dry-run`/`--ignore-cache`
+- [x] Multi-tier proxy fallback chain
+- [x] Secrets moved to environment variables / GitHub Secrets
+- [x] Immediate abort on HTTP 429 (no more retry-into-block)
 
-**Next up (in order):**
-- [ ] **Anomaly filtering in `src/analytics.py`** — guard DIP/SPIKE
-      signals against bad single data points (e.g. a stray
-      misclick/quick-sell listing) before wiring analytics onto a
-      schedule. Do this first — automating a signal engine that can
-      still be fooled by one bad row is worse than leaving it manual.
-- [ ] Wire `src/analytics.py` into the scraper cron (currently manual-only)
-- [ ] **Database RPCs** (read-only Supabase SQL functions) for the
-      friend's frontend — build when he's actually ready to start, not
-      before; timed to his readiness, not a fixed date.
-- [ ] Reconcile the two collection paths into one
-- [ ] Move all secrets to environment-variable-only
+**Next up:**
+- [ ] Anomaly filtering in `src/analytics.py` — guard signals against
+      single bad data points before relying on them further
+- [ ] Restore scheduled skin discovery (or fold it into `pipeline.yml`)
+- [ ] Fix or retire the local scheduler path (`collection_manager.py`
+      / `scheduler/`) — currently broken and unmaintained
+- [ ] Database RPCs (read-only Supabase SQL functions) for the
+      friend's frontend — build when he's ready to start
 - [ ] Volatility-aware scraping (frequent for volatile items, sparse for stable ones)
-- [ ] Buy/sell signal notifications beyond DIP/SPIKE (e.g. incorporating patch-note/news events)
+- [ ] Buy/sell signal notifications incorporating patch-note/news events
 
 **Optional, no dependency — build anytime:**
-- [ ] Portfolio P&L tracking (new, independent `user_inventory` table;
-      doesn't touch `market_history` or the scraper)
+- [ ] Portfolio P&L tracking (new, independent `user_inventory` table)
 
 **Deliberately deferred — phase 3+:**
-- [ ] Multi-marketplace arbitrage (CSFloat/Skinport, etc.) — a second
-      full scraping pipeline with its own rate limits and schema; not
-      worth starting until the Steam-only dataset has actually produced
-      something the friend can build on
+- [ ] Multi-marketplace arbitrage (CSFloat/Skinport, etc.)
