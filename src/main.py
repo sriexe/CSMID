@@ -13,6 +13,7 @@ from src.scraper import SteamMarketScraper
 from src.database import DatabaseManager
 from src.analytics import run_and_notify_analytics
 from src.env import SUPABASE_URL, SUPABASE_KEY
+from src.volatility import get_scrape_interval_for_item
 
 # Optional import for Discovery Phase
 try:
@@ -47,12 +48,12 @@ def run_pipeline(
     ignore_cache: bool = False
 ) -> None:
     """
-    Unified CLI pipeline runner.
+    Unified CLI pipeline runner with Volatility-Aware Scraping.
     
     :param mode: 'all' (scrape + analytics), 'scrape' (only scrape), 'analytics' (only analytics), 'discovery' (only discovery)
     :param limit: Max number of items to process (great for local testing)
     :param dry_run: If True, skips DB writes and alert notifications
-    :param ignore_cache: If True, bypasses the 12-hour recency check
+    :param ignore_cache: If True, bypasses the dynamic recency check
     """
     scraper = SteamMarketScraper(min_request_interval=4.0)
     db: Optional[DatabaseManager] = None
@@ -72,7 +73,7 @@ def run_pipeline(
         return
 
     # ------------------------------------------------------------------
-    # 1. SCRAPE PHASE
+    # 1. SCRAPE PHASE (Volatility-Aware)
     # ------------------------------------------------------------------
     if mode in ("all", "scrape"):
         logger.info(f"--- Starting Scraper Phase (Mode: {mode}, Limit: {limit}, Dry Run: {dry_run}) ---")
@@ -109,10 +110,14 @@ def run_pipeline(
         for skin_name in target_skins:
             logger.info(f"--- Processing: {skin_name} ---")
 
-            # Check 12-hour cache threshold unless bypassed
-            if not dry_run and not ignore_cache and db and db.is_recently_scraped(skin_name, hours_threshold=12):
-                logger.info(f"⏭️ Skipped {skin_name}: Already up to date.")
-                continue
+            # Volatility-aware cache threshold unless bypassed
+            if not dry_run and not ignore_cache and db:
+                tier, cv, required_hours = get_scrape_interval_for_item(skin_name, db)
+                if db.is_recently_scraped(skin_name, hours_threshold=required_hours):
+                    logger.info(f"⏭️ Skipped {skin_name} [{tier} tier, CV: {cv:.3f}]: Scraped within last {required_hours}h.")
+                    continue
+                else:
+                    logger.info(f"📊 Evaluated {skin_name} [{tier} tier, CV: {cv:.3f}]: Interval threshold {required_hours}h reached.")
 
             # Scrape price data using residential proxy chain
             price_data = scraper.get_price(appid=730, market_hash_name=skin_name)
@@ -168,7 +173,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--ignore-cache",
         action="store_true",
-        help="Ignore the 12-hour recency check and force a fresh scrape"
+        help="Ignore volatility intervals and force a fresh scrape"
     )
 
     args = parser.parse_args()
