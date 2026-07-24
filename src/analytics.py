@@ -30,9 +30,15 @@ class AnomalyFilter:
         self.z_score_threshold = z_score_threshold
         self.min_history_length = min_history_length
 
-    def is_valid_price(self, price: Optional[float]) -> bool:
+    def is_valid_price(self, price: Any) -> bool:
         """Sanity check: price must be a positive non-zero number."""
-        return price is not None and isinstance(price, (int, float)) and price > 0.0
+        if price is None:
+            return False
+        try:
+            val = float(price)
+            return val > 0.0 and np.isfinite(val)
+        except (ValueError, TypeError):
+            return False
 
     def evaluate_point(
         self, 
@@ -48,7 +54,7 @@ class AnomalyFilter:
             return True, f"Invalid or non-positive price value ({current_price})"
 
         # Filter out non-positive entries from history
-        valid_history = [p for p in history_prices if self.is_valid_price(p)]
+        valid_history = [float(p) for p in history_prices if self.is_valid_price(p)]
 
         # If insufficient historical depth, pass validation by default
         if len(valid_history) < self.min_history_length:
@@ -87,14 +93,15 @@ class AnomalyFilter:
             if not self.is_valid_price(price):
                 continue
             
+            p_float = float(price)
             # Evaluate against validated history
             if len(clean_series) >= self.min_history_length:
-                is_anomaly, _ = self.evaluate_point(price, clean_series[-10:])
+                is_anomaly, _ = self.evaluate_point(p_float, clean_series[-10:])
                 if is_anomaly:
-                    logger.debug(f"Filtering historical anomaly point: ${price:.2f}")
+                    logger.debug(f"Filtering historical anomaly point: ${p_float:.2f}")
                     continue
             
-            clean_series.append(price)
+            clean_series.append(p_float)
             
         return clean_series
 
@@ -119,7 +126,7 @@ def send_ntfy_alert(title: str, message: str, priority: str = "default", tags: s
     try:
         res = requests.post(url, data=message.encode("utf-8"), headers=headers, timeout=10)
         if res.status_code == 200:
-            logger.info(f"📲 Alert sent via ntfy: '{title}'")
+            logger.info(f"📱 Alert sent via ntfy: '{title}'")
         else:
             logger.error(f"Failed to send ntfy alert: HTTP {res.status_code}")
     except Exception as e:
@@ -158,8 +165,15 @@ def run_and_notify_analytics(price_drop_threshold_pct: float = 0.08) -> None:
                 continue
 
             # Extract prices sequentially (oldest to newest for analysis)
-            raw_prices = [record.get("lowest_price", 0.0) for record in reversed(history)]
-            
+            raw_prices = []
+            for record in reversed(history):
+                p = record.get("lowest_price")
+                if filter_engine.is_valid_price(p):
+                    raw_prices.append(float(p))
+
+            if len(raw_prices) < 2:
+                continue
+
             latest_price = raw_prices[-1]
             past_prices = raw_prices[:-1]
 
@@ -188,7 +202,7 @@ def run_and_notify_analytics(price_drop_threshold_pct: float = 0.08) -> None:
                     alerts_triggered += 1
                     title = f"🚨 Price Drop: {skin_name}"
                     message = (
-                        f"{skin_name} dropped by {drop_pct * 100:.1f}%!\n"
+                        f"{skin_name} dropped by {drop_pct * 100:.1f}%\n"
                         f"Current Price: ${latest_price:.2f}\n"
                         f"Previous Median: ${reference_price:.2f}"
                     )
