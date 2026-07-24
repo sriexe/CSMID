@@ -252,16 +252,13 @@ table. Flagged skins are pushed to your phone via ntfy.
 - [x] Multi-tier proxy fallback chain
 - [x] Secrets moved to environment variables / GitHub Secrets
 - [x] Immediate abort on HTTP 429 (no more retry-into-block)
-
-**Next up:**
-- [ ] Anomaly filtering in `src/analytics.py` — guard signals against
-      single bad data points before relying on them further
-- [ ] Restore scheduled skin discovery (or fold it into `pipeline.yml`)
-- [ ] Fix or retire the local scheduler path (`collection_manager.py`
+- [x] Anomaly filtering in `src/analytics.py` — guard signals against
+- [x] Restore scheduled skin discovery (or fold it into `pipeline.yml`)
+- [x] Fix or retire the local scheduler path (`collection_manager.py`
       / `scheduler/`) — currently broken and unmaintained
+- [x] Volatility-aware scraping (frequent for volatile items, sparse for stable ones)
 - [ ] Database RPCs (read-only Supabase SQL functions) for the
       friend's frontend — build when he's ready to start
-- [ ] Volatility-aware scraping (frequent for volatile items, sparse for stable ones)
 - [ ] Buy/sell signal notifications incorporating patch-note/news events
 
 **Optional, no dependency — build anytime:**
