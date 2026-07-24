@@ -2,6 +2,7 @@ import logging
 import requests
 import numpy as np
 from typing import List, Dict, Any, Optional, Tuple
+import base64
 
 from src.database import DatabaseManager
 from src.env import NTFY_TOPIC, NTFY_SERVER
@@ -110,25 +111,49 @@ class AnomalyFilter:
 # 2. NOTIFICATION DISPATCHER
 # =====================================================================
 
-def send_ntfy_alert(title: str, message: str, priority: str = "default", tags: str = "chart_with_downwards_trend") -> None:
+def send_ntfy_alert(title: str, message: str, priority: str = "high", tags: Any = None) -> None:
     """Dispatches push notifications via ntfy.sh."""
     if not NTFY_TOPIC:
         logger.warning("NTFY_TOPIC environment variable is not set. Skipping push notification.")
         return
 
-    url = f"{NTFY_SERVER.rstrip('/')}/{NTFY_TOPIC}"
+    # Ensure URL properly targets the topic endpoint
+    server_base = NTFY_SERVER.rstrip("/")
+    if not server_base.endswith(f"/{NTFY_TOPIC}"):
+        url = f"{server_base}/{NTFY_TOPIC}"
+    else:
+        url = server_base
+
+    # Format tags for HTTP header
+    if tags is None:
+        tag_str = "warning,moneybag"
+    elif isinstance(tags, list):
+        tag_str = ",".join(tags)
+    else:
+        tag_str = str(tags)
+
+    # Sanitize Title for HTTP headers (strip non-ASCII/emojis so latin-1 codec won't fail)
+    clean_title = title.encode("ascii", "ignore").decode("ascii").strip()
+    if not clean_title:
+        clean_title = "CSMID Alert"
+
     headers = {
-        "Title": title,
+        "Title": clean_title,
         "Priority": priority,
-        "Tags": tags
+        "Tags": tag_str
     }
 
     try:
-        res = requests.post(url, data=message.encode("utf-8"), headers=headers, timeout=10)
+        res = requests.post(
+            url, 
+            data=message.encode("utf-8"), 
+            headers=headers, 
+            timeout=10
+        )
         if res.status_code == 200:
-            logger.info(f"📱 Alert sent via ntfy: '{title}'")
+            logger.info(f"📱 Alert sent via ntfy: '{clean_title}'")
         else:
-            logger.error(f"Failed to send ntfy alert: HTTP {res.status_code}")
+            logger.error(f"Failed to send ntfy alert: HTTP {res.status_code} - {res.text}")
     except Exception as e:
         logger.error(f"Error sending ntfy notification: {e}")
 
