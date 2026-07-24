@@ -4,7 +4,7 @@ import sqlite3
 from pathlib import Path
 from typing import Optional, Any, List, Dict
 
-import config
+from src import config  
 from src.env import SUPABASE_DB_URL
 
 logger = logging.getLogger("CSMID.database")
