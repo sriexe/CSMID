@@ -1,151 +1,208 @@
-import os
-import sys
 import logging
-import warnings
-from datetime import timedelta
-import pandas as pd
-
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if ROOT_DIR not in sys.path:
-    sys.path.insert(0, ROOT_DIR)
+import requests
+import numpy as np
+from typing import List, Dict, Any, Optional, Tuple
 
 from src.database import DatabaseManager
-from src.notifier import send_push_notification
-from src.env import SUPABASE_URL, SUPABASE_KEY, NTFY_TOPIC, NTFY_SERVER
+from src.env import NTFY_TOPIC, NTFY_SERVER
 
-try:
-    from supabase import create_client
-except ImportError:  # pragma: no cover - optional dependency in some environments
-    create_client = None
-
-supabase = None
-if create_client and SUPABASE_URL and SUPABASE_KEY:
-    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+# Setup localized logger
 logger = logging.getLogger("CSMID.analytics")
 
-def calculate_market_metrics():
+
+# =====================================================================
+# 1. ANOMALY FILTERING ENGINE
+# =====================================================================
+
+class AnomalyFilter:
     """
-    Queries historical price data from Supabase for all tracked items.
-    Auto-detects column names to handle schema variations smoothly.
-    Calculates 24-hour price changes and 7-day moving averages (SMA).
+    Guards price history and incoming signals against single bad data points,
+    scraping glitches, currency formatting errors, and market outliers.
     """
-    db = DatabaseManager()
+
+    def __init__(
+        self,
+        max_pct_deviation: float = 0.40,  # Max 40% jump/drop relative to rolling median
+        z_score_threshold: float = 3.0,   # Standard deviation threshold
+        min_history_length: int = 3       # Min records required for statistical evaluation
+    ):
+        self.max_pct_deviation = max_pct_deviation
+        self.z_score_threshold = z_score_threshold
+        self.min_history_length = min_history_length
+
+    def is_valid_price(self, price: Optional[float]) -> bool:
+        """Sanity check: price must be a positive non-zero number."""
+        return price is not None and isinstance(price, (int, float)) and price > 0.0
+
+    def evaluate_point(
+        self, 
+        current_price: float, 
+        history_prices: List[float]
+    ) -> Tuple[bool, str]:
+        """
+        Evaluates whether current_price is an anomaly based on history_prices.
+        Returns: (is_anomaly: bool, reason: str)
+        """
+        # 1. Zero/Negative/Null check
+        if not self.is_valid_price(current_price):
+            return True, f"Invalid or non-positive price value ({current_price})"
+
+        # Filter out non-positive entries from history
+        valid_history = [p for p in history_prices if self.is_valid_price(p)]
+
+        # If insufficient historical depth, pass validation by default
+        if len(valid_history) < self.min_history_length:
+            return False, "Insufficient history depth for anomaly comparison"
+
+        # 2. Rolling Median Deviation Test (Resilient to past outliers)
+        median_price = float(np.median(valid_history))
+        if median_price > 0:
+            pct_change = abs(current_price - median_price) / median_price
+            if pct_change > self.max_pct_deviation:
+                return (
+                    True, 
+                    f"Deviates by {pct_change * 100:.1f}% from rolling median (${median_price:.2f})"
+                )
+
+        # 3. Z-Score Deviation Test (For items with >= 5 historical records)
+        if len(valid_history) >= 5:
+            mean = float(np.mean(valid_history))
+            std = float(np.std(valid_history))
+            if std > 0:
+                z_score = abs(current_price - mean) / std
+                if z_score > self.z_score_threshold:
+                    return (
+                        True, 
+                        f"Z-score ({z_score:.2f}) exceeds threshold ({self.z_score_threshold})"
+                    )
+
+        return False, "Normal price point"
+
+    def sanitize_series(self, price_series: List[float]) -> List[float]:
+        """
+        Removes single isolated bad data points from a historical price list.
+        """
+        clean_series: List[float] = []
+        for price in price_series:
+            if not self.is_valid_price(price):
+                continue
+            
+            # Evaluate against validated history
+            if len(clean_series) >= self.min_history_length:
+                is_anomaly, _ = self.evaluate_point(price, clean_series[-10:])
+                if is_anomaly:
+                    logger.debug(f"Filtering historical anomaly point: ${price:.2f}")
+                    continue
+            
+            clean_series.append(price)
+            
+        return clean_series
+
+
+# =====================================================================
+# 2. NOTIFICATION DISPATCHER
+# =====================================================================
+
+def send_ntfy_alert(title: str, message: str, priority: str = "default", tags: str = "chart_with_downwards_trend") -> None:
+    """Dispatches push notifications via ntfy.sh."""
+    if not NTFY_TOPIC:
+        logger.warning("NTFY_TOPIC environment variable is not set. Skipping push notification.")
+        return
+
+    url = f"{NTFY_SERVER.rstrip('/')}/{NTFY_TOPIC}"
+    headers = {
+        "Title": title,
+        "Priority": priority,
+        "Tags": tags
+    }
+
+    try:
+        res = requests.post(url, data=message.encode("utf-8"), headers=headers, timeout=10)
+        if res.status_code == 200:
+            logger.info(f"📲 Alert sent via ntfy: '{title}'")
+        else:
+            logger.error(f"Failed to send ntfy alert: HTTP {res.status_code}")
+    except Exception as e:
+        logger.error(f"Error sending ntfy notification: {e}")
+
+
+# =====================================================================
+# 3. ANALYTICS PIPELINE ENTRY POINT
+# =====================================================================
+
+def run_and_notify_analytics(price_drop_threshold_pct: float = 0.08) -> None:
+    """
+    Main analytics workflow:
+    1. Fetches recent price records from Supabase for all active items.
+    2. Runs AnomalyFilter to guard against single bad data points.
+    3. Calculates price trends and drop metrics on sanitized data.
+    4. Triggers ntfy push notifications for genuine price drops.
+    """
+    logger.info("--- Running CSMID Market Analytics Engine ---")
     
-    # Query all columns directly from market_history
-    query = """
-        SELECT *
-        FROM market_history
-        WHERE scraped_at >= NOW() - INTERVAL '14 days'
-        ORDER BY scraped_at ASC;
-    """
+    db = DatabaseManager()
+    filter_engine = AnomalyFilter(max_pct_deviation=0.40, z_score_threshold=3.0)
     
     try:
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")  # Suppresses the harmless Pandas SQLAlchemy warning
-            df = pd.read_sql_query(query, db.conn)
+        active_items = db.get_active_targets()
+        if not active_items:
+            logger.info("No active items found in target list.")
+            return
+
+        alerts_triggered = 0
+
+        for skin_name in active_items:
+            # Fetch recent price logs (newest first)
+            history = db.get_price_history(skin_name, limit=20)
+            if not history or len(history) < 2:
+                continue
+
+            # Extract prices sequentially (oldest to newest for analysis)
+            raw_prices = [record.get("lowest_price", 0.0) for record in reversed(history)]
+            
+            latest_price = raw_prices[-1]
+            past_prices = raw_prices[:-1]
+
+            # --- ANOMALY CHECK ON LATEST DATA POINT ---
+            is_anomaly, reason = filter_engine.evaluate_point(latest_price, past_prices)
+            
+            if is_anomaly:
+                logger.warning(
+                    f"⚠️ [ANOMALY SUPPRESSED] {skin_name} @ ${latest_price:.2f} — Reason: {reason}. Skipping alert."
+                )
+                continue
+
+            # --- SANITIZE HISTORICAL SERIES ---
+            clean_past_prices = filter_engine.sanitize_series(past_prices)
+            if not clean_past_prices:
+                continue
+
+            # --- METRICS & SIGNAL DETECTION ---
+            reference_price = float(np.median(clean_past_prices[-5:]))  # Median of last 5 clean readings
+            
+            if reference_price > 0:
+                drop_pct = (reference_price - latest_price) / reference_price
+
+                # Check if current price is a valid drop exceeding threshold
+                if drop_pct >= price_drop_threshold_pct:
+                    alerts_triggered += 1
+                    title = f"🚨 Price Drop: {skin_name}"
+                    message = (
+                        f"{skin_name} dropped by {drop_pct * 100:.1f}%!\n"
+                        f"Current Price: ${latest_price:.2f}\n"
+                        f"Previous Median: ${reference_price:.2f}"
+                    )
+                    logger.info(f"🎯 Signal Detected: {skin_name} dropped {drop_pct * 100:.1f}%")
+                    send_ntfy_alert(title, message, priority="high", tags="warning,moneybag")
+
+        logger.info(f"🏁 Analytics completed. {alerts_triggered} alert(s) dispatched.")
+
     except Exception as e:
-        logger.error(f"Error querying market history for analytics: {e}")
-        return []
+        logger.error(f"Error executing analytics engine: {e}")
     finally:
         db.close()
 
-    if df.empty:
-        logger.warning("No price records found in the last 14 days.")
-        return []
-
-    # --- Auto-detect Name and Price Columns ---
-    name_col = next((c for c in ['skin_name', 'market_hash_name', 'item_name'] if c in df.columns), None)
-    price_col = next((c for c in ['price_usd', 'price', 'lowest_price', 'median_price', 'value'] if c in df.columns), None)
-
-    if not name_col or not price_col:
-        logger.error(f"Could not automatically identify columns. Found in table: {list(df.columns)}")
-        return []
-
-    logger.info(f"Using columns -> Name: '{name_col}', Price: '{price_col}'")
-
-    # Clean numeric data and datetime objects
-    df['price_clean'] = pd.to_numeric(df[price_col], errors='coerce')
-    df['scraped_at'] = pd.to_datetime(df['scraped_at'])
-    df = df.dropna(subset=['price_clean', 'scraped_at'])
-
-    alerts = []
-    grouped = df.groupby(name_col)
-
-    for skin_name, group in grouped:
-        if len(group) < 2:
-            continue  # Need at least 2 data points
-
-        group = group.sort_values('scraped_at')
-        
-        latest_row = group.iloc[-1]
-        latest_price = float(latest_row['price_clean'])
-        latest_time = latest_row['scraped_at']
-
-        # 1. FIX: Calculate TRUE 7-Day Simple Moving Average (SMA)
-        seven_days_ago = latest_time - timedelta(days=7)
-        group_7d = group[group['scraped_at'] >= seven_days_ago]
-        sma_7d = group_7d['price_clean'].mean() if not group_7d.empty else latest_price
-
-        # 2. Find record closest to 24 hours ago
-        target_24h_time = latest_time - timedelta(hours=24)
-        group['time_diff'] = (group['scraped_at'] - target_24h_time).abs()
-        closest_24h_row = group.sort_values('time_diff').iloc[0]
-        price_24h_ago = float(closest_24h_row['price_clean'])
-
-        # 3. Calculate percentage metrics
-        delta_24h = ((latest_price - price_24h_ago) / price_24h_ago) * 100 if price_24h_ago > 0 else 0.0
-        sma_dev = ((latest_price - sma_7d) / sma_7d) * 100 if sma_7d > 0 else 0.0
-        
-        # --- SIGNAL THRESHOLDS ---
-        if delta_24h <= -8.0 or sma_dev <= -10.0:
-            alerts.append({
-                "type": "DIP 📉",
-                "skin": skin_name,
-                "price": latest_price,
-                "delta_24h": delta_24h,
-                "sma_dev": sma_dev
-            })
-        elif delta_24h >= 10.0 or sma_dev >= 12.0:
-            alerts.append({
-                "type": "SPIKE 📈",
-                "skin": skin_name,
-                "price": latest_price,
-                "delta_24h": delta_24h,
-                "sma_dev": sma_dev
-            })
-
-    return alerts
-
-def run_and_notify_analytics():
-    """Runs analytics and pings your phone if dip or spike signals are triggered."""
-    logger.info("📊 Running market analytics & signal detection engine...")
-    alerts = calculate_market_metrics()
-
-    if not alerts:
-        logger.info("Market is stable. No significant dips or spikes detected.")
-        return
-
-    logger.info(f"Detected {len(alerts)} market signals across tracked items!")
-    
-    # Format push notification message for phone
-    lines = []
-    for alert in alerts[:5]:  # Summarize top 5 signals
-        lines.append(
-            f"{alert['type']} {alert['skin']}\n"
-            f"  Price: ${alert['price']:.2f} | 24h: {alert['delta_24h']:+.1f}% | vs 7d Avg: {alert['sma_dev']:+.1f}%"
-        )
-
-    msg = "\n\n".join(lines)
-    if len(alerts) > 5:
-        msg += f"\n\n...and {len(alerts) - 5} more items flagging market activity!"
-
-    send_push_notification(
-        title=f"🚨 Market Alert: {len(alerts)} Signals Detected!",
-        message=msg,
-        priority="high"
-    )
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
     run_and_notify_analytics()
