@@ -66,6 +66,27 @@ python -m src.main   →   run_pipeline(mode, limit, dry_run, ignore_cache)
         │                       ▼
         │                   Confidence-scored forecast + ntfy summary
         │
+        ├── NEURAL PREDICTION PHASE (mode: "predict" with --neural flag)
+        │       │
+        │       ▼
+        │   NeuralForecasterWrapper — same .forecast() contract
+        │       │
+        │       ├── Checkpoint exists? → run neural model
+        │       │       (SoftFocusGate → TCN → DilatedGRU → MultiHorizonHead)
+        │       │
+        │       └── No checkpoint? → fall back to BaselineForecaster
+        │
+        ├── NEURAL TRAINING PHASE (mode: "train", manual only)
+        │       │
+        │       ▼
+        │   NeuralDataAdapter — Supabase records → tensors
+        │       │
+        │       ▼
+        │   NeuralTrainer — walk-forward training with temperature annealing
+        │       │
+        │       ▼
+        │   Checkpoint saved to data/models/neural_forecaster.pt
+        │
         └── BACKTEST PHASE (mode: "backtest")
                 │
                 ▼
@@ -91,7 +112,8 @@ Skin discovery (finding new items to track) is handled by
 CSMID/
 │
 ├── .github/workflows/
-│   └── pipeline.yml            # Twice-daily: scrape + analytics, unified
+│   └── pipeline.yml            # Twice-daily: scrape + analytics + forecast
+│                               # Manual: discovery, neural training, backtest
 │
 ├── src/
 │   ├── main.py                  # Unified CLI entrypoint — run_pipeline()
@@ -102,6 +124,7 @@ CSMID/
 │   ├── notifier.py               # ntfy.sh push notification client
 │   ├── volatility.py             # VolatilityManager — CV-based scrape interval tiers (HIGH/MEDIUM/LOW)
 │   ├── forecaster.py             # Gated baseline forecaster — feature extraction + blend model
+│   ├── neural_forecaster.py      # Neural TCN+DilatedGRU forecaster — full training pipeline
 │   ├── backtest.py               # Walk-forward backtest framework — per-skin & aggregate metrics
 │   ├── prediction_report.py      # Formatted text & Markdown reports for forecasts and backtests
 │   ├── proxy_manager.py          # Local HTTP proxy pool manager (currently unused by scraper.py)
@@ -134,10 +157,11 @@ CSMID/
 │   ├── raw_catalog/              # Raw skin catalog JSON
 │   ├── master/master_skins.csv   # Deduplicated catalog: weapon, skin_name, rarity, etc.
 │   ├── watchlists/                # Generated category watchlists
+│   ├── models/                    # Neural model checkpoints (neural_forecaster.pt)
 │   ├── processed/ raw/ source/ backups/
 │
 ├── docs/                          # Handover_V0.5.txt, Handover_V0.6.txt — project history
-├── tests/                         # pytest suite (conftest, database, env, forecaster, backtest, prediction_report)
+├── tests/                         # pytest suite (conftest, database, env, forecaster, backtest, prediction_report, neural_forecaster)
 ├── .env.example                   # Template for local environment variables
 ├── requirements.txt
 └── README.md
@@ -209,6 +233,15 @@ python -m src.main --mode scrape --limit 1 --ignore-cache
 # Run forecasts (requires live DB connection)
 python -m src.main --mode predict
 
+# Run forecasts using the neural forecaster (falls back to baseline if no checkpoint)
+python -m src.main --mode predict --neural
+
+# Train the neural model on all historical data
+python -m src.main --mode train
+
+# Train with custom hyperparameters
+python -m src.main --mode train --train-epochs 100 --train-lr 0.0005
+
 # Run walk-forward backtest against all available history
 python -m src.main --mode backtest
 
@@ -241,6 +274,17 @@ python tools/generate_watchlists.py
 daily — 00:00 and 12:00 UTC — scraping every active `tracked_items` row
 and running analytics/alerts immediately after, in one job. Trigger it
 manually anytime from the Actions tab (`workflow_dispatch`).
+
+**Manual workflow dispatch toggles:**
+
+| Input | Type | Default | What it does |
+|-------|------|---------|--------------|
+| `run_discovery` | boolean | false | Runs skin discovery (also auto-runs Sundays) |
+| `run_backtest` | boolean | false | Runs walk-forward backtest after forecast |
+| `run_neural_training` | boolean | false | Installs PyTorch and trains the neural forecaster |
+| `neural_epochs` | string | "" | Custom epoch count for neural training |
+| `forecast_min_data_points` | string | "" | Override the minimum data points gate |
+| `forecast_horizon_hours` | string | "" | Override the forecast horizon |
 
 ---
 
@@ -297,6 +341,39 @@ in aggregate.
 
 ---
 
+## Neural forecaster — TCN + DilatedGRU + Soft Focus
+
+`src/neural_forecaster.py` implements an advanced time-series model that
+extends the original college experiment architecture with production-grade
+improvements. It's designed as a drop-in replacement for `BaselineForecaster`.
+
+**Architecture:**
+
+| Component | Role | Key improvement |
+|-----------|------|-----------------|
+| `SoftFocusGate` | Learns which timesteps matter | Hard binary mask → Gumbel-sigmoid (stable gradients) |
+| `AdaptiveResidualBlock` | TCN residual block | Fixed dropout=0.5 → depth-adaptive (0.2–0.4) |
+| `NeuralTCNEncoder` | Dilated causal convolutions | Configurable channels, receptive field = 15 |
+| `DilatedGRUDecoder` | Skip-step GRU recurrence | Every-2nd-timestep processing for long-range |
+| `TemporalPositionalEncoding` | Position + interval encoding | Handles irregular scrape intervals |
+| `MultiHorizonHead` | Per-horizon predictions | Structured horizons [1h, 3h, 6h, 12h, 24h, 48h, 72h, 168h] with confidence |
+
+**Integration:**
+
+- `NeuralForecasterWrapper` exposes the same `.forecast(features)` contract as `BaselineForecaster`
+- Falls back to baseline automatically when no checkpoint exists
+- Data gate: requires ≥30 points (more conservative than baseline's 10)
+- Training: `python -m src.main --mode train` pulls all history from Supabase
+
+**When to use it:**
+- Baseline model is the default — it works on sparse data
+- Neural model becomes useful once skins have 60+ data points (~3 weeks)
+- Run `--mode backtest` to compare neural vs baseline accuracy
+
+**Dependencies:** PyTorch is optional — install with `pip install torch` when ready to train. The GitHub Actions workflow auto-installs it (CPU-only) when `run_neural_training` is toggled on.
+
+---
+
 ## Known issues / current limitations
 
 - **Skin discovery is no longer scheduled.** `discovery.yml` was
@@ -336,18 +413,18 @@ in aggregate.
 - [x] Multi-tier proxy fallback chain
 - [x] Secrets moved to environment variables / GitHub Secrets
 - [x] Immediate abort on HTTP 429 (no more retry-into-block)
-- [x] Anomaly filtering in `src/analytics.py` — guard signals against
+- [x] Anomaly filtering in `src/analytics.py` — guard signals against noise
 - [x] Restore scheduled skin discovery (or fold it into `pipeline.yml`)
 - [x] Fix or retire the local scheduler path (`collection_manager.py`
       / `scheduler/`) — currently broken and unmaintained
 - [x] Volatility-aware scraping (frequent for volatile items, sparse for stable ones)
 - [x] Gated prediction pipeline with walk-forward backtest framework
       (baseline model, data-sufficiency gate, feature extraction)
-- [ ] Database RPCs (read-only Supabase SQL functions) for the
+- [x] Neural forecaster — TCN + DilatedGRU + Soft Focus (drop-in replacement)
+- [x] Database RPCs (read-only Supabase SQL functions) for the
       friend's frontend — build when he's ready to start
 - [ ] Buy/sell signal notifications incorporating patch-note/news events
-- [ ] Advanced model upgrade path (e.g., ARIMA, Prophet) behind the
-      same forecaster interface — just swap the model class
+- [ ] ~~Advanced model upgrade path (e.g., ARIMA, Prophet)~~ — replaced by neural forecaster
 
 **Optional, no dependency — build anytime:**
 - [ ] Portfolio P&L tracking (new, independent `user_inventory` table)
