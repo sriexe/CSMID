@@ -15,6 +15,17 @@ from src.analytics import run_and_notify_analytics
 from src.env import SUPABASE_URL, SUPABASE_KEY
 from src.volatility import get_scrape_interval_for_item
 
+# Prediction pipeline imports
+from src.forecaster import ForecastConfig, generate_forecasts
+from src.backtest import run_backtest
+from src.prediction_report import (
+    format_forecast_report,
+    format_forecast_summary_ntfy,
+    format_backtest_report,
+    format_forecast_markdown,
+    format_backtest_markdown,
+)
+
 # Optional import for Discovery Phase
 try:
     from run_discovery import run_discovery
@@ -45,15 +56,25 @@ def run_pipeline(
     mode: str = "all",
     limit: Optional[int] = None,
     dry_run: bool = False,
-    ignore_cache: bool = False
+    ignore_cache: bool = False,
+    forecast_config: Optional[ForecastConfig] = None,
+    backtest_warmup: int = 10,
+    output_format: str = "text",
 ) -> None:
     """
-    Unified CLI pipeline runner with Volatility-Aware Scraping.
-    
-    :param mode: 'all' (scrape + analytics), 'scrape' (only scrape), 'analytics' (only analytics), 'discovery' (only discovery)
+    Unified CLI pipeline runner with Volatility-Aware Scraping and Prediction.
+
+    :param mode: 'all' (scrape + analytics), 'scrape' (only scrape),
+                 'analytics' (only analytics), 'discovery' (only discovery),
+                 'predict' (forecast from current data),
+                 'backtest' (walk-forward backtest),
+                 'all+predict' (scrape + analytics + forecast)
     :param limit: Max number of items to process (great for local testing)
     :param dry_run: If True, skips DB writes and alert notifications
     :param ignore_cache: If True, bypasses the dynamic recency check
+    :param forecast_config: Optional ForecastConfig override for prediction tuning
+    :param backtest_warmup: Min data points before first prediction in backtest
+    :param output_format: 'text' or 'markdown' for report output
     """
     scraper = SteamMarketScraper(min_request_interval=4.0)
     db: Optional[DatabaseManager] = None
@@ -75,9 +96,9 @@ def run_pipeline(
     # ------------------------------------------------------------------
     # 1. SCRAPE PHASE (Volatility-Aware)
     # ------------------------------------------------------------------
-    if mode in ("all", "scrape"):
+    if mode in ("all", "scrape", "all+predict"):
         logger.info(f"--- Starting Scraper Phase (Mode: {mode}, Limit: {limit}, Dry Run: {dry_run}) ---")
-        
+
         target_skins = []
 
         if not dry_run:
@@ -124,7 +145,7 @@ def run_pipeline(
 
             if price_data:
                 logger.info(f"✅ Scraped {skin_name}: ${price_data.get('lowest_price', 0.0)}")
-                
+
                 if dry_run:
                     logger.info(f"🧪 [Dry Run] Parsed payload for {skin_name}: {price_data}")
                 elif db:
@@ -143,19 +164,127 @@ def run_pipeline(
     # ------------------------------------------------------------------
     # 2. ANALYTICS & ALERT PHASE
     # ------------------------------------------------------------------
-    if mode in ("all", "analytics"):
+    if mode in ("all", "analytics", "all+predict"):
         logger.info("--- Starting Analytics Phase ---")
         if dry_run:
             logger.info("🧪 DRY RUN MODE: Skipping live analytics DB queries and ntfy alerts.")
         else:
             run_and_notify_analytics()
 
+    # ------------------------------------------------------------------
+    # 3. PREDICTION PHASE
+    # ------------------------------------------------------------------
+    if mode in ("predict", "all+predict"):
+        logger.info("--- Starting Prediction Phase ---")
+
+        if dry_run:
+            logger.info("🧪 DRY RUN MODE: Skipping live prediction DB queries.")
+            logger.info("  (Prediction requires live data; use --mode predict without --dry-run)")
+            return
+
+        try:
+            db = DatabaseManager()
+            active_items = db.get_active_targets()
+
+            if not active_items:
+                logger.info("No active items found for forecasting.")
+                db.close()
+                return
+
+            if limit and limit > 0:
+                active_items = active_items[:limit]
+
+            # Collect all price history in one pass
+            records_by_skin = {}
+            for skin_name in active_items:
+                records = db.get_price_history(skin_name=skin_name, limit=200)
+                if records:
+                    records_by_skin[skin_name] = records
+
+            db.close()
+
+            if not records_by_skin:
+                logger.info("No price history found in database for any tracked item.")
+                return
+
+            # Generate forecasts
+            results = generate_forecasts(records_by_skin, config=forecast_config)
+            report = format_forecast_report(results)
+            print(report)
+
+            # Also produce ntfy-eligible summary
+            if not dry_run:
+                ntfy_msg = format_forecast_summary_ntfy(results)
+                try:
+                    from src.analytics import send_ntfy_alert
+                    send_ntfy_alert(
+                        title="CSMID Forecast Update",
+                        message=ntfy_msg,
+                        priority="default",
+                        tags="bar_chart,game",
+                    )
+                except Exception as e:
+                    logger.warning("Failed to send forecast notification: %s", e)
+
+        except Exception as exc:
+            logger.error("Prediction phase failed: %s", exc)
+
+    # ------------------------------------------------------------------
+    # 4. BACKTEST PHASE
+    # ------------------------------------------------------------------
+    if mode == "backtest":
+        logger.info("--- Starting Backtest Phase ---")
+
+        if dry_run:
+            logger.info("🧪 DRY RUN MODE: Skipping live backtest DB queries.")
+            return
+
+        try:
+            db = DatabaseManager()
+            active_items = db.get_active_targets()
+
+            if not active_items:
+                logger.info("No active items found for backtesting.")
+                db.close()
+                return
+
+            if limit and limit > 0:
+                active_items = active_items[:limit]
+
+            # Collect all price history (need full history for backtest)
+            records_by_skin = {}
+            for skin_name in active_items:
+                records = db.get_price_history(skin_name=skin_name, limit=1000)
+                if records:
+                    records_by_skin[skin_name] = records
+
+            db.close()
+
+            if not records_by_skin:
+                logger.info("No price history found in database for backtesting.")
+                return
+
+            # Run walk-forward backtest
+            results = run_backtest(records_by_skin, warmup_periods=backtest_warmup)
+            report = format_backtest_report(results)
+            print(report)
+
+            # Optionally save Markdown report
+            md_path = os.path.join(ROOT_DIR, "data", "backtest_report.md")
+            os.makedirs(os.path.dirname(md_path), exist_ok=True)
+            with open(md_path, "w") as f:
+                f.write(format_backtest_markdown(results))
+            logger.info(f"Backtest Markdown report saved to: {md_path}")
+
+        except Exception as exc:
+            logger.error("Backtest phase failed: %s", exc)
+
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="CSMID Market Scraper & Analytics Pipeline")
+    parser = argparse.ArgumentParser(description="CSMID Market Scraper, Analytics & Prediction Pipeline")
     parser.add_argument(
         "--mode",
-        choices=["all", "scrape", "analytics", "discovery"],
+        choices=["all", "scrape", "analytics", "discovery", "predict", "backtest", "all+predict"],
         default="all",
         help="Pipeline phase to execute (default: all)"
     )
@@ -175,11 +304,44 @@ if __name__ == "__main__":
         action="store_true",
         help="Ignore volatility intervals and force a fresh scrape"
     )
+    parser.add_argument(
+        "--min-data-points",
+        type=int,
+        default=10,
+        help="Minimum data points required for forecasting (default: 10)"
+    )
+    parser.add_argument(
+        "--horizon-hours",
+        type=int,
+        default=12,
+        help="Forecast horizon in hours (default: 12)"
+    )
+    parser.add_argument(
+        "--backtest-warmup",
+        type=int,
+        default=10,
+        help="Min data points before first prediction in backtest (default: 10)"
+    )
+    parser.add_argument(
+        "--output-format",
+        choices=["text", "markdown"],
+        default="text",
+        help="Output format for reports (default: text)"
+    )
 
     args = parser.parse_args()
+
+    # Build config from CLI args
+    fc = ForecastConfig()
+    fc.MIN_DATA_POINTS = args.min_data_points
+    fc.HORIZON_HOURS = args.horizon_hours
+
     run_pipeline(
         mode=args.mode,
         limit=args.limit,
         dry_run=args.dry_run,
-        ignore_cache=args.ignore_cache
+        ignore_cache=args.ignore_cache,
+        forecast_config=fc,
+        backtest_warmup=args.backtest_warmup,
+        output_format=args.output_format,
     )

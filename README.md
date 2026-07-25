@@ -19,7 +19,7 @@ Everything now runs through one unified entrypoint:
         ▼
 python -m src.main   →   run_pipeline(mode, limit, dry_run, ignore_cache)
         │
-        ├── SCRAPE PHASE (mode: "all" or "scrape")
+        ├── SCRAPE PHASE (mode: "all", "scrape", or "all+predict")
         │       │
         │       ▼
         │   DatabaseManager.get_active_targets()  (tracked_items table)
@@ -34,16 +34,45 @@ python -m src.main   →   run_pipeline(mode, limit, dry_run, ignore_cache)
         │       ▼
         │   DatabaseManager.insert_price()  →  market_history table
         │
-        └── ANALYTICS PHASE (mode: "all" or "analytics")
+        ├── ANALYTICS PHASE (mode: "all", "analytics", or "all+predict")
+        │       │
+        │       ▼
+        │   calculate_market_metrics() — 14-day query, true 7-day SMA
+        │       │
+        │       ▼
+        │   DIP/SPIKE signal detection
+        │       │
+        │       ▼
+        │   send_push_notification() → ntfy.sh → phone
+        │
+        ├── PREDICTION PHASE (mode: "predict" or "all+predict")
+        │       │
+        │       ▼
+        │   DatabaseManager.get_price_history()  (last 200 records per skin)
+        │       │
+        │       ▼
+        │   PriceFeatureExtractor.extract_features()  → trend, volatility, momentum
+        │       │
+        │       ▼
+        │   DATA SUFFICIENCY GATE (need ≥10 points across ≥5 days)
+        │       │
+        │       ├── FAIL → skin gated out, logged with reason
+        │       │
+        │       └── PASS → BaselineForecaster.forecast()
+        │                       │
+        │                       ▼
+        │                   Blend: persistence + trend + mean-reversion
+        │                       │
+        │                       ▼
+        │                   Confidence-scored forecast + ntfy summary
+        │
+        └── BACKTEST PHASE (mode: "backtest")
                 │
                 ▼
-            calculate_market_metrics() — 14-day query, true 7-day SMA
+            WalkForwardBacktester — "predict the next point" repeatedly
                 │
                 ▼
-            DIP/SPIKE signal detection
-                │
-                ▼
-            send_push_notification() → ntfy.sh → phone
+            MAPE / RMSE / direction accuracy per skin + aggregate
 ```
 
 A separate, older local path (`scheduler/daily_collect.py` →
@@ -71,6 +100,10 @@ CSMID/
 │   ├── database.py               # DatabaseManager — psycopg2 client for Supabase
 │   ├── env.py                    # Environment variable loading (.env locally, GitHub Secrets in cloud)
 │   ├── notifier.py               # ntfy.sh push notification client
+│   ├── volatility.py             # VolatilityManager — CV-based scrape interval tiers (HIGH/MEDIUM/LOW)
+│   ├── forecaster.py             # Gated baseline forecaster — feature extraction + blend model
+│   ├── backtest.py               # Walk-forward backtest framework — per-skin & aggregate metrics
+│   ├── prediction_report.py      # Formatted text & Markdown reports for forecasts and backtests
 │   ├── proxy_manager.py          # Local HTTP proxy pool manager (currently unused by scraper.py)
 │   ├── collection_manager.py     # Local queue-driven collector — currently broken, see Known Issues
 │   ├── config.py                 # Legacy local paths (pre-cloud tooling)
@@ -104,7 +137,7 @@ CSMID/
 │   ├── processed/ raw/ source/ backups/
 │
 ├── docs/                          # Handover_V0.5.txt, Handover_V0.6.txt — project history
-├── tests/                         # pytest suite (conftest, database, env)
+├── tests/                         # pytest suite (conftest, database, env, forecaster, backtest, prediction_report)
 ├── .env.example                   # Template for local environment variables
 ├── requirements.txt
 └── README.md
@@ -172,6 +205,21 @@ python -m src.main --mode analytics
 
 # Force a fresh scrape, bypassing the 12h recency check
 python -m src.main --mode scrape --limit 1 --ignore-cache
+
+# Run forecasts (requires live DB connection)
+python -m src.main --mode predict
+
+# Run walk-forward backtest against all available history
+python -m src.main --mode backtest
+
+# Full pipeline + forecast in one shot
+python -m src.main --mode all+predict
+
+# Tune the forecast: require 20 points instead of 10, 24h horizon
+python -m src.main --mode predict --min-data-points 20 --horizon-hours 24
+
+# Backtest with a shorter warmup (for sparse data)
+python -m src.main --mode backtest --backtest-warmup 5
 ```
 
 **Discover new skins** (not currently scheduled — run manually):
@@ -210,6 +258,42 @@ and flags two signal types:
 Column names (`skin_name`/`market_hash_name`, `lowest_price`/
 `median_price`/etc.) are auto-detected from whatever's actually in the
 table. Flagged skins are pushed to your phone via ntfy.
+
+---
+
+## Prediction pipeline — gated baseline forecaster
+
+`src/forecaster.py` implements a transparent, interpretable forecasting
+pipeline with a hard data-sufficiency gate:
+
+**How it works:**
+
+1. **Feature extraction** (`PriceFeatureExtractor`) — pulls trend slope,
+   momentum, volatility (CV), volume trend, and time-series depth from
+   each skin's price history.
+2. **Data-sufficiency gate** — a skin must have ≥10 data points across
+   ≥5 distinct days before any forecast is attempted. Skins below the
+   threshold are logged and skipped (not guessed).
+3. **Baseline blend model** (`BaselineForecaster`) — combines three
+   interpretable components:
+   - **Persistence** (30–40% weight): price stays where it is
+   - **Trend extrapolation** (20–35% weight): linear slope from recent window
+   - **Mean reversion** (35–40% weight): drift toward historical median
+   - Blend weights shift based on volatility — stable items trust trend
+     more, volatile items trust mean reversion more.
+4. **Volume adjustment** — volume trend reinforces or dampens the
+   direction signal.
+5. **Confidence scoring** — based on data depth and volatility stability.
+
+The model starts producing real forecasts automatically the moment each
+skin crosses the data threshold — no rebuild needed.
+
+**Walk-forward backtest** (`src/backtest.py`):
+
+Repeatedly predicts the next data point using only history available at
+that time, then compares to the actual observation. Reports MAPE,
+median absolute error, RMSE, bias, and direction accuracy per skin and
+in aggregate.
 
 ---
 
@@ -257,9 +341,13 @@ table. Flagged skins are pushed to your phone via ntfy.
 - [x] Fix or retire the local scheduler path (`collection_manager.py`
       / `scheduler/`) — currently broken and unmaintained
 - [x] Volatility-aware scraping (frequent for volatile items, sparse for stable ones)
+- [x] Gated prediction pipeline with walk-forward backtest framework
+      (baseline model, data-sufficiency gate, feature extraction)
 - [ ] Database RPCs (read-only Supabase SQL functions) for the
       friend's frontend — build when he's ready to start
 - [ ] Buy/sell signal notifications incorporating patch-note/news events
+- [ ] Advanced model upgrade path (e.g., ARIMA, Prophet) behind the
+      same forecaster interface — just swap the model class
 
 **Optional, no dependency — build anytime:**
 - [ ] Portfolio P&L tracking (new, independent `user_inventory` table)
