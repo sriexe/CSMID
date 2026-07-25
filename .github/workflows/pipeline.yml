@@ -14,6 +14,14 @@ on:
         description: 'Run walk-forward backtest after forecast?'
         type: boolean
         default: false
+      run_neural_training:
+        description: 'Train the neural forecaster model on all historical data?'
+        type: boolean
+        default: false
+      neural_epochs:
+        description: 'Number of training epochs (override, default: 50 )'
+        type: string
+        default: ''
       forecast_min_data_points:
         description: 'Minimum data points required for forecasting (override )'
         type: string
@@ -54,8 +62,17 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       # ------------------------------------------------------------------
+      # Install PyTorch — Only needed when neural training is triggered
+      # ------------------------------------------------------------------
+      - name: Install PyTorch (CPU ) for Neural Training
+        if: github.event.inputs.run_neural_training == 'true'
+        run: |
+          echo "Installing PyTorch (CPU-only) for neural forecaster..."
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+      # ------------------------------------------------------------------
       # Optional / Scheduled Discovery Step
-      # Runs on Sundays (UTC ) OR when manually toggled in workflow_dispatch
+      # Runs on Sundays (UTC  ) OR when manually toggled in workflow_dispatch
       # ------------------------------------------------------------------
       - name: Run Skin Discovery (Weekly / Manual)
         if: github.event.inputs.run_discovery == 'true' || github.event.schedule == '0 0 * * 0'
@@ -81,6 +98,20 @@ jobs:
           if [ -n "${{ inputs.forecast_horizon_hours }}" ]; then
             ARGS="$ARGS --horizon-hours ${{ inputs.forecast_horizon_hours }}"
             echo "  Custom horizon: ${{ inputs.forecast_horizon_hours }}h"
+          fi
+          python -m src.main $ARGS
+
+      # ------------------------------------------------------------------
+      # Optional Neural Training — Runs when manually toggled
+      # ------------------------------------------------------------------
+      - name: Train Neural Forecaster Model (Manual)
+        if: github.event.inputs.run_neural_training == 'true'
+        run: |
+          echo "Training neural forecaster..."
+          ARGS="--mode train"
+          if [ -n "${{ inputs.neural_epochs }}" ]; then
+            ARGS="$ARGS --train-epochs ${{ inputs.neural_epochs }}"
+            echo "  Custom epochs: ${{ inputs.neural_epochs }}"
           fi
           python -m src.main $ARGS
 
