@@ -10,6 +10,18 @@ on:
         description: 'Run skin discovery to refresh tracked_items in Supabase?'
         type: boolean
         default: false
+      run_backtest:
+        description: 'Run walk-forward backtest after forecast?'
+        type: boolean
+        default: false
+      forecast_min_data_points:
+        description: 'Minimum data points required for forecasting (override )'
+        type: string
+        default: ''
+      forecast_horizon_hours:
+        description: 'Forecast horizon in hours (override)'
+        type: string
+        default: ''
 
 jobs:
   run-pipeline:
@@ -43,7 +55,7 @@ jobs:
 
       # ------------------------------------------------------------------
       # Optional / Scheduled Discovery Step
-      # Runs on Sundays (UTC) OR when manually toggled in workflow_dispatch
+      # Runs on Sundays (UTC ) OR when manually toggled in workflow_dispatch
       # ------------------------------------------------------------------
       - name: Run Skin Discovery (Weekly / Manual)
         if: github.event.inputs.run_discovery == 'true' || github.event.schedule == '0 0 * * 0'
@@ -54,3 +66,29 @@ jobs:
       # ------------------------------------------------------------------
       - name: Run CSMID Pipeline (Scrape & Analytics)
         run: python -m src.main --mode all
+
+      # ------------------------------------------------------------------
+      # Prediction Phase — Runs after every scrape + analytics cycle
+      # ------------------------------------------------------------------
+      - name: Run Forecast Pipeline
+        run: |
+          echo "Running prediction pipeline..."
+          ARGS="--mode predict"
+          if [ -n "${{ inputs.forecast_min_data_points }}" ]; then
+            ARGS="$ARGS --min-data-points ${{ inputs.forecast_min_data_points }}"
+            echo "  Custom min-data-points: ${{ inputs.forecast_min_data_points }}"
+          fi
+          if [ -n "${{ inputs.forecast_horizon_hours }}" ]; then
+            ARGS="$ARGS --horizon-hours ${{ inputs.forecast_horizon_hours }}"
+            echo "  Custom horizon: ${{ inputs.forecast_horizon_hours }}h"
+          fi
+          python -m src.main $ARGS
+
+      # ------------------------------------------------------------------
+      # Optional Backtest — Runs when manually toggled in workflow_dispatch
+      # ------------------------------------------------------------------
+      - name: Run Walk-Forward Backtest (Manual)
+        if: github.event.inputs.run_backtest == 'true'
+        run: |
+          echo "Running walk-forward backtest..."
+          python -m src.main --mode backtest
