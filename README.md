@@ -423,7 +423,7 @@ improvements. It's designed as a drop-in replacement for `BaselineForecaster`.
 - [x] Neural forecaster — TCN + DilatedGRU + Soft Focus (drop-in replacement)
 - [x] Database RPCs (read-only Supabase SQL functions) for the
       friend's frontend — build when he's ready to start
-- [ ] Buy/sell signal notifications incorporating patch-note/news events
+- [x] Buy/sell signal notifications incorporating patch-note/news events
 - [x] neural forecaster
 
 **Optional, no dependency — build anytime:**
