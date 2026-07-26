@@ -108,19 +108,32 @@ def format_forecast_summary_ntfy(results: dict) -> str:
         if not f.get("is_experimental", False)
     }
     
-    total = results.get("summary", {}).get("total_skins", 0)
+    summary = results.get("summary", {})
+    total = summary.get("total_skins", 0)
+    gated_out = summary.get("gated_out", 0)
     promoted_count = len(promoted_forecasts)
-    
-    if not promoted_forecasts:
-        return f"📊 CSMID Forecast: 0/{total} skins promoted. (All experimental or gated out)."
 
-    lines = [f"📊 CSMID Forecast ({promoted_count}/{total} Promoted):"]
+    if not forecasts:
+        return f"📊 CSMID Forecast: No forecasts yet ({gated_out} gated out, not enough data)."
+
+    if not promoted_forecasts:
+        return (
+            f"📊 CSMID Forecast: 0/{total} skins promoted. "
+            f"({gated_out} gated out, not enough data yet)."
+        )
+
+    lines = [
+        f"📊 CSMID Forecast ({promoted_count}/{total} Promoted, "
+        f"{gated_out} gated out):"
+    ]
+    emoji_by_direction = {"UP": "📈", "DOWN": "📉", "FLAT": "➡️"}
     for skin, f in promoted_forecasts.items():
-        curr = f.get("current_price", 0.0)
+        curr = f.get("features", {}).get("current_price", 0.0)
         pred = f.get("predicted_price", 0.0)
-        pct = f.get("expected_change_pct", 0.0)
-        direction = "📈" if pct > 0 else "📉"
-        lines.append(f"{direction} {skin}: ${curr:.2f} ➔ ${pred:.2f} ({pct:+.1f}%)")
+        pct = f.get("pct_change", 0.0)
+        direction = f.get("direction", "FLAT")
+        emoji = emoji_by_direction.get(direction, "➡️")
+        lines.append(f"{emoji} {skin} [{direction}]: ${curr:.2f} ➔ ${pred:.2f} ({pct:+.1f}%)")
 
     return "\n".join(lines)
 
