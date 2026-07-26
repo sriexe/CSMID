@@ -424,7 +424,7 @@ improvements. It's designed as a drop-in replacement for `BaselineForecaster`.
 - [x] Database RPCs (read-only Supabase SQL functions) for the
       friend's frontend — build when he's ready to start
 - [ ] Buy/sell signal notifications incorporating patch-note/news events
-- [ ] ~~Advanced model upgrade path (e.g., ARIMA, Prophet)~~ — replaced by neural forecaster
+- [x] neural forecaster
 
 **Optional, no dependency — build anytime:**
 - [ ] Portfolio P&L tracking (new, independent `user_inventory` table)

@@ -1,21 +1,19 @@
 """
 src/backtest.py — Walk-Forward Backtest Framework for CSMID
 
-Provides a rigorous walk-forward validation harness for the forecaster.
-Splits historical data into training windows, trains (or in this case,
-evaluates the parameter-free baseline), and measures prediction accuracy
-on held-out future data — simulating exactly how the model would perform
-in production.
+Provides a rigorous walk-forward validation harness comparing baseline
+and neural forecasters. Splits historical data into training windows,
+evaluates both models on held-out future observations, and computes
+head-to-head accuracy metrics.
 
-No ML training is involved (the baseline is parameter-free), but the
-framework is structured to accept any future model class that exposes
-a .forecast(features) interface.
+A neural model is strictly flagged as `neural_promoted = True` ONLY if it
+outperforms the parameter-free baseline in MAPE on identical evaluation steps.
 """
 
 import logging
 import numpy as np
 import pandas as pd
-from typing import List, Dict, Any, Optional, Callable
+from typing import List, Dict, Any, Optional
 
 from src.forecaster import (
     BaselineForecaster,
@@ -32,29 +30,31 @@ logger = logging.getLogger("CSMID.backtest")
 
 class WalkForwardBacktester:
     """
-    Walk-forward validation: repeatedly "predict the next point" using
-    only data available up to that point, then compare to the actual
-    observation. This is the gold standard for time-series evaluation.
+    Walk-forward validation engine for head-to-head model comparison.
 
     For each skin:
         For t in [warmup, ..., len(data) - 1]:
-            features = extract(data[:t])       # only past data
-            prediction = forecaster.forecast(features)
-            actual = data[t]["price"]          # the held-out truth
-            record(prediction, actual)
+            df_past = data[:t]
+            features = extract(df_past)
+            pred_baseline = baseline.forecast(features)
+            pred_neural   = neural.forecast(features / df_past)
+            actual        = data[t]["price"]
+            record_errors(pred_baseline, pred_neural, actual)
 
-    Returns per-skin error metrics and aggregate statistics.
+    Returns per-skin comparative metrics and global aggregate statistics.
     """
 
     def __init__(
         self,
         forecaster: Optional[BaselineForecaster] = None,
+        neural_forecaster: Optional[Any] = None,
         config: Optional[ForecastConfig] = None,
-        warmup_periods: int = 10,
+        warmup_periods: int = 15,
         step_size: int = 1,
     ):
-        self.forecaster = forecaster or BaselineForecaster(config)
-        self.config = config or self.forecaster.config
+        self.baseline_forecaster = forecaster or BaselineForecaster(config)
+        self.neural_forecaster = neural_forecaster
+        self.config = config or self.baseline_forecaster.config
         self.extractor = PriceFeatureExtractor()
         self.warmup_periods = warmup_periods
         self.step_size = step_size
@@ -65,11 +65,10 @@ class WalkForwardBacktester:
         records: List[Dict[str, Any]],
     ) -> Optional[Dict[str, Any]]:
         """
-        Run walk-forward backtest on a single skin's history.
+        Run head-to-head walk-forward backtest on a single skin's history.
 
         Returns:
-            Dict with 'skin_name', 'metrics', 'predictions' list,
-            or None if insufficient data.
+            Dict containing baseline metrics, neural metrics, and promotion status.
         """
         df = self.extractor.records_to_dataframe(records)
         if len(df) < self.warmup_periods + 1:
@@ -80,75 +79,101 @@ class WalkForwardBacktester:
             return None
 
         prices = df["price"].values
-        predictions = []
+        predictions_base = []
+        predictions_neural = []
 
-        # Walk forward from warmup to the second-to-last point
-        # (we need at least one actual to compare against)
+        # Walk forward step-by-step
         for t in range(self.warmup_periods, len(prices) - 1, self.step_size):
-            # Build features from data[:t] only (no peeking)
             df_past = df.iloc[:t]
-            features = self.extractor.extract_features(df_past, self.config)
+            actual = float(prices[t])
 
+            # 1. Evaluate Baseline Model
+            features = self.extractor.extract_features(df_past, self.config)
             if not features:
                 continue
 
-            forecast_result = self.forecaster.forecast(features)
-            if forecast_result is None:
+            forecast_base = self.baseline_forecaster.forecast(features)
+            if forecast_base is None:
                 continue
 
-            predicted = forecast_result["predicted_price"]
-            actual = float(prices[t])
-            pct_error = ((predicted - actual) / actual) * 100 if actual != 0 else 0.0
-
-            predictions.append({
-                "timestamp": str(df["scraped_at"].iloc[t].isoformat()) if "scraped_at" in df.columns else None,
-                "predicted": round(predicted, 4),
-                "actual": round(actual, 4),
-                "pct_error": round(pct_error, 2),
-                "direction_predicted": forecast_result["direction"],
+            pred_base = forecast_base["predicted_price"]
+            err_base = ((pred_base - actual) / actual) * 100 if actual != 0 else 0.0
+            predictions_base.append({
+                "predicted": pred_base,
+                "actual": actual,
+                "pct_error": err_base,
+                "direction": forecast_base["direction"],
             })
 
-        if not predictions:
+            # 2. Evaluate Neural Model (if provided & operational)
+            if self.neural_forecaster is not None:
+                try:
+                    # Neural model predicts using available historical slice
+                    neural_res = None
+                    if hasattr(self.neural_forecaster, "forecast"):
+                        neural_res = self.neural_forecaster.forecast(df_past)
+                    elif hasattr(self.neural_forecaster, "predict"):
+                        neural_res = self.neural_forecaster.predict(df_past)
+
+                    if neural_res is not None:
+                        pred_neural = float(
+                            neural_res["predicted_price"]
+                            if isinstance(neural_res, dict)
+                            else neural_res
+                        )
+                        err_neural = ((pred_neural - actual) / actual) * 100 if actual != 0 else 0.0
+                        predictions_neural.append({
+                            "predicted": pred_neural,
+                            "actual": actual,
+                            "pct_error": err_neural,
+                        })
+                except Exception as exc:
+                    logger.debug("Neural prediction step failed at t=%d for %s: %s", t, skin_name, exc)
+
+        if not predictions_base:
             return None
 
-        # Compute metrics
-        pct_errors = np.array([p["pct_error"] for p in predictions])
-        abs_errors = np.abs(pct_errors)
+        # Compute Baseline Metrics
+        base_pct_errors = np.array([p["pct_error"] for p in predictions_base])
+        base_abs_errors = np.abs(base_pct_errors)
+        base_mape = float(np.nanmean(base_abs_errors)) if len(base_abs_errors) > 0 else 0.0
+        base_rmse = float(np.sqrt(np.nanmean(base_pct_errors ** 2))) if len(base_pct_errors) > 0 else 0.0
 
-        mape = float(np.nanmean(abs_errors)) if len(abs_errors) > 0 else 0.0
-        median_abs_error = float(np.nanmedian(abs_errors)) if len(abs_errors) > 0 else 0.0
-        rmse_pct = float(np.sqrt(np.nanmean(pct_errors ** 2))) if len(pct_errors) > 0 else 0.0
+        # Compute Neural Metrics (if evaluated)
+        neural_mape = float("inf")
+        neural_rmse = float("inf")
+        neural_eval_count = len(predictions_neural)
 
-        # Direction accuracy
-        directions_correct = 0
-        for i, p in enumerate(predictions):
-            if i + 1 < len(prices):
-                actual_next = float(prices[
-                    self.warmup_periods + (i * self.step_size) + 1
-                ]) if self.warmup_periods + (i * self.step_size) + 1 < len(prices) else actual
-                if actual > predictions[i]["actual"]:
-                    actual_dir = "UP"
-                elif actual < predictions[i]["actual"]:
-                    actual_dir = "DOWN"
-                else:
-                    actual_dir = "FLAT"
+        if neural_eval_count > 0 and neural_eval_count == len(predictions_base):
+            neur_pct_errors = np.array([p["pct_error"] for p in predictions_neural])
+            neur_abs_errors = np.abs(neur_pct_errors)
+            neural_mape = float(np.nanmean(neur_abs_errors))
+            neural_rmse = float(np.sqrt(np.nanmean(neur_pct_errors ** 2)))
 
-                if p["direction_predicted"] == actual_dir or actual_dir == "FLAT":
-                    directions_correct += 1
-
-        dir_accuracy = directions_correct / len(predictions) if predictions else 0.0
+        # Promotion Gate: Neural MUST exist, pass all steps, and achieve LOWER MAPE than Baseline
+        neural_promoted = (
+            self.neural_forecaster is not None
+            and neural_eval_count == len(predictions_base)
+            and neural_mape < base_mape
+        )
 
         return {
             "skin_name": skin_name,
-            "n_predictions": len(predictions),
-            "metrics": {
-                "mape_pct": round(mape, 2),
-                "median_abs_error_pct": round(median_abs_error, 2),
-                "rmse_pct": round(rmse_pct, 2),
-                "direction_accuracy": round(dir_accuracy, 3),
-                "bias_pct": round(float(np.nanmean(pct_errors)), 2),
+            "n_evaluations": len(predictions_base),
+            "baseline_metrics": {
+                "mape_pct": round(base_mape, 2),
+                "rmse_pct": round(base_rmse, 2),
+                "bias_pct": round(float(np.nanmean(base_pct_errors)), 2),
             },
-            "predictions": predictions,
+            "neural_metrics": {
+                "evaluations": neural_eval_count,
+                "mape_pct": round(neural_mape, 2) if neural_mape != float("inf") else None,
+                "rmse_pct": round(neural_rmse, 2) if neural_rmse != float("inf") else None,
+            } if self.neural_forecaster else None,
+            "comparison": {
+                "neural_promoted": neural_promoted,
+                "mape_improvement": round(base_mape - neural_mape, 2) if neural_mape != float("inf") else None,
+            }
         }
 
     def backtest_all(
@@ -157,13 +182,10 @@ class WalkForwardBacktester:
     ) -> Dict[str, Any]:
         """
         Run walk-forward backtest across all skins.
-
-        Returns:
-            Dict with 'results' (per-skin), 'aggregate' (summary stats),
-            and 'skipped' (skins with insufficient data).
         """
         results = []
         skipped = []
+        promoted_count = 0
 
         for skin_name, records in records_by_skin.items():
             try:
@@ -176,6 +198,8 @@ class WalkForwardBacktester:
                     })
                 else:
                     results.append(result)
+                    if result["comparison"]["neural_promoted"]:
+                        promoted_count += 1
             except Exception as exc:
                 logger.error("Backtest error for %s: %s", skin_name, exc)
                 skipped.append({
@@ -183,23 +207,18 @@ class WalkForwardBacktester:
                     "error": str(exc),
                 })
 
-        # Aggregate metrics
+        # Global aggregate stats
         aggregate = {}
         if results:
-            mapes = [r["metrics"]["mape_pct"] for r in results]
-            biases = [r["metrics"]["bias_pct"] for r in results]
-            dir_accs = [r["metrics"]["direction_accuracy"] for r in results]
-            total_preds = sum(r["n_predictions"] for r in results)
+            base_mapes = [r["baseline_metrics"]["mape_pct"] for r in results]
+            total_evals = sum(r["n_evaluations"] for r in results)
 
             aggregate = {
                 "n_skins_evaluated": len(results),
                 "n_skins_skipped": len(skipped),
-                "total_predictions": total_preds,
-                "mean_mape_pct": round(float(np.mean(mapes)), 2),
-                "median_mape_pct": round(float(np.median(mapes)), 2),
-                "mean_bias_pct": round(float(np.mean(biases)), 2),
-                "median_bias_pct": round(float(np.median(biases)), 2),
-                "mean_direction_accuracy": round(float(np.mean(dir_accs)), 3),
+                "total_evaluations": total_evals,
+                "baseline_mean_mape_pct": round(float(np.mean(base_mapes)), 2),
+                "neural_promotions": promoted_count,
             }
 
         return {
@@ -216,19 +235,16 @@ class WalkForwardBacktester:
 def run_backtest(
     records_by_skin: Dict[str, List[Dict[str, Any]]],
     config: Optional[ForecastConfig] = None,
-    warmup_periods: int = 10,
+    neural_forecaster: Optional[Any] = None,
+    warmup_periods: int = 15,
 ) -> Dict[str, Any]:
     """
-    High-level entry point for running a full backtest.
-
-    Args:
-        records_by_skin: {skin_name: [record_dict, ...]}
-        config: Optional ForecastConfig
-        warmup_periods: Min history points before first prediction
-
-    Returns:
-        Backtest result dict with aggregate metrics and per-skin details.
+    High-level entry point for running a full comparative backtest.
     """
     cfg = config or ForecastConfig()
-    backtester = WalkForwardBacktester(config=cfg, warmup_periods=warmup_periods)
+    backtester = WalkForwardBacktester(
+        config=cfg,
+        neural_forecaster=neural_forecaster,
+        warmup_periods=warmup_periods,
+    )
     return backtester.backtest_all(records_by_skin)

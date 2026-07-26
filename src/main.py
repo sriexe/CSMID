@@ -4,6 +4,7 @@ import time
 import logging
 import argparse
 from typing import Optional
+import numpy as np
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT_DIR not in sys.path:
@@ -17,7 +18,7 @@ from src.volatility import get_scrape_interval_for_item
 
 # Prediction pipeline imports
 from src.forecaster import ForecastConfig, generate_forecasts
-from src.backtest import run_backtest
+from src.backtest import run_backtest, WalkForwardBacktester
 from src.prediction_report import (
     format_forecast_report,
     format_forecast_summary_ntfy,
@@ -230,8 +231,8 @@ def run_pipeline(
             if use_neural and HAS_NEURAL:
                 logger.info("Using neural forecaster (falls back to baseline if no checkpoint)")
                 wrapper = NeuralForecasterWrapper(config=forecast_config)
+                backtester = WalkForwardBacktester(neural_forecaster=wrapper)
 
-                # Run forecasts using the wrapper
                 forecasts = {}
                 gated_out = []
                 errors = []
@@ -248,9 +249,26 @@ def run_pipeline(
                             })
                             continue
 
-                        # Build a simplified features dict from the extracted data
+                        # --- Promotion Gate via Walk-Forward Backtest ---
+                        backtest_res = backtester.backtest_skin(skin_name, records)
+                        neural_promoted = False
+                        mape_imp = 0.0
+
+                        if backtest_res and "comparison" in backtest_res:
+                            neural_promoted = backtest_res["comparison"].get("neural_promoted", False)
+                            mape_imp = backtest_res["comparison"].get("mape_improvement") or 0.0
+
+                        if neural_promoted:
+                            logger.info(f"🏆 Neural model PROMOTED for {skin_name}: MAPE improved by {mape_imp:.2f}%")
+                            is_experimental = False
+                        else:
+                            logger.info(f"🧪 Neural model EXPERIMENTAL for {skin_name}: Failed to beat baseline MAPE.")
+                            is_experimental = True
+
+                        # Build features & generate forecast
                         features = _features_from_dict(feat_dict, forecast_config)
                         result = wrapper.forecast(features)
+
                         if result is None:
                             gated_out.append({
                                 "skin_name": skin_name,
@@ -259,7 +277,10 @@ def run_pipeline(
                             })
                         else:
                             result["skin_name"] = skin_name
+                            result["is_experimental"] = is_experimental
+                            result["source"] = "baseline" if is_experimental else "neural"
                             forecasts[skin_name] = result
+
                     except Exception as exc:
                         errors.append({"skin_name": skin_name, "error": str(exc)})
                         logger.error("Neural forecast error for %s: %s", skin_name, exc)
@@ -412,10 +433,8 @@ def _features_from_dict(
     config: ForecastConfig,
 ) -> dict:
     """Build a BaselineForecaster-compatible features dict from neural adapter output."""
-    df = None
     try:
         extractor = __import__("src.forecaster", fromlist=["PriceFeatureExtractor"]).PriceFeatureExtractor()
-        # We don't have the raw records here, so construct from feat_dict
         prices = feat_dict.get("feature_matrix", [])
         n = len(prices)
         current_price = float(prices[-1, 0]) if n > 0 else 0.0

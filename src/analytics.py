@@ -157,6 +157,93 @@ def send_ntfy_alert(title: str, message: str, priority: str = "high", tags: Any 
     except Exception as e:
         logger.error(f"Error sending ntfy notification: {e}")
 
+import logging
+from typing import Any, Dict
+
+logger = logging.getLogger("CSMID.analytics")
+
+
+def process_alerts_and_notify(db: Any, notifier: Any, threshold_drop: float = 0.08) -> int:
+    """
+    Evaluates price anomalies and dispatches ntfy alerts.
+    
+    STRICT RULE: Alerts MUST originate from verified baseline statistical drops,
+    NEVER from experimental neural forecasts or unpromoted models.
+    """
+    logger.info("Processing price alerts for verified baseline drops...")
+
+    try:
+        anomalies = db.get_recent_anomalies(threshold_drop=threshold_drop)
+    except Exception as e:
+        logger.error(f"Failed to retrieve anomalies from database: {e}")
+        return 0
+
+    if not anomalies:
+        logger.info("No price anomalies detected.")
+        return 0
+
+    alerts_triggered = 0
+
+    for alert in anomalies:
+        skin_name = alert.get("skin_name", "Unknown Item")
+        source = alert.get("source", "baseline")
+        is_experimental = alert.get("is_experimental", False)
+
+        # 1. Enforce strict baseline-only rule
+        if source == "neural" or is_experimental:
+            logger.info(
+                f"🛡️ [GATE SUPPRESSED] Skipping alert for '{skin_name}': "
+                f"Source is '{source}' (is_experimental={is_experimental})."
+            )
+            continue
+
+        # 2. Extract and sanitize numerical values safely
+        current_price = alert.get("current_price")
+        avg_price = alert.get("avg_price") or alert.get("reference_price")
+        drop_pct = alert.get("drop_percent") or alert.get("drop_pct")
+
+        if current_price is None or avg_price is None:
+            logger.warning(f"Skipping incomplete alert payload for '{skin_name}' (missing prices)")
+            continue
+
+        # Handle decimal (0.12) vs percentage (12.0) conversion dynamically
+        if drop_pct is None and avg_price > 0:
+            drop_pct = ((avg_price - current_price) / avg_price) * 100.0
+        elif drop_pct is not None and drop_pct <= 1.0:
+            drop_pct = drop_pct * 100.0
+
+        # 3. Format push message payload
+        title = f"🚨 Price Drop: {skin_name}"
+        message = (
+            f"📉 Price Drop Alert: {skin_name}\n"
+            f"Current: ${float(current_price):.2f} | Reference: ${float(avg_price):.2f}\n"
+            f"Drop: {float(drop_pct):.1f}%"
+        )
+
+        # 4. Dispatch alert safely (supports class instances or standalone functions)
+        try:
+            if hasattr(notifier, "send_alert"):
+                notifier.send_alert(
+                    title=title,
+                    message=message,
+                    priority="high",
+                    tags=["warning", "moneybag"]
+                )
+            elif callable(notifier):
+                notifier(title, message, priority="high", tags="warning,moneybag")
+            else:
+                logger.error("Notifier provided is neither callable nor an object with .send_alert()")
+                break
+
+            alerts_triggered += 1
+            logger.info(f"🎯 Alert dispatched for '{skin_name}' (-{drop_pct:.1f}%)")
+
+        except Exception as exc:
+            logger.error(f"Failed to dispatch ntfy alert for '{skin_name}': {exc}")
+
+    logger.info(f"Finished alert processing. Dispatched {alerts_triggered} alert(s).")
+    return alerts_triggered
+
 
 # =====================================================================
 # 3. ANALYTICS PIPELINE ENTRY POINT
