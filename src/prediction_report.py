@@ -98,39 +98,29 @@ def format_forecast_report(results: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def format_forecast_summary_ntfy(results: Dict[str, Any]) -> str:
-    """
-    Compact summary suitable for ntfy push notification body.
+def format_forecast_summary_ntfy(results: dict) -> str:
+    """Format short summary for ntfy notifications (filters out experimental/unpromoted forecasts)."""
+    forecasts = results.get("forecasts", {})
+    
+    # Filter out experimental predictions
+    promoted_forecasts = {
+        skin: f for skin, f in forecasts.items() 
+        if not f.get("is_experimental", False)
+    }
+    
+    total = results.get("summary", {}).get("total_skins", 0)
+    promoted_count = len(promoted_forecasts)
+    
+    if not promoted_forecasts:
+        return f"📊 CSMID Forecast: 0/{total} skins promoted. (All experimental or gated out)."
 
-    Only includes skins with non-trivial predicted moves.
-    """
-    forecasts = results["forecasts"]
-    if not forecasts:
-        return "No forecasts available yet — insufficient data for all tracked skins."
-
-    # Filter to meaningful signals (pct_change > 2%)
-    signals = [
-        fc for fc in forecasts.values()
-        if abs(fc["pct_change"]) >= 2.0
-    ]
-
-    if not signals:
-        return "All forecasts show FLAT prices (±2%). No actionable signals."
-
-    lines = []
-    sorted_signals = sorted(signals, key=lambda x: abs(x["pct_change"]), reverse=True)
-
-    for fc in sorted_signals[:10]:
-        direction = fc["direction"]
-        lines.append(
-            f"{direction} {fc['skin_name']}: "
-            f"${fc['features']['current_price']:.4f} -> ${fc['predicted_price']:.4f} "
-            f"({fc['pct_change']:+.1f}%, conf={fc['confidence']:.2f})"
-        )
-
-    gated_count = results["summary"]["gated_out"]
-    lines.append("")
-    lines.append(f"{results['summary']['forecasted']} forecasted | {gated_count} gated out")
+    lines = [f"📊 CSMID Forecast ({promoted_count}/{total} Promoted):"]
+    for skin, f in promoted_forecasts.items():
+        curr = f.get("current_price", 0.0)
+        pred = f.get("predicted_price", 0.0)
+        pct = f.get("expected_change_pct", 0.0)
+        direction = "📈" if pct > 0 else "📉"
+        lines.append(f"{direction} {skin}: ${curr:.2f} ➔ ${pred:.2f} ({pct:+.1f}%)")
 
     return "\n".join(lines)
 

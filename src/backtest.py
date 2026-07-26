@@ -4,7 +4,7 @@ src/backtest.py — Walk-Forward Backtest Framework for CSMID
 Provides a rigorous walk-forward validation harness comparing baseline
 and neural forecasters. Splits historical data into training windows,
 evaluates both models on held-out future observations, and computes
-head-to-head accuracy metrics.
+head-to-head accuracy metrics including MAPE, RMSE, and Direction Accuracy.
 
 A neural model is strictly flagged as `neural_promoted = True` ONLY if it
 outperforms the parameter-free baseline in MAPE on identical evaluation steps.
@@ -37,7 +37,7 @@ class WalkForwardBacktester:
             df_past = data[:t]
             features = extract(df_past)
             pred_baseline = baseline.forecast(features)
-            pred_neural   = neural.forecast(features / df_past)
+            pred_neural   = neural.forecast(df_past)
             actual        = data[t]["price"]
             record_errors(pred_baseline, pred_neural, actual)
 
@@ -86,6 +86,7 @@ class WalkForwardBacktester:
         for t in range(self.warmup_periods, len(prices) - 1, self.step_size):
             df_past = df.iloc[:t]
             actual = float(prices[t])
+            last_price = float(df_past["price"].iloc[-1])
 
             # 1. Evaluate Baseline Model
             features = self.extractor.extract_features(df_past, self.config)
@@ -96,19 +97,25 @@ class WalkForwardBacktester:
             if forecast_base is None:
                 continue
 
-            pred_base = forecast_base["predicted_price"]
+            pred_base = float(forecast_base["predicted_price"])
             err_base = ((pred_base - actual) / actual) * 100 if actual != 0 else 0.0
+            
+            # Direction check: did baseline correctly predict price move sign?
+            actual_move = actual - last_price
+            pred_move_base = pred_base - last_price
+            dir_correct_base = 1.0 if np.sign(actual_move) == np.sign(pred_move_base) else 0.0
+
             predictions_base.append({
                 "predicted": pred_base,
                 "actual": actual,
                 "pct_error": err_base,
-                "direction": forecast_base["direction"],
+                "dir_correct": dir_correct_base,
+                "direction": forecast_base.get("direction", "NEUTRAL"),
             })
 
             # 2. Evaluate Neural Model (if provided & operational)
             if self.neural_forecaster is not None:
                 try:
-                    # Neural model predicts using available historical slice
                     neural_res = None
                     if hasattr(self.neural_forecaster, "forecast"):
                         neural_res = self.neural_forecaster.forecast(df_past)
@@ -122,10 +129,15 @@ class WalkForwardBacktester:
                             else neural_res
                         )
                         err_neural = ((pred_neural - actual) / actual) * 100 if actual != 0 else 0.0
+                        
+                        pred_move_neural = pred_neural - last_price
+                        dir_correct_neural = 1.0 if np.sign(actual_move) == np.sign(pred_move_neural) else 0.0
+
                         predictions_neural.append({
                             "predicted": pred_neural,
                             "actual": actual,
                             "pct_error": err_neural,
+                            "dir_correct": dir_correct_neural,
                         })
                 except Exception as exc:
                     logger.debug("Neural prediction step failed at t=%d for %s: %s", t, skin_name, exc)
@@ -138,10 +150,12 @@ class WalkForwardBacktester:
         base_abs_errors = np.abs(base_pct_errors)
         base_mape = float(np.nanmean(base_abs_errors)) if len(base_abs_errors) > 0 else 0.0
         base_rmse = float(np.sqrt(np.nanmean(base_pct_errors ** 2))) if len(base_pct_errors) > 0 else 0.0
+        base_dir_acc = float(np.nanmean([p["dir_correct"] for p in predictions_base]) * 100.0) if len(predictions_base) > 0 else 0.0
 
         # Compute Neural Metrics (if evaluated)
         neural_mape = float("inf")
         neural_rmse = float("inf")
+        neural_dir_acc = 0.0
         neural_eval_count = len(predictions_neural)
 
         if neural_eval_count > 0 and neural_eval_count == len(predictions_base):
@@ -149,6 +163,7 @@ class WalkForwardBacktester:
             neur_abs_errors = np.abs(neur_pct_errors)
             neural_mape = float(np.nanmean(neur_abs_errors))
             neural_rmse = float(np.sqrt(np.nanmean(neur_pct_errors ** 2)))
+            neural_dir_acc = float(np.nanmean([p["dir_correct"] for p in predictions_neural]) * 100.0)
 
         # Promotion Gate: Neural MUST exist, pass all steps, and achieve LOWER MAPE than Baseline
         neural_promoted = (
@@ -157,22 +172,32 @@ class WalkForwardBacktester:
             and neural_mape < base_mape
         )
 
+        base_metrics_dict = {
+            "mape_pct": round(base_mape, 2),
+            "rmse_pct": round(base_rmse, 2),
+            "bias_pct": round(float(np.nanmean(base_pct_errors)), 2),
+            "direction_accuracy": round(base_dir_acc, 2),
+        }
+
+        neural_metrics_dict = {
+            "evaluations": neural_eval_count,
+            "mape_pct": round(neural_mape, 2) if neural_mape != float("inf") else None,
+            "rmse_pct": round(neural_rmse, 2) if neural_rmse != float("inf") else None,
+            "direction_accuracy": round(neural_dir_acc, 2) if neural_eval_count > 0 else None,
+        } if self.neural_forecaster else None
+
         return {
             "skin_name": skin_name,
             "n_evaluations": len(predictions_base),
-            "baseline_metrics": {
-                "mape_pct": round(base_mape, 2),
-                "rmse_pct": round(base_rmse, 2),
-                "bias_pct": round(float(np.nanmean(base_pct_errors)), 2),
-            },
-            "neural_metrics": {
-                "evaluations": neural_eval_count,
-                "mape_pct": round(neural_mape, 2) if neural_mape != float("inf") else None,
-                "rmse_pct": round(neural_rmse, 2) if neural_rmse != float("inf") else None,
-            } if self.neural_forecaster else None,
+            "n_predictions": len(predictions_base),  # Alias for backward compatibility
+            "baseline_metrics": base_metrics_dict,
+            "metrics": base_metrics_dict,            # Alias for backward compatibility
+            "neural_metrics": neural_metrics_dict,
             "comparison": {
                 "neural_promoted": neural_promoted,
                 "mape_improvement": round(base_mape - neural_mape, 2) if neural_mape != float("inf") else None,
+                "baseline_direction_acc": round(base_dir_acc, 2),
+                "neural_direction_acc": round(neural_dir_acc, 2) if neural_eval_count > 0 else None,
             }
         }
 
@@ -211,18 +236,32 @@ class WalkForwardBacktester:
         aggregate = {}
         if results:
             base_mapes = [r["baseline_metrics"]["mape_pct"] for r in results]
+            base_dirs = [r["baseline_metrics"]["direction_accuracy"] for r in results]
             total_evals = sum(r["n_evaluations"] for r in results)
+
+            mean_mape = round(float(np.mean(base_mapes)), 2)
+            mean_dir_acc = round(float(np.mean(base_dirs)), 2)
 
             aggregate = {
                 "n_skins_evaluated": len(results),
+                "total_skins_evaluated": len(results),      # Alias
                 "n_skins_skipped": len(skipped),
                 "total_evaluations": total_evals,
-                "baseline_mean_mape_pct": round(float(np.mean(base_mapes)), 2),
+                "total_predictions": total_evals,             # Alias
+                "baseline_mean_mape_pct": mean_mape,
+                "mean_mape_pct": mean_mape,                   # Alias
+                "baseline_mean_direction_accuracy": mean_dir_acc,
+                "mean_direction_accuracy": mean_dir_acc,      # Alias
                 "neural_promotions": promoted_count,
+                "promoted_skins_count": promoted_count,       # Alias
             }
+
+        # Build dictionary map for skins lookup
+        skins_dict = {r["skin_name"]: r for r in results}
 
         return {
             "results": results,
+            "skins": skins_dict,
             "aggregate": aggregate,
             "skipped": skipped,
         }

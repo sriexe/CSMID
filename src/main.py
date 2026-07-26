@@ -399,7 +399,6 @@ def run_pipeline(
             if limit and limit > 0:
                 active_items = active_items[:limit]
 
-            # Collect all price history (need full history for backtest)
             records_by_skin = {}
             for skin_name in active_items:
                 records = db.get_price_history(skin_name=skin_name, limit=1000)
@@ -412,12 +411,25 @@ def run_pipeline(
                 logger.info("No price history found in database for backtesting.")
                 return
 
+            # Attach neural forecaster if requested
+            neural_wrapper = None
+            if use_neural:
+                if HAS_NEURAL:
+                    logger.info("Enabling Neural Forecaster for walk-forward comparison...")
+                    neural_wrapper = NeuralForecasterWrapper(config=forecast_config)
+                else:
+                    logger.warning("Neural flag set but PyTorch is unavailable. Falling back to baseline backtest.")
+
             # Run walk-forward backtest
-            results = run_backtest(records_by_skin, warmup_periods=backtest_warmup)
+            results = run_backtest(
+                records_by_skin, 
+                warmup_periods=backtest_warmup, 
+                neural_forecaster=neural_wrapper
+            )
             report = format_backtest_report(results)
             print(report)
 
-            # Optionally save Markdown report
+            # Save report
             md_path = os.path.join(ROOT_DIR, "data", "backtest_report.md")
             os.makedirs(os.path.dirname(md_path), exist_ok=True)
             with open(md_path, "w") as f:
