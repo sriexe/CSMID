@@ -453,79 +453,79 @@ class NeuralDataAdapter:
         return (features - self._means) / self._stds
 
     
-  def features_to_tensor(self, features_dict: Dict[str, Any]) -> Optional[Dict[str, torch.Tensor]]:
-      """
-      Convert a single skin's features into aligned, fixed-length tensors.
-      Each input timestep is paired with its next observed price target.
-      """
-      raw_all = features_dict["feature_matrix"]
-      intervals_all = features_dict["intervals"]
-      targets_all = features_dict["target_prices"]
-      currents_all = features_dict["current_prices"]
-  
-      # Feature rows have length N; next-price targets have length N-1.
-      # Drop the final feature row so inputs and targets stay aligned.
-      paired_len = min(
-          len(raw_all) - 1,
-          len(intervals_all) - 1,
-          len(targets_all),
-          len(currents_all),
-      )
-  
-      if paired_len < 10:
-          return None
-  
-      raw = raw_all[:paired_len]
-      intervals = intervals_all[:paired_len]
-      targets = targets_all[:paired_len]
-      currents = currents_all[:paired_len]
-  
-      # Keep the most recent aligned observations.
-      if paired_len > self.max_seq_len:
-          raw = raw[-self.max_seq_len:]
-          intervals = intervals[-self.max_seq_len:]
-          targets = targets[-self.max_seq_len:]
-          currents = currents[-self.max_seq_len:]
-  
-      # Pad every array to exactly the same sequence length.
-      pad_len = self.max_seq_len - len(raw)
-  
-      if pad_len > 0:
-          raw = np.pad(raw, ((pad_len, 0), (0, 0)), mode="constant")
-          intervals = np.pad(intervals, (pad_len, 0), mode="constant")
-          targets = np.pad(targets, (pad_len, 0), mode="constant")
-          currents = np.pad(currents, (pad_len, 0), mode="constant")
-  
-      # Catch future alignment problems with a useful error.
-      lengths = {
-          len(raw),
-          len(intervals),
-          len(targets),
-          len(currents),
-      }
-      if len(lengths) != 1 or len(raw) != self.max_seq_len:
-          raise ValueError(
-              "Sequence alignment failed: "
-              f"input={len(raw)}, intervals={len(intervals)}, "
-              f"targets={len(targets)}, current={len(currents)}"
-          )
-  
-      norm_features = self.normalize(raw)
-  
-      return {
-          "input": torch.tensor(
-              norm_features, dtype=torch.float32
-          ).unsqueeze(0),
-          "time_intervals": torch.tensor(
-              intervals, dtype=torch.float32
-          ).unsqueeze(0),
-          "target": torch.tensor(
-              targets, dtype=torch.float32
-          ).unsqueeze(0),
-          "current": torch.tensor(
-              currents, dtype=torch.float32
-          ).unsqueeze(0),
-      }
+    def features_to_tensor(self, features_dict: Dict[str, Any]) -> Optional[Dict[str, torch.Tensor]]:
+        """
+        Convert a single skin's features into aligned, fixed-length tensors.
+        Each input timestep is paired with its next observed price target.
+        """
+        raw_all = features_dict["feature_matrix"]
+        intervals_all = features_dict["intervals"]
+        targets_all = features_dict["target_prices"]
+        currents_all = features_dict["current_prices"]
+    
+        # Feature rows have length N; next-price targets have length N-1.
+        # Drop the final feature row so inputs and targets stay aligned.
+        paired_len = min(
+            len(raw_all) - 1,
+            len(intervals_all) - 1,
+            len(targets_all),
+            len(currents_all),
+        )
+    
+        if paired_len < 10:
+            return None
+    
+        raw = raw_all[:paired_len]
+        intervals = intervals_all[:paired_len]
+        targets = targets_all[:paired_len]
+        currents = currents_all[:paired_len]
+    
+        # Keep the most recent aligned observations.
+        if paired_len > self.max_seq_len:
+            raw = raw[-self.max_seq_len:]
+            intervals = intervals[-self.max_seq_len:]
+            targets = targets[-self.max_seq_len:]
+            currents = currents[-self.max_seq_len:]
+    
+        # Pad every array to exactly the same sequence length.
+        pad_len = self.max_seq_len - len(raw)
+    
+        if pad_len > 0:
+            raw = np.pad(raw, ((pad_len, 0), (0, 0)), mode="constant")
+            intervals = np.pad(intervals, (pad_len, 0), mode="constant")
+            targets = np.pad(targets, (pad_len, 0), mode="constant")
+            currents = np.pad(currents, (pad_len, 0), mode="constant")
+    
+        # Catch future alignment problems with a useful error.
+        lengths = {
+            len(raw),
+            len(intervals),
+            len(targets),
+            len(currents),
+        }
+        if len(lengths) != 1 or len(raw) != self.max_seq_len:
+            raise ValueError(
+                "Sequence alignment failed: "
+                f"input={len(raw)}, intervals={len(intervals)}, "
+                f"targets={len(targets)}, current={len(currents)}"
+            )
+    
+        norm_features = self.normalize(raw)
+    
+        return {
+            "input": torch.tensor(
+                norm_features, dtype=torch.float32
+            ).unsqueeze(0),
+            "time_intervals": torch.tensor(
+                intervals, dtype=torch.float32
+            ).unsqueeze(0),
+            "target": torch.tensor(
+                targets, dtype=torch.float32
+            ).unsqueeze(0),
+            "current": torch.tensor(
+                currents, dtype=torch.float32
+            ).unsqueeze(0),
+        }
 
 
     def build_dataset(
