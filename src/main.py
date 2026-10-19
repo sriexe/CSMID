@@ -277,8 +277,14 @@ def run_pipeline(
                             })
                         else:
                             result["skin_name"] = skin_name
-                            result["is_experimental"] = is_experimental
-                            result["source"] = "baseline" if is_experimental else "neural"
+                            # Neural inference is deliberately disabled in the wrapper.
+                            # A successful backtest must not relabel its baseline fallback.
+                            result["is_experimental"] = True
+                            result["source"] = "baseline"
+                            result["model_status"] = (
+                                "neural_disabled_contract_mismatch"
+                                if wrapper._has_model else "baseline_no_checkpoint"
+                            )
                             forecasts[skin_name] = result
 
                     except Exception as exc:
