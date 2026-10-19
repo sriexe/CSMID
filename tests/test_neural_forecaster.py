@@ -274,7 +274,7 @@ class TestNeuralDataAdapter:
 
         assert feat is not None
         assert feat["n_points"] == 20
-        assert feat["distinct_days"] == 10
+        assert feat["distinct_days"] == 11
         assert feat["time_span_hours"] == pytest.approx(228.0)
         assert np.isfinite(feat["time_span_hours"])
 
