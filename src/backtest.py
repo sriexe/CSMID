@@ -106,11 +106,14 @@ class WalkForwardBacktester:
             dir_correct_base = 1.0 if np.sign(actual_move) == np.sign(pred_move_base) else 0.0
 
             predictions_base.append({
+                "timestamp": df.iloc[t]["scraped_at"].isoformat()
+                if "scraped_at" in df.columns else None,
                 "predicted": pred_base,
                 "actual": actual,
                 "pct_error": err_base,
                 "dir_correct": dir_correct_base,
                 "direction": forecast_base.get("direction", "NEUTRAL"),
+                "direction_predicted": forecast_base.get("direction", "NEUTRAL"),
             })
 
             # 2. Evaluate Neural Model (if provided & operational)
@@ -134,6 +137,8 @@ class WalkForwardBacktester:
                         dir_correct_neural = 1.0 if np.sign(actual_move) == np.sign(pred_move_neural) else 0.0
 
                         predictions_neural.append({
+                            "timestamp": df.iloc[t]["scraped_at"].isoformat()
+                            if "scraped_at" in df.columns else None,
                             "predicted": pred_neural,
                             "actual": actual,
                             "pct_error": err_neural,
@@ -150,7 +155,7 @@ class WalkForwardBacktester:
         base_abs_errors = np.abs(base_pct_errors)
         base_mape = float(np.nanmean(base_abs_errors)) if len(base_abs_errors) > 0 else 0.0
         base_rmse = float(np.sqrt(np.nanmean(base_pct_errors ** 2))) if len(base_pct_errors) > 0 else 0.0
-        base_dir_acc = float(np.nanmean([p["dir_correct"] for p in predictions_base]) * 100.0) if len(predictions_base) > 0 else 0.0
+        base_dir_acc = float(np.nanmean([p["dir_correct"] for p in predictions_base])) if len(predictions_base) > 0 else 0.0
 
         # Compute Neural Metrics (if evaluated)
         neural_mape = float("inf")
@@ -163,7 +168,7 @@ class WalkForwardBacktester:
             neur_abs_errors = np.abs(neur_pct_errors)
             neural_mape = float(np.nanmean(neur_abs_errors))
             neural_rmse = float(np.sqrt(np.nanmean(neur_pct_errors ** 2)))
-            neural_dir_acc = float(np.nanmean([p["dir_correct"] for p in predictions_neural]) * 100.0)
+            neural_dir_acc = float(np.nanmean([p["dir_correct"] for p in predictions_neural]))
 
         # Promotion Gate: Neural MUST exist, pass all steps, and achieve LOWER MAPE than Baseline
         neural_promoted = (
@@ -174,9 +179,10 @@ class WalkForwardBacktester:
 
         base_metrics_dict = {
             "mape_pct": round(base_mape, 2),
+            "median_abs_error_pct": round(float(np.nanmedian(base_abs_errors)), 2),
             "rmse_pct": round(base_rmse, 2),
             "bias_pct": round(float(np.nanmean(base_pct_errors)), 2),
-            "direction_accuracy": round(base_dir_acc, 2),
+            "direction_accuracy": round(base_dir_acc, 4),
         }
 
         neural_metrics_dict = {
@@ -190,14 +196,15 @@ class WalkForwardBacktester:
             "skin_name": skin_name,
             "n_evaluations": len(predictions_base),
             "n_predictions": len(predictions_base),  # Alias for backward compatibility
+            "predictions": predictions_base,
             "baseline_metrics": base_metrics_dict,
             "metrics": base_metrics_dict,            # Alias for backward compatibility
             "neural_metrics": neural_metrics_dict,
             "comparison": {
                 "neural_promoted": neural_promoted,
                 "mape_improvement": round(base_mape - neural_mape, 2) if neural_mape != float("inf") else None,
-                "baseline_direction_acc": round(base_dir_acc, 2),
-                "neural_direction_acc": round(neural_dir_acc, 2) if neural_eval_count > 0 else None,
+                "baseline_direction_acc": round(base_dir_acc, 4),
+                "neural_direction_acc": round(neural_dir_acc, 4) if neural_eval_count > 0 else None,
             }
         }
 
@@ -239,8 +246,12 @@ class WalkForwardBacktester:
             base_dirs = [r["baseline_metrics"]["direction_accuracy"] for r in results]
             total_evals = sum(r["n_evaluations"] for r in results)
 
+            base_biases = [r["baseline_metrics"]["bias_pct"] for r in results]
+            median_mape = round(float(np.median(base_mapes)), 2)
+            mean_bias = round(float(np.mean(base_biases)), 2)
+            median_bias = round(float(np.median(base_biases)), 2)
             mean_mape = round(float(np.mean(base_mapes)), 2)
-            mean_dir_acc = round(float(np.mean(base_dirs)), 2)
+            mean_dir_acc = round(float(np.mean(base_dirs)), 4)
 
             aggregate = {
                 "n_skins_evaluated": len(results),
@@ -250,6 +261,9 @@ class WalkForwardBacktester:
                 "total_predictions": total_evals,             # Alias
                 "baseline_mean_mape_pct": mean_mape,
                 "mean_mape_pct": mean_mape,                   # Alias
+                "median_mape_pct": median_mape,
+                "mean_bias_pct": mean_bias,
+                "median_bias_pct": median_bias,
                 "baseline_mean_direction_accuracy": mean_dir_acc,
                 "mean_direction_accuracy": mean_dir_acc,      # Alias
                 "neural_promotions": promoted_count,

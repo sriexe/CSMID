@@ -97,6 +97,7 @@ class TestWalkForwardBacktester:
             assert "predicted" in pred
             assert "actual" in pred
             assert "pct_error" in pred
+            assert "timestamp" in pred
             assert "direction_predicted" in pred
             assert pred["predicted"] > 0
             assert pred["actual"] > 0
@@ -178,4 +179,7 @@ class TestBacktestAll:
         assert agg["n_skins_evaluated"] == 5
         assert agg["total_predictions"] > 0
         assert agg["mean_mape_pct"] >= 0
+        assert agg["median_mape_pct"] >= 0
+        assert "mean_bias_pct" in agg
+        assert "median_bias_pct" in agg
         assert 0 <= agg["mean_direction_accuracy"] <= 1
