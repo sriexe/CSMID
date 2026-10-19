@@ -299,6 +299,38 @@ class TestNeuralForecasterWrapper:
         wrapper = NeuralForecasterWrapper(checkpoint_path="/tmp/nonexistent.pt")
         assert not wrapper._has_model
 
+    def test_trained_checkpoint_still_uses_baseline_until_contract_is_fixed(self, monkeypatch):
+        """A loaded neural model must not emit forecasts with mismatched input/target contracts."""
+        wrapper = NeuralForecasterWrapper(
+            checkpoint_path="/tmp/nonexistent.pt",
+            config=ForecastConfig(),
+        )
+        wrapper._has_model = True
+        wrapper.model = object()
+
+        features = {
+            "current_price": 2.0,
+            "mean_price": 1.9,
+            "median_price": 1.95,
+            "std_price": 0.3,
+            "cv": 0.16,
+            "slope": 0.02,
+            "momentum": 0.03,
+            "volume_trend": 10.0,
+            "n_points": 35,
+            "distinct_days": 10,
+            "time_span_hours": 120.0,
+            "avg_interval_hours": 12.0,
+        }
+        expected = {"predicted_price": 2.01, "direction": "FLAT", "confidence": 0.5}
+        monkeypatch.setattr(wrapper.baseline, "forecast", lambda _features: expected)
+        monkeypatch.setattr(
+            wrapper, "_neural_forecast",
+            lambda _features: (_ for _ in ()).throw(AssertionError("unsafe neural inference called")),
+        )
+
+        assert wrapper.forecast(features) == expected
+
     def test_can_forecast_gate(self):
         wrapper = NeuralForecasterWrapper()
         assert wrapper.min_data_points >= 30  # Neural needs more data
