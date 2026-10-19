@@ -295,7 +295,10 @@ class TestNeuralDataAdapter:
         assert "inputs" in tensors
         assert "intervals" in tensors
         assert "targets" in tensors
-        assert tensors["inputs"].shape[0] == 3  # 3 skins
+        # The horizon-aware adapter emits multiple rolling windows per skin,
+        # not one fixed sample per skin.
+        assert tensors["inputs"].shape[0] > len(records_by_skin)
+        assert tensors["inputs"].shape[1] == adapter.max_seq_len
         assert tensors["inputs"].shape[2] == INPUT_DIM
         assert len(metadata) == 3
 
