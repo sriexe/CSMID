@@ -343,6 +343,12 @@ class TestNeuralForecasterWrapper:
             "distinct_days": 1,
             "time_span_hours": 2.0,
         })
+        # Zero elapsed time is inconsistent with multiple distinct days.
+        assert not wrapper.can_forecast({
+            "n_points": 35,
+            "distinct_days": wrapper.config.MIN_DISTINCT_DAYS,
+            "time_span_hours": 0.0,
+        })
         # Valid history must provide timestamp-derived sufficiency metadata.
         assert wrapper.can_forecast({
             "n_points": 35,
