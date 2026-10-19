@@ -15,6 +15,9 @@ Covers:
 import pytest
 import numpy as np
 import torch
+import pandas as pd
+import numpy as np
+import pytest
 import torch.nn as nn
 import sys
 import os
@@ -520,10 +523,21 @@ class TestHorizonAlignedDataset:
         assert tensors["targets"].ndim == 2
         assert tensors["targets"].shape[1] == len(tensors["horizons_hours"])
         assert tensors["horizons_hours"].tolist() == [1, 3, 6, 12, 24, 48, 72, 168]
-        # With 6-hour observations, a 12-hour target is two observations ahead.
-        # Since the synthetic price increases by 0.01 per observation, this
-        # target must be at least 0.02 above the anchor price.
-        assert torch.all(tensors["targets"][:, 3] > 1.0)
+        # Verify each horizon target against the first observed source price
+        # at or after anchor_time + horizon, not a feature-column proxy.
+        source = adapter.records_to_features(self._records())
+        source_times = pd.to_datetime(source["timestamps"], utc=True)
+        source_prices = source["prices"]
+        sample_times = pd.to_datetime(
+            tensors["sample_timestamps"].numpy(), unit="s", utc=True
+        )
+        for row, anchor_time in enumerate(sample_times):
+            for col, horizon in enumerate(tensors["horizons_hours"].tolist()):
+                target_time = anchor_time + pd.Timedelta(hours=horizon)
+                target_idx = int(np.flatnonzero(source_times >= target_time)[0])
+                assert tensors["targets"][row, col].item() == pytest.approx(
+                    float(source_prices[target_idx])
+                )
         assert len(metadata) == 1
 
     def test_no_sample_when_history_does_not_reach_longest_horizon(self):
