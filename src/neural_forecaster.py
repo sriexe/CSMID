@@ -425,6 +425,7 @@ class NeuralDataAdapter:
             "intervals": intervals,
             "target_prices": target_prices,
             "current_prices": current_prices,
+            "prices": prices,
             "n_points": len(df),
             # Derive history sufficiency from the cleaned, timestamped records.
             # Do not infer distinct days from the observation count.
@@ -569,12 +570,14 @@ class NeuralDataAdapter:
 
         # Output horizons are expressed in hours, matching the model head.
         horizons = list(NeuralPriceForecaster().output_horizons)
-        all_inputs, all_intervals, all_targets, all_timestamps = [], [], [], []
+        all_inputs, all_intervals, all_targets, all_timestamps, all_skin_ids = [], [], [], [], []
+        skin_names = list(features_by_skin.keys())
 
-        for feat in features_by_skin.values():
+        for skin_index, skin_name in enumerate(skin_names):
+            feat = features_by_skin[skin_name]
             raw = feat["feature_matrix"]
             intervals = feat["intervals"]
-            prices = np.asarray(feat["current_prices"], dtype=float)
+            prices = np.asarray(feat["prices"], dtype=float)
             timestamps = pd.to_datetime(feat["timestamps"], utc=True)
             if len(raw) < self.max_seq_len + 1:
                 # Left-pad short histories; do not fabricate target labels.
@@ -593,9 +596,7 @@ class NeuralDataAdapter:
                         valid = False
                         break
                     target_idx = int(future_indices[0])
-                    target_price = float(feat["feature_matrix"][target_idx, 0])
-                    # FEATURE_COLUMNS[0] is lowest_price; use cleaned price
-                    # series from the source DataFrame via target feature value.
+                    target_price = float(prices[target_idx])
                     if not np.isfinite(target_price) or target_price <= 0:
                         valid = False
                         break
@@ -615,6 +616,7 @@ class NeuralDataAdapter:
                 all_intervals.append(window_intervals.astype(np.float32))
                 all_targets.append(np.asarray(targets_for_horizons, dtype=np.float32))
                 all_timestamps.append(anchor_time.timestamp())
+                all_skin_ids.append(skin_index)
 
         if not all_inputs:
             return {}, features_by_skin
@@ -625,6 +627,7 @@ class NeuralDataAdapter:
             "intervals": torch.tensor(np.asarray(all_intervals)[order], dtype=torch.float32),
             "targets": torch.tensor(np.asarray(all_targets)[order], dtype=torch.float32),
             "sample_timestamps": torch.tensor(np.asarray(all_timestamps)[order], dtype=torch.float64),
+            "sample_skin_ids": torch.tensor(np.asarray(all_skin_ids)[order], dtype=torch.int64),
             "scaler_mean": torch.tensor(self._means.copy(), dtype=torch.float32),
             "scaler_std": torch.tensor(self._stds.copy(), dtype=torch.float32),
             "horizons_hours": torch.tensor(horizons, dtype=torch.int64),
@@ -695,11 +698,8 @@ class NeuralTrainer:
         n_samples = inputs.size(0)
         if n_samples < 2:
             raise ValueError("At least two timestamp-aligned samples are required for training")
-        val_size = max(int(n_samples * val_split), 1)
-        train_size = n_samples - val_size
-        if train_size < 1:
-            raise ValueError("Validation split leaves no training samples")
-        # build_dataset sorts samples chronologically; split at the time boundary.
+        if not 0.0 < val_split < 1.0:
+            raise ValueError("val_split must be between 0 and 1")
         horizons = tensors.get("horizons_hours")
         if horizons is None:
             raise ValueError("Training targets must include explicit horizon metadata")
@@ -708,15 +708,36 @@ class NeuralTrainer:
             raise ValueError("Trainer requires a configured 12-hour target at horizon_index")
         if targets.ndim != 2 or targets.shape[1] != len(horizons_list):
             raise ValueError("Targets must be [samples, configured horizons], not sequences")
+        if "sample_skin_ids" not in tensors or "sample_timestamps" not in tensors:
+            raise ValueError("Per-skin timestamps are required for chronological validation")
 
-        # Split (no shuffle — walk-forward style, last val_split is validation)
-        train_inputs = inputs[:train_size]
-        train_intervals = intervals[:train_size]
-        train_targets = targets[:train_size]
+        # Split chronologically inside each skin, then embargo training anchors
+        # whose longest-horizon labels could reach into the validation period.
+        skin_ids = tensors["sample_skin_ids"].cpu().numpy()
+        timestamps = tensors["sample_timestamps"].cpu().numpy()
+        train_indices, val_indices = [], []
+        embargo_seconds = max(horizons_list) * 3600.0
+        for skin_id in np.unique(skin_ids):
+            indices = np.flatnonzero(skin_ids == skin_id)
+            indices = indices[np.argsort(timestamps[indices])]
+            if len(indices) < 3:
+                continue
+            split_at = int(len(indices) * (1.0 - val_split))
+            split_at = min(max(split_at, 1), len(indices) - 1)
+            skin_train = indices[:split_at]
+            skin_val = indices[split_at:]
+            validation_start = timestamps[skin_val[0]]
+            skin_train = skin_train[timestamps[skin_train] + embargo_seconds < validation_start]
+            train_indices.extend(skin_train.tolist())
+            val_indices.extend(skin_val.tolist())
 
-        val_inputs = inputs[train_size:]
-        val_intervals = intervals[train_size:]
-        val_targets = targets[train_size:]
+        if not train_indices or not val_indices:
+            raise ValueError("Insufficient per-skin samples for chronological train/validation split")
+        train_idx = torch.tensor(train_indices, dtype=torch.long, device=device)
+        val_idx = torch.tensor(val_indices, dtype=torch.long, device=device)
+        train_inputs, train_intervals, train_targets = inputs[train_idx], intervals[train_idx], targets[train_idx]
+        val_inputs, val_intervals, val_targets = inputs[val_idx], intervals[val_idx], targets[val_idx]
+        train_size = len(train_indices)
 
         history = {"train_loss": [], "val_loss": [], "temperature": []}
 
@@ -834,9 +855,21 @@ class NeuralTrainer:
             model.eval()
             trainer = cls(model)
             trainer.model = model
-            trainer.scaler_mean = checkpoint["scaler_mean"].cpu().numpy()
-            trainer.scaler_std = checkpoint["scaler_std"].cpu().numpy()
-            trainer.horizons_hours = list(checkpoint["horizons_hours"])
+            scaler_mean = checkpoint["scaler_mean"].cpu().numpy()
+            scaler_std = checkpoint["scaler_std"].cpu().numpy()
+            horizons_hours = list(checkpoint["horizons_hours"])
+            if scaler_mean.shape != (INPUT_DIM,) or scaler_std.shape != (INPUT_DIM,):
+                logger.warning("Rejecting checkpoint with invalid scaler dimensions: %s", path)
+                return None
+            if not np.all(np.isfinite(scaler_mean)) or not np.all(np.isfinite(scaler_std)) or np.any(scaler_std <= 0):
+                logger.warning("Rejecting checkpoint with invalid scaler values: %s", path)
+                return None
+            if horizons_hours != list(model.output_horizons):
+                logger.warning("Rejecting checkpoint with incompatible horizon metadata: %s", path)
+                return None
+            trainer.scaler_mean = scaler_mean
+            trainer.scaler_std = scaler_std
+            trainer.horizons_hours = horizons_hours
             return trainer
         except (KeyError, TypeError, ValueError, RuntimeError, OSError) as exc:
             logger.warning("Rejecting incompatible neural checkpoint %s: %s", path, exc)
@@ -878,6 +911,10 @@ class NeuralForecasterWrapper:
             logger.info("No neural checkpoint found — will use baseline fallback")
 
         self.adapter = NeuralDataAdapter()
+        if trainer is not None:
+            self.adapter._means = trainer.scaler_mean.copy()
+            self.adapter._stds = trainer.scaler_std.copy()
+            self.adapter._fitted = True
         self._baseline = None  # Lazy-loaded
 
     @property
@@ -1040,8 +1077,9 @@ def train_neural_model(
         logger.warning("No usable training data after feature extraction.")
         return {"status": "skipped", "reason": "no_training_data"}
 
-    n_skins = tensors["inputs"].size(0)
-    logger.info("Training on %d skins, input shape: %s", n_skins, str(tensors["inputs"].shape))
+    n_skins = len(features_by_skin)
+    n_windows = tensors["inputs"].size(0)
+    logger.info("Training on %d skins and %d rolling windows, input shape: %s", n_skins, n_windows, str(tensors["inputs"].shape))
 
     # Create model
     model = NeuralPriceForecaster(input_dim=INPUT_DIM)
