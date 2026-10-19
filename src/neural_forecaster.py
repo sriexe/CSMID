@@ -807,7 +807,7 @@ class NeuralForecasterWrapper:
         return (
             n_points >= self.min_data_points
             and distinct_days >= self.config.MIN_DISTINCT_DAYS
-            and time_span_hours >= 0.0
+            and time_span_hours > 0.0
         )
 
     def forecast(self, features: Dict[str, Any]) -> Optional[Dict[str, Any]]:
