@@ -334,11 +334,43 @@ class TestNeuralForecasterWrapper:
     def test_can_forecast_gate(self):
         wrapper = NeuralForecasterWrapper()
         assert wrapper.min_data_points >= 30  # Neural needs more data
-        # Below gate
+        # Below point-count gate
         assert not wrapper.can_forecast({})
         assert not wrapper.can_forecast({"n_points": 5})
-        # Above gate
-        assert wrapper.can_forecast({"n_points": 35})
+        # Point count alone must never imply sufficient distinct-day history.
+        assert not wrapper.can_forecast({
+            "n_points": 35,
+            "distinct_days": 1,
+            "time_span_hours": 2.0,
+        })
+        # Valid history must provide timestamp-derived sufficiency metadata.
+        assert wrapper.can_forecast({
+            "n_points": 35,
+            "distinct_days": wrapper.config.MIN_DISTINCT_DAYS,
+            "time_span_hours": 96.0,
+        })
+
+    def test_loaded_checkpoint_rejects_clustered_history_before_fallback(self, monkeypatch):
+        """A loaded checkpoint must not bypass the baseline's distinct-day gate."""
+        wrapper = NeuralForecasterWrapper(
+            checkpoint_path="/tmp/nonexistent.pt",
+            config=ForecastConfig(),
+        )
+        wrapper._has_model = True
+        wrapper.model = object()
+        features = {
+            "current_price": 2.0,
+            "n_points": 35,
+            "distinct_days": 1,
+            "time_span_hours": 2.0,
+        }
+        monkeypatch.setattr(
+            wrapper.baseline, "forecast",
+            lambda _features: (_ for _ in ()).throw(
+                AssertionError("baseline forecast called for clustered history")
+            ),
+        )
+        assert wrapper.forecast(features) is None
 
     def test_fallback_to_baseline(self):
         """When no neural checkpoint, forecast uses baseline."""
