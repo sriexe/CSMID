@@ -20,6 +20,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Include prerequisite backtest fixes for stacked PR validation
+        run: |
+          git fetch origin fix/backtest-report-metrics
+          git merge --no-edit origin/fix/backtest-report-metrics
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
