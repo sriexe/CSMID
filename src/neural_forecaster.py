@@ -796,11 +796,20 @@ class NeuralForecasterWrapper:
         if not self.can_forecast(features):
             return None
 
-        # If neural model is trained, use it
+        # Neural inference is intentionally disabled until training and inference
+        # share the same feature scaler and target units. The current checkpoint
+        # stores neither the fitted adapter scaler nor a target-transform contract,
+        # and _neural_forecast builds a synthetic one-timestep input while training
+        # uses a 50-timestep history. Using that output can produce extreme prices.
+        # Keep production forecasts on the interpretable baseline until this
+        # contract is fixed and validated end to end.
         if self._has_model and self.model is not None:
-            return self._neural_forecast(features)
+            logger.warning(
+                "Neural checkpoint found, but neural inference is disabled because "
+                "training/inference feature and target contracts are not aligned; "
+                "using baseline forecast."
+            )
 
-        # Otherwise fall back to baseline
         return self.baseline.forecast(features)
 
     def _neural_forecast(self, features: Dict[str, Any]) -> Optional[Dict[str, Any]]:
