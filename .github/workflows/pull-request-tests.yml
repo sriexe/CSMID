@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - fix/disable-unsafe-neural-inference
+      - fix/neural-fallback-history-gate
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
