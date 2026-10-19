@@ -488,8 +488,8 @@ def _features_from_dict(
             "momentum": momentum,
             "volume_trend": vol_trend,
             "n_points": feat_dict.get("n_points", n),
-            "distinct_days": feat_dict.get("n_points", n),
-            "time_span_hours": avg_interval * (n - 1) if n > 1 else 0.0,
+            "distinct_days": feat_dict.get("distinct_days", 0),
+            "time_span_hours": feat_dict.get("time_span_hours", 0.0),
             "avg_interval_hours": avg_interval,
         }
     except Exception:
@@ -504,8 +504,8 @@ def _features_from_dict(
             "momentum": 0.0,
             "volume_trend": 0.0,
             "n_points": feat_dict.get("n_points", 0),
-            "distinct_days": feat_dict.get("n_points", 0),
-            "time_span_hours": 0.0,
+            "distinct_days": feat_dict.get("distinct_days", 0),
+            "time_span_hours": feat_dict.get("time_span_hours", 0.0),
             "avg_interval_hours": 12.0,
         }
 
