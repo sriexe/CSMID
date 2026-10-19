@@ -426,6 +426,13 @@ class NeuralDataAdapter:
             "target_prices": target_prices,
             "current_prices": current_prices,
             "n_points": len(df),
+            # Derive history sufficiency from the cleaned, timestamped records.
+            # Do not infer distinct days from the observation count.
+            "distinct_days": int(df["scraped_at"].dt.date.nunique()),
+            "time_span_hours": (
+                float((df["scraped_at"].iloc[-1] - df["scraped_at"].iloc[0]).total_seconds() / 3600.0)
+                if len(df) > 1 else 0.0
+            ),
             "skin_name": records[0].get("skin_name", "unknown"),
             "timestamps": df["scraped_at"].values,
         }
@@ -786,7 +793,22 @@ class NeuralForecasterWrapper:
     def can_forecast(self, features: Dict[str, Any]) -> bool:
         if not features:
             return False
-        return features.get("n_points", 0) >= self.min_data_points
+
+        # The wrapper falls back to the baseline, so it must enforce the
+        # baseline's full history gate too. These values must come from the
+        # cleaned record timestamps, not be synthesized from n_points.
+        try:
+            n_points = int(features.get("n_points", 0))
+            distinct_days = int(features.get("distinct_days", 0))
+            time_span_hours = float(features.get("time_span_hours", 0.0))
+        except (TypeError, ValueError):
+            return False
+
+        return (
+            n_points >= self.min_data_points
+            and distinct_days >= self.config.MIN_DISTINCT_DAYS
+            and time_span_hours >= 0.0
+        )
 
     def forecast(self, features: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
