@@ -14,10 +14,8 @@ Covers:
 
 import pytest
 import numpy as np
-import torch
 import pandas as pd
-import numpy as np
-import pytest
+import torch
 import torch.nn as nn
 import sys
 import os
