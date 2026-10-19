@@ -494,3 +494,50 @@ class TestEdgeCases:
         # Should not crash — zeros get filtered by the extractor
         # The extractor drops rows with price <= 0
         assert feat is None  # All zeros → filtered out → < 10 points
+
+
+
+class TestHorizonAlignedDataset:
+    def _records(self, count=100, interval_hours=6):
+        import datetime
+        start = datetime.datetime(2026, 1, 1, 0, 0, 0)
+        return [{
+            "skin_name": "Synthetic Case",
+            "hash_name": "Synthetic Case",
+            "lowest_price": 1.0 + i * 0.01,
+            "median_price": 1.0 + i * 0.01,
+            "volume": 10 + i,
+            "scraped_at": (start + datetime.timedelta(hours=interval_hours * i)).isoformat() + "Z",
+        } for i in range(count)]
+
+    def test_targets_are_prices_at_or_after_configured_horizons(self):
+        adapter = NeuralDataAdapter(max_seq_len=10)
+        tensors, metadata = adapter.build_dataset({"Synthetic Case": self._records()})
+        assert tensors
+        assert tensors["targets"].ndim == 2
+        assert tensors["targets"].shape[1] == len(tensors["horizons_hours"])
+        assert tensors["horizons_hours"].tolist() == [1, 3, 6, 12, 24, 48, 72, 168]
+        # With 6-hour observations, a 12-hour target is two observations ahead.
+        # Since the synthetic price increases by 0.01 per observation, this
+        # target must be at least 0.02 above the anchor price.
+        assert torch.all(tensors["targets"][:, 3] > 1.0)
+        assert len(metadata) == 1
+
+    def test_no_sample_when_history_does_not_reach_longest_horizon(self):
+        adapter = NeuralDataAdapter(max_seq_len=10)
+        tensors, _ = adapter.build_dataset({
+            "Synthetic Case": self._records(count=20, interval_hours=6)
+        })
+        assert tensors == {}
+
+    def test_legacy_checkpoint_is_rejected(self, tmp_path):
+        legacy = tmp_path / "legacy.pt"
+        torch.save({"model_state_dict": NeuralPriceForecaster().state_dict()}, legacy)
+        assert NeuralForecasterWrapper(checkpoint_path=str(legacy))._has_model is False
+
+    def test_scaler_metadata_is_present_in_training_dataset(self):
+        adapter = NeuralDataAdapter(max_seq_len=10)
+        tensors, _ = adapter.build_dataset({"Synthetic Case": self._records()})
+        assert tensors["scaler_mean"].shape == (INPUT_DIM,)
+        assert tensors["scaler_std"].shape == (INPUT_DIM,)
+        assert torch.all(tensors["scaler_std"] > 0)
