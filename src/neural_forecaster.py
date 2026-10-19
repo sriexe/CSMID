@@ -540,13 +540,10 @@ class NeuralDataAdapter:
         records_by_skin: Dict[str, List[Dict[str, Any]]],
     ) -> Tuple[Dict[str, torch.Tensor], Dict[str, Dict[str, Any]]]:
         """
-        Build training tensors for all skins.
-
-        Returns:
-            tensors: {"inputs": [N, T, D], "intervals": [N, T], "targets": [N, T]}
-            metadata: per-skin feature info for reporting
+        Build timestamp-aligned rolling windows with explicit future-price
+        targets for each model horizon. A sample is retained only when every
+        configured horizon has an observed price at or after its target time.
         """
-        # Phase 1: extract features per skin
         features_by_skin = {}
         for skin_name, records in records_by_skin.items():
             feat = self.records_to_features(records)
@@ -556,28 +553,81 @@ class NeuralDataAdapter:
         if not features_by_skin:
             return {}, {}
 
-        # Phase 2: fit scaler
-        self.fit_scaler(list(features_by_skin.values()))
+        # Keep the current scaler interface, but fit only on each skin's
+        # earliest 80% of observations to reduce validation-period leakage.
+        train_feature_rows = []
+        for feat in features_by_skin.values():
+            matrix = feat["feature_matrix"]
+            cutoff = max(1, int(len(matrix) * 0.8))
+            train_feature_rows.append(matrix[:cutoff])
+        if train_feature_rows:
+            combined = np.vstack(train_feature_rows)
+            self._means = combined.mean(axis=0)
+            self._stds = combined.std(axis=0)
+            self._stds[self._stds == 0] = 1.0
+            self._fitted = True
 
-        # Phase 3: convert to tensors
-        inputs = []
-        intervals = []
-        targets = []
+        # Output horizons are expressed in hours, matching the model head.
+        horizons = list(NeuralPriceForecaster().output_horizons)
+        all_inputs, all_intervals, all_targets, all_timestamps = [], [], [], []
 
-        for skin_name, feat in features_by_skin.items():
-            tensor_dict = self.features_to_tensor(feat)
-            if tensor_dict is not None:
-                inputs.append(tensor_dict["input"])
-                intervals.append(tensor_dict["time_intervals"])
-                targets.append(tensor_dict["target"])
+        for feat in features_by_skin.values():
+            raw = feat["feature_matrix"]
+            intervals = feat["intervals"]
+            prices = np.asarray(feat["current_prices"], dtype=float)
+            timestamps = pd.to_datetime(feat["timestamps"], utc=True)
+            if len(raw) < self.max_seq_len + 1:
+                # Left-pad short histories; do not fabricate target labels.
+                min_endpoint = 9
+            else:
+                min_endpoint = 9
 
-        if not inputs:
-            return {}, {}
+            for endpoint in range(min_endpoint, len(raw) - 1):
+                anchor_time = timestamps[endpoint]
+                targets_for_horizons = []
+                valid = True
+                for horizon in horizons:
+                    target_time = anchor_time + pd.Timedelta(hours=float(horizon))
+                    future_indices = np.flatnonzero(timestamps >= target_time)
+                    if len(future_indices) == 0:
+                        valid = False
+                        break
+                    target_idx = int(future_indices[0])
+                    target_price = float(feat["feature_matrix"][target_idx, 0])
+                    # FEATURE_COLUMNS[0] is lowest_price; use cleaned price
+                    # series from the source DataFrame via target feature value.
+                    if not np.isfinite(target_price) or target_price <= 0:
+                        valid = False
+                        break
+                    targets_for_horizons.append(target_price)
+                if not valid:
+                    continue
 
+                left = max(0, endpoint - self.max_seq_len + 1)
+                window = raw[left:endpoint + 1]
+                window_intervals = intervals[left:endpoint + 1]
+                pad_len = self.max_seq_len - len(window)
+                if pad_len > 0:
+                    window = np.pad(window, ((pad_len, 0), (0, 0)), mode="constant")
+                    window_intervals = np.pad(window_intervals, (pad_len, 0), mode="constant")
+                normalized = self.normalize(window)
+                all_inputs.append(normalized.astype(np.float32))
+                all_intervals.append(window_intervals.astype(np.float32))
+                all_targets.append(np.asarray(targets_for_horizons, dtype=np.float32))
+                all_timestamps.append(anchor_time.timestamp())
+
+        if not all_inputs:
+            return {}, features_by_skin
+
+        order = np.argsort(np.asarray(all_timestamps))
         return {
-            "inputs": torch.cat(inputs, dim=0),
-            "intervals": torch.cat(intervals, dim=0),
-            "targets": torch.cat(targets, dim=0),
+            "inputs": torch.tensor(np.asarray(all_inputs)[order], dtype=torch.float32),
+            "intervals": torch.tensor(np.asarray(all_intervals)[order], dtype=torch.float32),
+            "targets": torch.tensor(np.asarray(all_targets)[order], dtype=torch.float32),
+            "sample_timestamps": torch.tensor(np.asarray(all_timestamps)[order], dtype=torch.float64),
+            "scaler_mean": torch.tensor(self._means.copy(), dtype=torch.float32),
+            "scaler_std": torch.tensor(self._stds.copy(), dtype=torch.float32),
+            "horizons_hours": torch.tensor(horizons, dtype=torch.int64),
         }, features_by_skin
 
 
@@ -643,8 +693,21 @@ class NeuralTrainer:
         targets = tensors["targets"].to(device)
 
         n_samples = inputs.size(0)
+        if n_samples < 2:
+            raise ValueError("At least two timestamp-aligned samples are required for training")
         val_size = max(int(n_samples * val_split), 1)
         train_size = n_samples - val_size
+        if train_size < 1:
+            raise ValueError("Validation split leaves no training samples")
+        # build_dataset sorts samples chronologically; split at the time boundary.
+        horizons = tensors.get("horizons_hours")
+        if horizons is None:
+            raise ValueError("Training targets must include explicit horizon metadata")
+        horizons_list = [int(value) for value in horizons.tolist()]
+        if self.horizon_index >= len(horizons_list) or horizons_list[self.horizon_index] != 12:
+            raise ValueError("Trainer requires a configured 12-hour target at horizon_index")
+        if targets.ndim != 2 or targets.shape[1] != len(horizons_list):
+            raise ValueError("Targets must be [samples, configured horizons], not sequences")
 
         # Split (no shuffle — walk-forward style, last val_split is validation)
         train_inputs = inputs[:train_size]
@@ -679,8 +742,8 @@ class NeuralTrainer:
                 preds, _ = self.model(x, ti)
                 # Predict price at the chosen horizon
                 y_pred = preds[:, self.horizon_index, 0]  # [B]
-                # Target: price at the same horizon step
-                y_target = y_true[:, -1]  # Last timestep = current → predict next
+                # The target column is explicitly aligned to this output horizon.
+                y_target = y_true[:, self.horizon_index]
                 loss = self.loss_fn(y_pred, y_target)
 
                 self.optimizer.zero_grad()
@@ -696,7 +759,7 @@ class NeuralTrainer:
             with torch.no_grad():
                 val_preds, _ = self.model(val_inputs, val_intervals)
                 val_y_pred = val_preds[:, self.horizon_index, 0]
-                val_y_true = val_targets[:, -1]
+                val_y_true = val_targets[:, self.horizon_index]
                 val_loss = self.loss_fn(val_y_pred, val_y_true).item()
 
             train_loss = epoch_loss / max(n_batches, 1)
@@ -716,8 +779,21 @@ class NeuralTrainer:
         # Save checkpoint
         MODEL_DIR.mkdir(parents=True, exist_ok=True)
         torch.save({
+            "format_version": 2,
             "model_state_dict": self.model.state_dict(),
             "optimizer_state_dict": self.optimizer.state_dict(),
+            "model_config": {
+                "input_dim": self.model.input_dim,
+                "proj_dim": self.model.proj_dim,
+                "ff_dim": self.model.ff_dim,
+                "tcn_channels": self.model.tcn_channels,
+                "output_horizons": self.model.output_horizons,
+            },
+            "feature_columns": FEATURE_COLUMNS,
+            "target_type": "observed_price_at_or_after_horizon",
+            "horizons_hours": [int(value) for value in tensors["horizons_hours"].tolist()],
+            "scaler_mean": tensors["scaler_mean"].cpu(),
+            "scaler_std": tensors["scaler_std"].cpu(),
             "epoch": self.epochs,
             "train_loss": history["train_loss"][-1],
             "val_loss": history["val_loss"][-1],
@@ -734,15 +810,37 @@ class NeuralTrainer:
             return None
 
         device = torch.device("cpu")
-        checkpoint = torch.load(path, map_location=device, weights_only=True)
-
-        model = NeuralPriceForecaster()
-        model.load_state_dict(checkpoint["model_state_dict"])
-        model.eval()
-
-        trainer = cls(model)
-        trainer.model = model
-        return trainer
+        try:
+            checkpoint = torch.load(path, map_location=device, weights_only=True)
+            # Legacy checkpoints lack a trustworthy target/scaler contract.
+            if checkpoint.get("format_version") != 2:
+                logger.warning("Rejecting legacy neural checkpoint without horizon/scaler contract: %s", path)
+                return None
+            if checkpoint.get("target_type") != "observed_price_at_or_after_horizon":
+                logger.warning("Rejecting checkpoint with unknown target contract: %s", path)
+                return None
+            if checkpoint.get("feature_columns") != FEATURE_COLUMNS:
+                logger.warning("Rejecting checkpoint with incompatible feature columns: %s", path)
+                return None
+            config = checkpoint.get("model_config", {})
+            model = NeuralPriceForecaster(
+                input_dim=config.get("input_dim", INPUT_DIM),
+                proj_dim=config.get("proj_dim", 64),
+                ff_dim=config.get("ff_dim", 128),
+                tcn_channels=config.get("tcn_channels", [64, 64, 128]),
+                output_horizons=config.get("output_horizons"),
+            )
+            model.load_state_dict(checkpoint["model_state_dict"])
+            model.eval()
+            trainer = cls(model)
+            trainer.model = model
+            trainer.scaler_mean = checkpoint["scaler_mean"].cpu().numpy()
+            trainer.scaler_std = checkpoint["scaler_std"].cpu().numpy()
+            trainer.horizons_hours = list(checkpoint["horizons_hours"])
+            return trainer
+        except (KeyError, TypeError, ValueError, RuntimeError, OSError) as exc:
+            logger.warning("Rejecting incompatible neural checkpoint %s: %s", path, exc)
+            return None
 
 
 # =====================================================================
