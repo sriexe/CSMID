@@ -257,6 +257,27 @@ class TestNeuralDataAdapter:
         assert feat["n_points"] == 20
         assert feat["feature_matrix"].shape[1] == INPUT_DIM
 
+    def test_records_to_features_ignores_missing_timestamps(self):
+        """A null timestamp must not poison otherwise valid history metadata."""
+        adapter = NeuralDataAdapter()
+        records = self._make_records(20)
+        records.append({
+            "skin_name": "Test Case",
+            "hash_name": "Test Case",
+            "lowest_price": 1.25,
+            "median_price": 1.25,
+            "volume": 20,
+            "scraped_at": None,
+        })
+
+        feat = adapter.records_to_features(records)
+
+        assert feat is not None
+        assert feat["n_points"] == 20
+        assert feat["distinct_days"] == 10
+        assert feat["time_span_hours"] == pytest.approx(228.0)
+        assert np.isfinite(feat["time_span_hours"])
+
     def test_insufficient_data(self):
         adapter = NeuralDataAdapter()
         records = self._make_records(5)
