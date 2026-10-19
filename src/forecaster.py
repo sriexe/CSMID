@@ -64,7 +64,10 @@ class PriceFeatureExtractor:
             return pd.DataFrame()
 
         df = pd.DataFrame(records)
-        df["scraped_at"] = pd.to_datetime(df["scraped_at"], utc=True)
+        df["scraped_at"] = pd.to_datetime(df["scraped_at"], utc=True, errors="coerce")
+        # Rows without a valid timestamp cannot contribute to temporal features
+        # or history-span validation. Drop them before sorting and feature extraction.
+        df = df.dropna(subset=["scraped_at"])
         df = df.sort_values("scraped_at").reset_index(drop=True)
 
         # Use lowest_price as primary signal; fall back to median_price
