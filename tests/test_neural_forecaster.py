@@ -14,6 +14,7 @@ Covers:
 
 import pytest
 import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
 import sys
@@ -295,7 +296,10 @@ class TestNeuralDataAdapter:
         assert "inputs" in tensors
         assert "intervals" in tensors
         assert "targets" in tensors
-        assert tensors["inputs"].shape[0] == 3  # 3 skins
+        # The horizon-aware adapter emits multiple rolling windows per skin,
+        # not one fixed sample per skin.
+        assert tensors["inputs"].shape[0] > len(records_by_skin)
+        assert tensors["inputs"].shape[1] == adapter.max_seq_len
         assert tensors["inputs"].shape[2] == INPUT_DIM
         assert len(metadata) == 3
 
@@ -494,3 +498,82 @@ class TestEdgeCases:
         # Should not crash — zeros get filtered by the extractor
         # The extractor drops rows with price <= 0
         assert feat is None  # All zeros → filtered out → < 10 points
+
+
+
+class TestHorizonAlignedDataset:
+    def _records(self, count=100, interval_hours=6):
+        import datetime
+        start = datetime.datetime(2026, 1, 1, 0, 0, 0)
+        return [{
+            "skin_name": "Synthetic Case",
+            "hash_name": "Synthetic Case",
+            "lowest_price": 1.0 + i * 0.01,
+            "median_price": 1.0 + i * 0.01,
+            "volume": 10 + i,
+            "scraped_at": (start + datetime.timedelta(hours=interval_hours * i)).isoformat() + "Z",
+        } for i in range(count)]
+
+    def test_targets_are_prices_at_or_after_configured_horizons(self):
+        adapter = NeuralDataAdapter(max_seq_len=10)
+        tensors, metadata = adapter.build_dataset({"Synthetic Case": self._records()})
+        assert tensors
+        assert tensors["targets"].ndim == 2
+        assert tensors["targets"].shape[1] == len(tensors["horizons_hours"])
+        assert tensors["horizons_hours"].tolist() == [1, 3, 6, 12, 24, 48, 72, 168]
+        # Verify each horizon target against the first observed source price
+        # at or after anchor_time + horizon, not a feature-column proxy.
+        source = adapter.records_to_features(self._records())
+        source_times = pd.to_datetime(source["timestamps"], utc=True)
+        source_prices = source["prices"]
+        sample_times = pd.to_datetime(
+            tensors["sample_timestamps"].numpy(), unit="s", utc=True
+        )
+        for row, anchor_time in enumerate(sample_times):
+            for col, horizon in enumerate(tensors["horizons_hours"].tolist()):
+                target_time = anchor_time + pd.Timedelta(hours=horizon)
+                target_idx = int(np.flatnonzero(source_times >= target_time)[0])
+                assert tensors["targets"][row, col].item() == pytest.approx(
+                    float(source_prices[target_idx])
+                )
+        assert len(metadata) == 1
+
+    def test_no_sample_when_history_does_not_reach_longest_horizon(self):
+        adapter = NeuralDataAdapter(max_seq_len=10)
+        tensors, _ = adapter.build_dataset({
+            "Synthetic Case": self._records(count=20, interval_hours=6)
+        })
+        assert tensors == {}
+
+    def test_legacy_checkpoint_is_rejected(self, tmp_path):
+        legacy = tmp_path / "legacy.pt"
+        torch.save({"model_state_dict": NeuralPriceForecaster().state_dict()}, legacy)
+        assert NeuralForecasterWrapper(checkpoint_path=str(legacy))._has_model is False
+
+    def test_scaler_excludes_validation_and_embargo_period(self):
+        adapter = NeuralDataAdapter(max_seq_len=10)
+        records = self._records(count=100, interval_hours=6)
+        tensors, _ = adapter.build_dataset({"Synthetic Case": records})
+        source = adapter.records_to_features(records)
+        timestamps = pd.to_datetime(source["timestamps"], utc=True)
+        horizons = [1, 3, 6, 12, 24, 48, 72, 168]
+        valid_endpoints = [
+            endpoint for endpoint in range(9, len(source["feature_matrix"]) - 1)
+            if all(np.any(timestamps >= timestamps[endpoint] + pd.Timedelta(hours=h))
+                   for h in horizons)
+        ]
+        split_at = min(max(int(len(valid_endpoints) * 0.8), 1), len(valid_endpoints) - 1)
+        validation_start = timestamps[valid_endpoints[split_at]]
+        scaler_cutoff_time = validation_start - pd.Timedelta(hours=max(horizons))
+        cutoff = int(np.searchsorted(timestamps.asi8, scaler_cutoff_time.value, side="left"))
+        cutoff = min(max(cutoff, 1), len(source["feature_matrix"]))
+        expected_mean = source["feature_matrix"][:cutoff].mean(axis=0)
+        assert tensors
+        assert tensors["scaler_mean"].numpy() == pytest.approx(expected_mean)
+
+    def test_scaler_metadata_is_present_in_training_dataset(self):
+        adapter = NeuralDataAdapter(max_seq_len=10)
+        tensors, _ = adapter.build_dataset({"Synthetic Case": self._records()})
+        assert tensors["scaler_mean"].shape == (INPUT_DIM,)
+        assert tensors["scaler_std"].shape == (INPUT_DIM,)
+        assert torch.all(tensors["scaler_std"] > 0)
