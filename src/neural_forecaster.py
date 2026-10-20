@@ -554,22 +554,42 @@ class NeuralDataAdapter:
         if not features_by_skin:
             return {}, {}
 
-        # Keep the current scaler interface, but fit only on each skin's
-        # earliest 80% of observations to reduce validation-period leakage.
-        train_feature_rows = []
-        for feat in features_by_skin.values():
-            matrix = feat["feature_matrix"]
-            cutoff = max(1, int(len(matrix) * 0.8))
-            train_feature_rows.append(matrix[:cutoff])
-        if train_feature_rows:
-            combined = np.vstack(train_feature_rows)
-            self._means = combined.mean(axis=0)
-            self._stds = combined.std(axis=0)
-            self._stds[self._stds == 0] = 1.0
-            self._fitted = True
-
         # Output horizons are expressed in hours, matching the model head.
         horizons = list(NeuralPriceForecaster().output_horizons)
+
+        # Fit normalization only on feature rows available before each skin's
+        # chronological validation boundary, including a max-horizon embargo.
+        # This avoids leaking later feature distributions into training inputs.
+        train_feature_rows = []
+        max_horizon = max(horizons)
+        for feat in features_by_skin.values():
+            matrix = feat["feature_matrix"]
+            timestamps = pd.to_datetime(feat["timestamps"], utc=True)
+            prices = np.asarray(feat["prices"], dtype=float)
+            valid_endpoints = []
+            for endpoint in range(9, len(matrix) - 1):
+                anchor_time = timestamps[endpoint]
+                if all(np.any(timestamps >= anchor_time + pd.Timedelta(hours=float(h)))
+                       for h in horizons):
+                    valid_endpoints.append(endpoint)
+            if len(valid_endpoints) < 3:
+                continue
+            split_at = min(max(int(len(valid_endpoints) * 0.8), 1), len(valid_endpoints) - 1)
+            validation_start = timestamps[valid_endpoints[split_at]]
+            scaler_cutoff_time = validation_start - pd.Timedelta(hours=float(max_horizon))
+            cutoff = int(np.searchsorted(timestamps.asi8, scaler_cutoff_time.value, side="left"))
+            cutoff = min(max(cutoff, 1), len(matrix))
+            train_feature_rows.append(matrix[:cutoff])
+
+        if not train_feature_rows:
+            # Dataset construction will return no samples for histories too
+            # short to support the configured horizon contract.
+            return {}, features_by_skin
+        combined = np.vstack(train_feature_rows)
+        self._means = combined.mean(axis=0)
+        self._stds = combined.std(axis=0)
+        self._stds[~np.isfinite(self._stds) | (self._stds == 0)] = 1.0
+        self._fitted = True
         all_inputs, all_intervals, all_targets, all_timestamps, all_skin_ids = [], [], [], [], []
         skin_names = list(features_by_skin.keys())
 
